@@ -115,6 +115,15 @@ void data_ui::init() {
     Evas_Object *leftBox = elm_box_add(window);
     elm_object_part_content_set(panes, "left", leftBox);
 
+    // Scroller for fields table
+    Evas_Object *scroller = elm_scroller_add(window);
+    evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    elm_scroller_bounce_set(scroller, EINA_FALSE, EINA_FALSE);
+    elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
+    evas_object_show(scroller);
+    elm_box_pack_end(leftBox, scroller);
+
     // Create fields table
     fieldsTable = elm_table_add(window);
     evas_object_size_hint_weight_set(fieldsTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -124,7 +133,7 @@ void data_ui::init() {
     elm_table_align_set(fieldsTable, 0, 0);
     elm_table_homogeneous_set(fieldsTable, EINA_FALSE);
     evas_object_show(fieldsTable);
-    elm_box_pack_end(leftBox, fieldsTable);
+    elm_object_content_set(scroller, fieldsTable);
 
     // Create search box
     Evas_Object *searchBox = elm_box_add(window);
@@ -385,6 +394,8 @@ void data_ui::newRow() {
 }
 
 void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols) const {
+    elm_popup_scrollable_set(popup, EINA_TRUE);
+
     Evas_Object *popupTable = elm_table_add(window);
     evas_object_size_hint_weight_set(popupTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(popupTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -402,7 +413,7 @@ void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<st
         elm_table_pack(popupTable, field_name, 0, i, 1, 1);
         evas_object_show(field_name);
 
-        Evas_Object *input = elm_entry_add(popup);
+        Evas_Object *input = elm_entry_add(popupTable);
         if (!currentRowValues[i].empty()) {
             elm_object_text_set(input, currentRowValues[i].c_str());
         }
