@@ -180,6 +180,76 @@ TEST_F(SqliteFileTests, TableSearchNext) {
     EXPECT_EQ(savedTitle, "Subject2");
 }
 
+TEST_F(SqliteFileTests, TableColumnReorder) {
+    sqlite_file db;
+    db.newFile(":memory:");
+
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("Test Subject");
+    row.emplace_back("Test URL");
+    row.emplace_back("Test Notes");
+    db.addRow(row);
+    auto oldColumns = db.listColumns();
+    auto newColumns = db.listColumns();
+    std::swap(newColumns[1], newColumns[2]);
+    std::swap(newColumns[0], newColumns[3]);
+    db.setColumns(newColumns);
+    int rows = db.rowCount();
+    EXPECT_EQ(1, rows);
+    std::string savedTitle = db.readRowTitle(0);
+    EXPECT_EQ(savedTitle, "Test URL");
+}
+
+TEST_F(SqliteFileTests, TableColumnAdd) {
+    sqlite_file db;
+    db.newFile(":memory:");
+
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("Test Subject");
+    row.emplace_back("Test URL");
+    row.emplace_back("Test Notes");
+    db.addRow(row);
+    auto oldColumns = db.listColumns();
+    auto newColumns = db.listColumns();
+    newColumns.emplace_back("newColumn");
+    db.setColumns(newColumns);
+    int rows = db.rowCount();
+    EXPECT_EQ(1, rows);
+    auto savedColumns = db.listColumns();
+    EXPECT_EQ(savedColumns[savedColumns.size()-1], "newColumn");
+}
+
+TEST_F(SqliteFileTests, TableColumnRename) {
+    sqlite_file db;
+    db.newFile(":memory:");
+
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("Test Subject");
+    row.emplace_back("Test URL");
+    row.emplace_back("Test Notes");
+    db.addRow(row);
+    auto oldColumns = db.listColumns();
+    auto newColumns = db.listColumns();
+    std::string fromColumn("notes");
+    std::string toColumn("comments");
+    std::replace(newColumns.begin(), newColumns.end(), fromColumn, toColumn);
+    std::map<std::string,std::string> renames;
+    renames.emplace(toColumn,fromColumn);
+    db.setColumns(newColumns, renames);
+    int rows = db.rowCount();
+    EXPECT_EQ(1, rows);
+    auto savedColumns = db.listColumns();
+    EXPECT_EQ(savedColumns[savedColumns.size()-1], "comments");
+    auto savedRow = db.readRow(0);
+    EXPECT_EQ(savedRow[0], "1");
+    EXPECT_EQ(savedRow[1], "Test Subject");
+    EXPECT_EQ(savedRow[2], "Test URL");
+    EXPECT_EQ(savedRow[3], "Test Notes");
+}
+
 TEST(basic_check, test_eq) {
     EXPECT_EQ(1, 1);
 }

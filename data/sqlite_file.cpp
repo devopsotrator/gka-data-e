@@ -8,6 +8,7 @@
 #include <vector>
 #include <regex>
 #include <Elementary.h>
+#include <numeric>
 #include "sqlite_file.h"
 
 sqlite_file::~sqlite_file() {
@@ -33,7 +34,7 @@ void sqlite_file::newFile(std::string fileName) {
 
     if (listTables().empty()) {
         char *sqliteErrMsg = nullptr;
-        std::string sql = "CREATE TABLE IF NOT EXISTS notes(id INTEGER PRIMARY KEY, title TEXT, url TEXT, notes TEXT);";
+        std::string sql = "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, title TEXT, url TEXT, notes TEXT);";
         rc = sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
         if (rc != SQLITE_OK) {
             EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
@@ -63,7 +64,7 @@ std::vector<std::string> sqlite_file::listTables() {
 void sqlite_file::createTable(std::string &string, std::vector<std::string> &vector) {
     char *sqliteErrMsg = nullptr;
 
-    std::string sql = "CREATE TABLE IF NOT EXISTS " + string + "(";
+    std::string sql = "CREATE TABLE IF NOT EXISTS " + string + " (";
     for (const auto &field : vector) {
         if (field != vector[0])
             sql += ",";
@@ -291,4 +292,124 @@ std::vector<std::string> sqlite_file::listSearchableColumns(std::string &table) 
     sqlite3_finalize(ppStmt);
 
     return ret;
+}
+
+void sqlite_file::setColumns(std::vector<std::string> newColumns, std::map<std::string,std::string> renames, std::string table) {
+    std::vector<std::string> ret;
+    table = getTable(table);
+    if (table.empty()) {
+        return;
+    }
+    char *sqliteErrMsg = nullptr;
+
+    int rc=sqlite3_exec(handle, "BEGIN TRANSACTION", nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
+
+    std::vector<std::string> oldName;
+    std::vector<std::string> oldType;
+    std::vector<int> oldNullPermitted;
+    std::vector<std::string> oldDefaultValues;
+    std::vector<int> oldPrimaryKey;
+
+    std::string sql = "PRAGMA TABLE_INFO("+table+");";
+    sqlite3_stmt* ppStmt = nullptr;
+    const char* pzTail = nullptr;
+    rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+        return;
+    }
+    while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+        oldName.emplace_back(reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 1)));
+        oldType.emplace_back(reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 2)));
+        oldNullPermitted.emplace_back(sqlite3_column_int(ppStmt, 3));
+        auto defaultValue = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 4));
+        if (defaultValue != nullptr) {
+            oldDefaultValues.emplace_back(defaultValue);
+        } else {
+            oldDefaultValues.emplace_back("");
+        }
+        oldPrimaryKey.emplace_back(sqlite3_column_int(ppStmt, 5));
+    }
+    sqlite3_finalize(ppStmt);
+
+    sql = "CREATE TABLE new_" + table + "(";
+    if (std::accumulate(oldPrimaryKey.begin(), oldPrimaryKey.end(), 0) == 0) {
+        sql += "id INTEGER PRIMARY KEY, ";
+    }
+    for (auto &column : newColumns) {
+        if (column != newColumns[0])
+            sql += ", ";
+        sql += column;
+        auto index = std::find(oldName.begin(), oldName.end(), column) - oldName.begin();
+        if (index < oldName.size()) {
+            sql += " " + oldType[index];
+            if (oldPrimaryKey[index] > 0) {
+                sql += " PRIMARY KEY";
+            }
+        }
+    }
+    sql += ")";
+    rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
+
+    sql = "INSERT INTO new_" + table + "(";
+    for (auto &column : newColumns) {
+        if ((std::find(oldName.begin(), oldName.end(), column) != std::end(oldName)) || (renames.find(column) != renames.end())) {
+            if (column != newColumns[0])
+                sql += ", ";
+            sql += column;
+        }
+    }
+    sql += ") SELECT ";
+    for (auto &column : newColumns) {
+        if (std::find(oldName.begin(), oldName.end(), column) != std::end(oldName)) {
+            if (column != newColumns[0])
+                sql += ", ";
+            sql += column;
+        } else if (renames.find(column) != renames.end()) {
+            if (column != newColumns[0])
+                sql += ", ";
+            sql += renames.find(column)->second;
+        }
+    }
+    sql += " FROM " + table + ";";
+    EINA_LOG_ERR("SQL: %s", sql.c_str());
+    rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
+
+    sql = "DROP TABLE "+table;
+    rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
+
+    sql = "ALTER TABLE new_" + table + " RENAME TO " + table;
+    rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
+
+    rc=sqlite3_exec(handle, "COMMIT TRANSACTION", nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return;
+    }
 }

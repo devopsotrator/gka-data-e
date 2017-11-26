@@ -20,7 +20,7 @@ include_directories(
 
 link_directories (${PC_LIBELEMENTARY_LIBRARY_DIRS})
 
-add_executable(gka_data_e main.cpp data_ui.cpp data_menu.cpp data_menu.h)
+add_executable(gka_data_e main.cpp data_ui.cpp data_menu.cpp data_menu.h data_label_preferences.cpp data_label_preferences.h)
 
 add_subdirectory(data)
 add_subdirectory(data_tests)

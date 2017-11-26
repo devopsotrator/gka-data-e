@@ -5,16 +5,20 @@
 #include <sqlite_file.h>
 #include <Elementary.h>
 #include <regex>
+#include <unordered_set>
 #include "data_ui.h"
+#include "data_label_preferences.h"
 
 static sqlite_file db;
 data_ui ui;
 
-static char *right_list_text_get(void *data, Evas_Object *obj, const char *part) {
+static char *right_list_text_get_cb(void *data, Evas_Object *obj, const char *part) {
     if (strcmp(part, "elm.text") == 0) {
         auto *buf = static_cast<char *>(malloc(MAX_LIST_LENGTH));
         auto row = db.readRowTitle((int) (uintptr_t) data);
-        snprintf(buf, MAX_LIST_LENGTH, "%s", row.c_str());
+        std::string toFind("<br/>");
+        std::string firstLine(row.begin(), std::search(row.begin(), row.end(), toFind.begin(), toFind.end()));
+        snprintf(buf, MAX_LIST_LENGTH, "%s", firstLine.c_str());
 
         return buf;
     } else return NULL;
@@ -117,7 +121,7 @@ void data_ui::init() {
 
     right_list_itc = elm_genlist_item_class_new();
     right_list_itc->item_style = "default";
-    right_list_itc->func.text_get = right_list_text_get;
+    right_list_itc->func.text_get = right_list_text_get_cb;
     right_list_itc->func.content_get = NULL;
     right_list_itc->func.state_get = NULL;
     right_list_itc->func.del = NULL;
@@ -530,4 +534,91 @@ void data_ui::nextButton() {
 void data_ui::repopulateUI() {
     repopulateFieldsTable();
     repopulateRightList();
+}
+
+void data_ui::labelPreferences() {
+    renames.clear();
+    data_label_preferences label_preferences;
+    label_preferences.show(window);
+}
+
+void data_ui::saveLabelPreferences() {
+    db.setColumns(editableColumns, renames);
+}
+
+std::vector<std::string> data_ui::getEditableColumns() {
+    if (editableColumns.empty()) {
+        editableColumns = db.listColumns();
+    }
+    return editableColumns;
+}
+
+void data_ui::editColumnMoveUp() {
+    auto index = editableColumnsIndex;
+    if (index > 0) {
+        std::swap(editableColumns[index], editableColumns[index - 1]);
+        editableColumnsIndex--;
+    }
+}
+
+void data_ui::editColumnMoveDown() {
+    auto index = editableColumnsIndex;
+    if (index < editableColumns.size()-1) {
+        std::swap(editableColumns[index], editableColumns[index + 1]);
+        editableColumnsIndex++;
+    }
+}
+
+void data_ui::editColumnDelete() {
+    auto index = editableColumnsIndex;
+    editableColumns.erase(editableColumns.begin()+index);
+    editableColumnsIndex--;
+}
+
+void data_ui::setEditColumnSelection(int i) {
+    editableColumnsIndex = i;
+    updateEditLabel(editableColumns[i]);
+}
+
+int data_ui::getEditColumnSelection() {
+    return editableColumnsIndex;
+}
+
+void data_ui::updateEditLabel(std::string label) {
+    editableColumnsEditLabel = label;
+}
+
+void data_ui::addEditableLabel() {
+    auto index = editableColumnsIndex;
+    editableColumns.insert(editableColumns.begin()+index, editableColumnsEditLabel);
+}
+
+std::string data_ui::getEditLabel() {
+    return editableColumnsEditLabel;
+}
+
+void data_ui::saveEditableLabel() {
+    if (editableColumns[editableColumnsIndex] != editableColumnsEditLabel) {
+        if (renames.find(editableColumns[editableColumnsIndex]) != renames.end()) {
+            renames[editableColumnsEditLabel] = renames.find(editableColumns[editableColumnsIndex])->second;
+            renames.erase(editableColumns[editableColumnsIndex]);
+        } else {
+            renames[editableColumnsEditLabel] = editableColumns[editableColumnsIndex];
+        }
+        editableColumns[editableColumnsIndex] = editableColumnsEditLabel;
+    }
+}
+
+Eina_Bool data_ui::labelPreferencesAreValid() {
+    std::unordered_set<std::string> validCheck;
+    for (auto column : editableColumns) {
+        auto search = validCheck.find(column);
+        if(search == validCheck.end()) {
+            validCheck.insert(column);
+        } else {
+            return EINA_FALSE;
+        }
+    }
+
+    return EINA_TRUE;
 }

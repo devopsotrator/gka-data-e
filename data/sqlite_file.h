@@ -8,6 +8,7 @@
 #include <sqlite3.h>
 #include <vector>
 #include <string>
+#include <map>
 
 typedef enum
 {
@@ -54,6 +55,8 @@ public:
     std::string where(std::string table, std::vector<std::string> &toBind);
 
     std::vector<std::string> listSearchableColumns(std::string &table);
+
+    void setColumns(std::vector<std::string> vector, std::map<std::string,std::string> renames={}, std::string table="");
 };
 
 

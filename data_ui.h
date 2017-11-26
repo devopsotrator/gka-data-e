@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "data_menu.h"
 
 #ifdef ENABLE_NLS
@@ -36,6 +37,10 @@ public:
     std::vector<std::string> currentRowValues;
     data_menu menu;
     int oldSearchEntryPos;
+    std::vector<std::string> editableColumns;
+    int editableColumnsIndex;
+    std::string editableColumnsEditLabel;
+    std::map<std::string, std::string> renames;
 
 public:
     void init();
@@ -81,6 +86,33 @@ public:
     void nextItem();
 
     void repopulateUI();
+
+    void labelPreferences();
+
+    void saveLabelPreferences();
+
+    std::vector<std::string> getEditableColumns();
+
+    void editColumnMoveUp();
+
+    void editColumnMoveDown();
+
+    void editColumnDelete();
+
+    void setEditColumnSelection(int i);
+
+    int getEditColumnSelection();
+
+    void updateEditLabel(std::string label);
+
+    void addEditableLabel();
+
+    std::string getEditLabel();
+
+    void saveEditableLabel();
+
+    Eina_Bool labelPreferencesAreValid();
+
 };
 
 extern data_ui ui;
