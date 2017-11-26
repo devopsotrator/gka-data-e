@@ -46,7 +46,7 @@ public:
 
     void setNewFile();
 
-    void repopulateFieldsTable() const;
+    void repopulateFieldsTable();
 
     void repopulateRightList() const;
 
@@ -72,6 +72,15 @@ public:
 
     void handleKeyDown(void *event_info);
 
+    void prevButton();
+
+    void nextButton();
+
+    void prevItem();
+
+    void nextItem();
+
+    void repopulateUI();
 };
 
 extern data_ui ui;

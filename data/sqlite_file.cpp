@@ -1,20 +1,18 @@
 //
 // Created by adam on 23/11/17.
 //
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <eina/eina_log.h>
-#ifdef __cplusplus
-}
-#endif
+//
 
 #include <sqlite3.h>
 #include <utility>
 #include <vector>
 #include <regex>
+#include <Elementary.h>
 #include "sqlite_file.h"
+
+sqlite_file::~sqlite_file() {
+    sqlite3_close(handle);
+}
 
 void sqlite_file::file(std::string fileName) {
     int rc = sqlite3_open_v2(fileName.c_str(), &handle, SQLITE_OPEN_READWRITE, nullptr);
@@ -41,6 +39,7 @@ void sqlite_file::newFile(std::string fileName) {
             EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
             sqlite3_free(sqliteErrMsg);
         }
+        intPrimaryKey = 0 + 1;
     }
 }
 
@@ -76,11 +75,17 @@ void sqlite_file::createTable(std::string &string, std::vector<std::string> &vec
         EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
         sqlite3_free(sqliteErrMsg);
     }
-
+    if (!vector.empty()) {
+        for (auto i=0; i < vector.size(); i++) {
+            if (strcasestr(vector[i].c_str(), "INTEGER PRIMARY KEY") != NULL) {
+                intPrimaryKey = i + 1;
+            }
+        }
+    }
 }
 
 std::vector<std::string> sqlite_file::listColumns(std::string table) {
-    intPrimaryKey = EINA_FALSE;
+    intPrimaryKey = 0;
 
     std::vector<std::string> ret;
     table = getTable(table);
@@ -95,15 +100,19 @@ std::vector<std::string> sqlite_file::listColumns(std::string table) {
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
-    while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+    if (sqlite3_step(ppStmt) == SQLITE_ROW) {
         std::string text = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 1));
         ret.emplace_back(text);
-        //detect use of primary key
+        //detect use of integer primary key
         auto primaryKey = sqlite3_column_int(ppStmt, 5);
         auto type = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 2));
         if (primaryKey && strcmp(type, "INTEGER")==0) {
-            intPrimaryKey = EINA_TRUE;
+            intPrimaryKey = primaryKey;
         }
+    }
+    while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+        std::string text = reinterpret_cast<const char *>(sqlite3_column_text(ppStmt, 1));
+        ret.emplace_back(text);
     }
     sqlite3_finalize(ppStmt);
     return ret;
@@ -151,13 +160,21 @@ int sqlite_file::rowCount(std::string table) {
     if (table.empty()) {
         return ret;
     }
+    std::vector<std::string> toBind;
 
-    std::string sql = "SELECT COUNT(*) FROM "+table+";";
+    std::string sql = "SELECT COUNT(*) FROM " + table + where(table, toBind) + ";";
     sqlite3_stmt* ppStmt = nullptr;
     const char* pzTail = nullptr;
     int rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+    }
+    for (int i=0; i<toBind.size(); i++) {
+        auto colValue = toBind[i];
+        rc = sqlite3_bind_text(ppStmt, i+1, colValue.c_str(), -1, SQLITE_TRANSIENT);
+        if (rc != SQLITE_OK) {
+            EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+        }
     }
     if (sqlite3_step(ppStmt) == SQLITE_ROW) {
         ret = sqlite3_column_int(ppStmt, 0);
@@ -180,21 +197,31 @@ std::string &sqlite_file::getTable(std::string &table) {
     return table;
 }
 
-std::vector<std::string> sqlite_file::readRow(int i, std::string table) {
+std::vector<std::string> sqlite_file::readRow(int rowIndex, std::string table) {
     std::vector<std::string> ret;
     table = getTable(table);
     if (table.empty()) {
         return ret;
     }
+    std::vector<std::string> toBind;
 
-    std::string sql = "SELECT * FROM "+table+" LIMIT 1 OFFSET ?1;";
+    std::string sql = "SELECT * FROM "+table+where(table,toBind);
+    auto nextBind = toBind.size() + 1;
+    sql += " LIMIT 1 OFFSET ?" + std::to_string(nextBind) + ";";
     sqlite3_stmt* ppStmt = nullptr;
     const char* pzTail = nullptr;
     int rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
-    rc=sqlite3_bind_int(ppStmt, 1, i);
+    for (int i=0; i<toBind.size(); i++) {
+        auto colValue = toBind[i];
+        rc = sqlite3_bind_text(ppStmt, i+1, colValue.c_str(), -1, SQLITE_TRANSIENT);
+        if (rc != SQLITE_OK) {
+            EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+        }
+    }
+    rc=sqlite3_bind_int(ppStmt, nextBind, rowIndex);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
@@ -217,8 +244,51 @@ std::vector<std::string> sqlite_file::readRow(int i, std::string table) {
 std::string sqlite_file::readRowTitle(int i, std::string table) {
     std::vector<std::string> row = readRow(i, std::move(table));
 
-    if (intPrimaryKey) {
+    if (intPrimaryKey == 0 + 1) {
         return row[1];
+    } else {
+        return row[0];
     }
-    return row[0];
+}
+
+void sqlite_file::setFilter(const std::string &string) {
+    filter = string;
+}
+
+std::string sqlite_file::where(std::string table, std::vector<std::string> &toBind) {
+    if (filter.empty()) {
+        return "";
+    } else {
+        std::string ret = " WHERE (";
+        std::vector<std::string> searchable = listSearchableColumns(table);
+        for (auto &search : searchable) {
+            if (search != searchable[0])
+                ret += " OR ";
+            toBind.emplace_back("%" + filter + "%");
+            ret += search + " LIKE ?" + std::to_string(toBind.size());
+        }
+        return ret + ")";
+    }
+}
+
+std::vector<std::string> sqlite_file::listSearchableColumns(std::string &table) {
+    std::vector<std::string> ret;
+
+    std::string sql = "PRAGMA TABLE_INFO("+table+");";
+    sqlite3_stmt* ppStmt = nullptr;
+    const char* pzTail = nullptr;
+    int rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+    }
+    while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+        std::string columnName = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 1));
+        auto type = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 2));
+        if (strcasestr(type, "TEXT")==0 || strcasestr(type, "CHAR")==0) {
+            ret.emplace_back(columnName);
+        }
+    }
+    sqlite3_finalize(ppStmt);
+
+    return ret;
 }

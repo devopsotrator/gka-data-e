@@ -2,24 +2,20 @@
 // Created by adam on 23/11/17.
 //
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <eina/eina_main.h>
-#include <eina/eina_log.h>
-#ifdef __cplusplus
-}
-#endif
-
+#include "Elementary.h"
 #include <sqlite_file.h>
 #include "gtest/gtest.h"
 
 class SqliteFileTests : public testing::Test {
 protected:
-    virtual void SetUp() {
+    void SetUp() override {
         eina_init();
         int _log_dom = eina_log_domain_register("gka-data", EINA_COLOR_GREEN);
 
+    }
+
+    void TearDown() override {
+        elm_shutdown();
     }
 };
 
@@ -28,6 +24,15 @@ void createTableT1(sqlite_file &db, std::vector<std::string> &columns, std::stri
     columns.emplace_back("a INTEGER PRIMARY KEY");
     columns.emplace_back("b TEXT");
     columns.emplace_back(" c DATETIME");
+    columns.emplace_back("d");
+    db.createTable(tableName, columns);
+}
+
+void createTableT2(sqlite_file &db, std::vector<std::string> &columns, std::string &tableName) {
+    tableName= "t2";
+    columns.emplace_back("a TEXT");
+    columns.emplace_back(" b DATETIME");
+    columns.emplace_back("c INTEGER PRIMARY KEY");
     columns.emplace_back("d");
     db.createTable(tableName, columns);
 }
@@ -123,6 +128,23 @@ TEST_F(SqliteFileTests, TableRowTitle) {
     EXPECT_EQ(savedTitle, "First Column");
 }
 
+TEST_F(SqliteFileTests, TableRowTitleWithSecondColumnPK) {
+    sqlite_file db;
+    db.file(":memory:");
+    std::string tableName;
+    std::vector<std::string> columns;
+    createTableT2(db, columns, tableName);
+
+    std::vector<std::string> row;
+    row.emplace_back("First Column");
+    row.emplace_back("Second Column");
+    row.emplace_back("");
+    row.emplace_back("Third Column");
+    db.addRow(row);
+    std::string savedTitle = db.readRowTitle(0);
+    EXPECT_EQ(savedTitle, "First Column");
+}
+
 TEST_F(SqliteFileTests, TableDefaultNewFile) {
     sqlite_file db;
     db.newFile(":memory:");
@@ -135,6 +157,27 @@ TEST_F(SqliteFileTests, TableDefaultNewFile) {
     db.addRow(row);
     std::string savedTitle = db.readRowTitle(0);
     EXPECT_EQ(savedTitle, "Test Subject");
+}
+
+TEST_F(SqliteFileTests, TableSearchNext) {
+    sqlite_file db;
+    db.newFile(":memory:");
+
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("Test Subject");
+    row.emplace_back("Test URL");
+    row.emplace_back("Test Notes");
+    db.addRow(row);
+    row[1] = "Subject2";
+    db.addRow(row);
+    row[1] = "Subject3";
+    db.addRow(row);
+    db.setFilter("Subject2");
+    int rows = db.rowCount();
+    EXPECT_EQ(1, rows);
+    std::string savedTitle = db.readRowTitle(0);
+    EXPECT_EQ(savedTitle, "Subject2");
 }
 
 TEST(basic_check, test_eq) {

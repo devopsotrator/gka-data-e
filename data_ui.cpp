@@ -21,10 +21,18 @@ static char *right_list_text_get(void *data, Evas_Object *obj, const char *part)
 }
 
 static void row_selected_cb(void *data, Evas_Object *obj, void *event_info) {
-    Elm_Object_Item *it = (Elm_Object_Item *) event_info;
+    auto *it = (Elm_Object_Item *) event_info;
     auto i = (int) (uintptr_t) data;
 
     ui.rowSelected(i);
+}
+
+static void previous_button_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.prevButton();
+}
+
+static void next_button_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.nextButton();
 }
 
 static void window_cb_key_down(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info) {
@@ -34,13 +42,12 @@ static void window_cb_key_down(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas
 void data_ui::handleKeyDown(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     Eina_Bool ctrl, alt, shift;
-    Elm_Object_Item *it;
 
     ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-//    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
@@ -60,31 +67,47 @@ void data_ui::handleKeyDown(void *event_info) {
 
     if (!strcmp(ev->key, "Escape")) {
         elm_object_text_set(searchEntry,"");
+        db.setFilter("");
+        repopulateUI();
     } else if (!strcmp(ev->key, "Up")) {
+    } else if (!strcmp(ev->key, "Return")) {
+        if (shift) {
+            prevButton();
+        } else {
+            nextButton();
+        }
     } else if (!strcmp(ev->key, "Down")) {
     } else if (!strcmp(ev->key, "Left")) {
         auto pos = elm_entry_cursor_pos_get(searchEntry);
         if (pos == oldSearchEntryPos) {
-            auto sIt = elm_genlist_selected_item_get(rightList);
-            it = elm_genlist_item_prev_get(sIt);
-            if (!it) it = elm_genlist_last_item_get(rightList);
-            elm_genlist_item_selected_set(it, EINA_TRUE);
-            elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+            prevItem();
             clearFocus();
         }
         oldSearchEntryPos = pos;
     } else if (!strcmp(ev->key, "Right")) {
         auto pos = elm_entry_cursor_pos_get(searchEntry);
         if (pos == oldSearchEntryPos) {
-            auto sIt = elm_genlist_selected_item_get(rightList);
-            it = elm_genlist_item_next_get(sIt);
-            if (!it) it = elm_genlist_first_item_get(rightList);
-            elm_genlist_item_selected_set(it, EINA_TRUE);
-            elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+            nextItem();
             clearFocus();
         }
         oldSearchEntryPos = pos;
     }
+}
+
+void data_ui::nextItem() {
+    auto sIt = elm_genlist_selected_item_get(rightList);
+    auto it = elm_genlist_item_next_get(sIt);
+    if (!it) it = elm_genlist_first_item_get(rightList);
+    elm_genlist_item_selected_set(it, EINA_TRUE);
+    elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+}
+
+void data_ui::prevItem() {
+    auto sIt = elm_genlist_selected_item_get(rightList);
+    auto it = elm_genlist_item_prev_get(sIt);
+    if (!it) it = elm_genlist_last_item_get(rightList);
+    elm_genlist_item_selected_set(it, EINA_TRUE);
+    elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
 }
 
 void data_ui::init() {
@@ -166,12 +189,21 @@ void data_ui::init() {
     elm_object_focus_set(searchEntry, EINA_TRUE);
     evas_object_show(searchEntry);
 
-    Evas_Object *searchButton = elm_button_add(window);
-    elm_object_text_set(searchButton, _("Search"));
-    evas_object_size_hint_weight_set(searchButton, 0, 0);
-    evas_object_size_hint_align_set(searchButton, 1, 1);
-    elm_box_pack_end(searchBox, searchButton);
-    evas_object_show(searchButton);
+    Evas_Object *prevButton = elm_button_add(window);
+    elm_object_text_set(prevButton, _("Prev"));
+    evas_object_size_hint_weight_set(prevButton, 0, 0);
+    evas_object_size_hint_align_set(prevButton, 1, 1);
+    elm_box_pack_end(searchBox, prevButton);
+    evas_object_show(prevButton);
+    evas_object_smart_callback_add(prevButton, "clicked", previous_button_cb, NULL);
+
+    Evas_Object *nextButton = elm_button_add(window);
+    elm_object_text_set(nextButton, _("Next"));
+    evas_object_size_hint_weight_set(nextButton, 0, 0);
+    evas_object_size_hint_align_set(nextButton, 1, 1);
+    elm_box_pack_end(searchBox, nextButton);
+    evas_object_show(nextButton);
+    evas_object_smart_callback_add(nextButton, "clicked", next_button_cb, NULL);
 
     elm_box_pack_end(leftBox, searchBox);
 
@@ -184,7 +216,8 @@ void data_ui::init() {
     elm_object_focus_allow_set(leftBox, EINA_FALSE);
     elm_object_focus_allow_set(searchBox, EINA_FALSE);
     elm_object_focus_allow_set(searchLabel, EINA_FALSE);
-    elm_object_focus_allow_set(searchButton, EINA_FALSE);
+    elm_object_focus_allow_set(prevButton, EINA_FALSE);
+    elm_object_focus_allow_set(nextButton, EINA_FALSE);
 
     elm_win_center(window, EINA_TRUE, EINA_TRUE);
     evas_object_show(window);
@@ -197,8 +230,7 @@ void data_ui::setFile(std::string fileName) {
     db.file(fileName);
     elm_win_title_set(window, getTitleForFileName(fileName).c_str());
 
-    repopulateFieldsTable();
-    repopulateRightList();
+    repopulateUI();
 
     clearFocus();
 }
@@ -214,13 +246,12 @@ void data_ui::setNewFile() {
     db.newFile(newFileName);
     elm_win_title_set(window, getTitleForFileName(newFileName).c_str());
 
-    repopulateFieldsTable();
-    repopulateRightList();
+    repopulateUI();
 
     clearFocus();
 }
 
-void data_ui::repopulateFieldsTable() const {
+void data_ui::repopulateFieldsTable() {
     elm_table_clear(fieldsTable, EINA_TRUE);
     auto cols = db.listColumns();
 
@@ -230,6 +261,10 @@ void data_ui::repopulateFieldsTable() const {
         evas_object_size_hint_align_set(field_name, 1, 0);
         evas_object_show(field_name);
         elm_table_pack(fieldsTable, field_name, 0, i, 1, 1);
+
+        if (selectedRow > db.rowCount()) {
+            selectedRow = 0;
+        }
 
         if (selectedRow) {
             auto row = db.readRow(selectedRow - 1);
@@ -385,8 +420,8 @@ static void edit_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
 
 static void edit_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_popup_dismiss((Evas_Object *) data);
-    ui.clearFocus();
     ui.saveCurrentRow();
+    ui.clearFocus();
 }
 
 void data_ui::newRow() {
@@ -472,6 +507,27 @@ void data_ui::updateCurrentRowValue(int i, std::string value) {
 void data_ui::saveCurrentRow() {
     db.addRow(currentRowValues);
 
+    repopulateUI();
+}
+
+void data_ui::prevButton() {
+    auto filter = elm_object_text_get(searchEntry);
+    db.setFilter(filter);
+
+    repopulateUI();
+
+
+}
+
+void data_ui::nextButton() {
+    auto filter = elm_object_text_get(searchEntry);
+    db.setFilter(filter);
+
+    repopulateUI();
+
+}
+
+void data_ui::repopulateUI() {
     repopulateFieldsTable();
     repopulateRightList();
 }
