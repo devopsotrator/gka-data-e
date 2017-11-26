@@ -10,8 +10,6 @@
 static sqlite_file db;
 data_ui ui;
 
-Eina_Bool handleKeyDown(const void *event_info);
-
 static char *right_list_text_get(void *data, Evas_Object *obj, const char *part) {
     if (strcmp(part, "elm.text") == 0) {
         char *buf = static_cast<char *>(malloc(MAX_LIST_LENGTH));
@@ -59,31 +57,57 @@ void data_ui::handleKeyDown(void *event_info) {
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
+//    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+
+    if (ctrl && shift) {
+        if (!strcmp(ev->key, "N")) {
+            newRow();
+        } else if (!strcmp(ev->key, "E")) {
+            editRow();
+        }
+    } else if (ctrl) {
+        if (!strcmp(ev->key, "n")) {
+            newFile();
+        } else if (!strcmp(ev->key, "o")) {
+            openFile();
+        } else if (!strcmp(ev->key, "e")) {
+            elm_exit();
+        }
+    }
+
     if (!strcmp(ev->key, "Escape")) {
-        //Clear search field
+        elm_object_text_set(searchEntry,"");
     } else if (!strcmp(ev->key, "Up")) {
     } else if (!strcmp(ev->key, "Down")) {
     } else if (!strcmp(ev->key, "Left")) {
-        auto sIt = elm_genlist_selected_item_get(rightList);
-        it = elm_genlist_item_prev_get(sIt);
-        if(!it) it = elm_genlist_last_item_get(rightList);
-        elm_genlist_item_selected_set(it, EINA_TRUE);
-        elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
-        clearFocus();
+        auto pos = elm_entry_cursor_pos_get(searchEntry);
+        if (pos == oldSearchEntryPos) {
+            auto sIt = elm_genlist_selected_item_get(rightList);
+            it = elm_genlist_item_prev_get(sIt);
+            if (!it) it = elm_genlist_last_item_get(rightList);
+            elm_genlist_item_selected_set(it, EINA_TRUE);
+            elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+            clearFocus();
+        }
+        oldSearchEntryPos = pos;
     } else if (!strcmp(ev->key, "Right")) {
-        auto sIt = elm_genlist_selected_item_get(rightList);
-        it = elm_genlist_item_next_get(sIt);
-        if(!it) it = elm_genlist_first_item_get(rightList);
-        elm_genlist_item_selected_set(it, EINA_TRUE);
-        elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
-        clearFocus();
+        auto pos = elm_entry_cursor_pos_get(searchEntry);
+        if (pos == oldSearchEntryPos) {
+            auto sIt = elm_genlist_selected_item_get(rightList);
+            it = elm_genlist_item_next_get(sIt);
+            if (!it) it = elm_genlist_first_item_get(rightList);
+            elm_genlist_item_selected_set(it, EINA_TRUE);
+            elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+            clearFocus();
+        }
+        oldSearchEntryPos = pos;
     }
 }
 
 void data_ui::init() {
     window = elm_win_util_standard_add("Main", _("Data"));
     elm_win_autodel_set(window, EINA_TRUE);
-    evas_object_resize(window, 216 * 3, 108 * 3);
+    evas_object_resize(window, DEFAULT_APP_WIDTH, DEFAULT_APP_HEIGHT);
 
     right_list_itc = elm_genlist_item_class_new();
     right_list_itc->item_style = "default";
@@ -152,17 +176,12 @@ void data_ui::init() {
 
     searchEntry = elm_entry_add(window);
     elm_entry_single_line_set(searchEntry, EINA_TRUE);
-    //elm_object_text_set(searchEntry, _("Search"));
     elm_entry_editable_set(searchEntry, EINA_TRUE);
     evas_object_size_hint_weight_set(searchEntry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(searchEntry, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_box_pack_end(searchBox, searchEntry);
     elm_object_focus_set(searchEntry, EINA_TRUE);
     evas_object_show(searchEntry);
-
-    evas_object_event_callback_add(searchEntry, EVAS_CALLBACK_KEY_DOWN, window_cb_key_down, searchEntry);
-    evas_object_event_callback_add(rightList, EVAS_CALLBACK_KEY_DOWN, window_cb_key_down, searchEntry);
-    evas_object_event_callback_add(fieldsTable, EVAS_CALLBACK_KEY_DOWN, window_cb_key_down, searchEntry);
 
     Evas_Object *searchButton = elm_button_add(window);
     elm_object_text_set(searchButton, _("Search"));
@@ -174,6 +193,15 @@ void data_ui::init() {
     elm_box_pack_end(leftBox, searchBox);
 
     elm_panes_content_left_size_set(panes, 0.7);
+
+    evas_object_event_callback_add(searchEntry, EVAS_CALLBACK_KEY_DOWN, window_cb_key_down, searchEntry);
+    elm_object_focus_allow_set(window, EINA_FALSE);
+    elm_object_focus_allow_set(rightList, EINA_FALSE);
+    elm_object_focus_allow_set(fieldsTable, EINA_FALSE);
+    elm_object_focus_allow_set(leftBox, EINA_FALSE);
+    elm_object_focus_allow_set(searchBox, EINA_FALSE);
+    elm_object_focus_allow_set(searchLabel, EINA_FALSE);
+    elm_object_focus_allow_set(searchButton, EINA_FALSE);
 
     elm_win_center(window, EINA_TRUE, EINA_TRUE);
     evas_object_show(window);
@@ -225,9 +253,8 @@ void data_ui::repopulateFieldsTable() const {
             auto field_value = elm_label_add(fieldsTable);
             elm_object_text_set(field_value, row[i].c_str());
             evas_object_size_hint_weight_set(field_value, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-//            elm_object_style_set(field_value, "left");
             evas_object_size_hint_align_set(field_value, 0, EVAS_HINT_FILL);
-            //elm_label_line_wrap_set(field_value, ELM_WRAP_WORD); //TODO: We would like wordwrap, but this line makes the text dissapear
+//            elm_label_line_wrap_set(field_value, ELM_WRAP_WORD); //TODO: We would like wordwrap, but this line makes the text disapear
             evas_object_show(field_value);
             elm_table_pack(fieldsTable, field_value, 1, i, 1, 1);
         }
@@ -285,7 +312,6 @@ void data_ui::openFile() {
     Evas_Object *fs = elm_fileselector_add(win);
     evas_object_size_hint_weight_set(fs, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(fs, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_min_set(fs, 240, 240);
     evas_object_smart_callback_add(fs, "delete,request", file_open_exit_cb, win);
     evas_object_smart_callback_add(fs, "done", file_open_ok_cb, win);
     evas_object_show(fs);
@@ -293,12 +319,12 @@ void data_ui::openFile() {
     elm_fileselector_expandable_set(fs, EINA_TRUE);
     elm_fileselector_folder_only_set(fs, EINA_FALSE);
     elm_fileselector_path_set(fs, eina_environment_home_get());
-    elm_fileselector_mime_types_filter_append(fs, "application/x-sqlite3",
-                                              ""); //http://fileformats.archiveteam.org/wiki/DB_(SQLite)
+    //http://fileformats.archiveteam.org/wiki/DB_(SQLite)
+    elm_fileselector_mime_types_filter_append(fs, "application/x-sqlite3", "");
     elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
 
     elm_win_resize_object_add(win, fs);
-    evas_object_resize(win, 216 * 2, 108 * 3);
+    evas_object_resize(win, DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
     elm_win_center(win, EINA_TRUE, EINA_TRUE);
     evas_object_show(win);
 }

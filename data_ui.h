@@ -18,6 +18,11 @@
 
 static const int MAX_LIST_LENGTH = 255;
 
+static const int DEFAULT_APP_WIDTH = 216 * 3;
+static const int DEFAULT_APP_HEIGHT = 108 * 3;
+static const int DEFAULT_DIALOG_WIDTH = 216 * 2;
+static const int DEFAULT_DIALOG_HEIGHT = DEFAULT_APP_HEIGHT;
+
 class data_ui {
 
 public:
@@ -30,6 +35,7 @@ public:
     std::string newFileName;
     std::vector<std::string> currentRowValues;
     data_menu menu;
+    int oldSearchEntryPos;
 
 public:
     void init();
