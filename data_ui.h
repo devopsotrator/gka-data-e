@@ -1,0 +1,73 @@
+//
+// Created by adam on 24/11/17.
+//
+
+#ifndef GKA_DATA_E_DATA_UI_H
+#define GKA_DATA_E_DATA_UI_H
+
+#include <string>
+#include <vector>
+#include "data_menu.h"
+
+#ifdef ENABLE_NLS
+# include <libintl.h>
+# define _(x) gettext(x)
+#else
+# define _(x) (x)
+#endif
+
+static const int MAX_LIST_LENGTH = 255;
+
+class data_ui {
+
+public:
+    Evas_Object *searchEntry;
+    Evas_Object *rightList;
+    Evas_Object *fieldsTable;
+    Evas_Object *window;
+    Elm_Genlist_Item_Class *right_list_itc;
+    int selectedRow;
+    std::string newFileName;
+    std::vector<std::string> currentRowValues;
+    data_menu menu;
+
+public:
+    void init();
+
+    void setFile(std::string fileName);
+
+    void rowSelected(int i);
+
+    void setNewFile();
+
+    void repopulateFieldsTable() const;
+
+    void repopulateRightList() const;
+
+    void openFile();
+
+    void newFile();
+
+    void updateNewFileName(std::string fileName);
+
+    void clearFocus();
+
+    void newRow();
+
+    void editRow();
+
+    void updateCurrentRowValue(int i, std::string value);
+
+    void saveCurrentRow();
+
+    std::string getTitleForFileName(const std::string &fileName) const;
+
+    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols) const;
+
+    void handleKeyDown(void *event_info);
+
+};
+
+extern data_ui ui;
+
+#endif //GKA_DATA_E_DATA_UI_H
