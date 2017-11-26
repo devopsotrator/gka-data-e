@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #include <sqlite3.h>
+#include <utility>
 #include <vector>
 #include <regex>
 #include "sqlite_file.h"
@@ -32,7 +33,7 @@ void sqlite_file::newFile(std::string fileName) {
         state = DATA_CONNECT_TYPE_INIT;
     }
 
-    if (listTables().size() == 0) {
+    if (listTables().empty()) {
         char *sqliteErrMsg = nullptr;
         std::string sql = "CREATE TABLE IF NOT EXISTS notes(id INTEGER PRIMARY KEY, title TEXT, url TEXT, notes TEXT);";
         rc = sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
@@ -109,7 +110,7 @@ std::vector<std::string> sqlite_file::listColumns(std::string table) {
 }
 
 void sqlite_file::addRow(std::vector<std::string> &vector) {
-    if (current_table.size() == 0) {
+    if (current_table.empty()) {
         current_table = listTables()[0];
     }
 
@@ -171,7 +172,7 @@ std::string &sqlite_file::getTable(std::string &table) {
             table = current_table;
         } else {
             auto vector = listTables();
-            if (vector.size() > 0) {
+            if (!vector.empty()) {
                 table = vector[0];
             }
         }
@@ -214,7 +215,7 @@ std::vector<std::string> sqlite_file::readRow(int i, std::string table) {
 }
 
 std::string sqlite_file::readRowTitle(int i, std::string table) {
-    std::vector<std::string> row = readRow(i, table);
+    std::vector<std::string> row = readRow(i, std::move(table));
 
     if (intPrimaryKey) {
         return row[1];

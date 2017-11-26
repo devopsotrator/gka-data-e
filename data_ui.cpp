@@ -12,7 +12,7 @@ data_ui ui;
 
 static char *right_list_text_get(void *data, Evas_Object *obj, const char *part) {
     if (strcmp(part, "elm.text") == 0) {
-        char *buf = static_cast<char *>(malloc(MAX_LIST_LENGTH));
+        auto *buf = static_cast<char *>(malloc(MAX_LIST_LENGTH));
         auto row = db.readRowTitle((int) (uintptr_t) data);
         snprintf(buf, MAX_LIST_LENGTH, "%s", row.c_str());
 
@@ -20,26 +20,9 @@ static char *right_list_text_get(void *data, Evas_Object *obj, const char *part)
     } else return NULL;
 }
 
-static Evas_Object *right_list_content_get(void *data, Evas_Object *obj, const char *part) {
-    int i = (int) (uintptr_t) data;
-
-    if (strcmp(part, "elm.swallow.icon") == 0) {
-        Evas_Object *bg = elm_bg_add(obj);
-        elm_bg_color_set(bg, MAX(0, 255 * cos(i / (double) 10)), 0, i % 255);
-
-        return bg;
-    } else if (strcmp(part, "elm.swallow.end") == 0) {
-        Evas_Object *bg = elm_bg_add(obj);
-        elm_bg_color_set(bg, 0, (255 * sin(i / (double) 10)), i % 255);
-
-        return bg;
-    }
-    return NULL;
-}
-
 static void row_selected_cb(void *data, Evas_Object *obj, void *event_info) {
     Elm_Object_Item *it = (Elm_Object_Item *) event_info;
-    int i = (int) (uintptr_t) data;
+    auto i = (int) (uintptr_t) data;
 
     ui.rowSelected(i);
 }
@@ -49,7 +32,7 @@ static void window_cb_key_down(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas
 }
 
 void data_ui::handleKeyDown(void *event_info) {
-    Evas_Event_Key_Down *ev = static_cast<Evas_Event_Key_Down *>(event_info);
+    auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     Eina_Bool ctrl, alt, shift;
     Elm_Object_Item *it;
 
@@ -112,7 +95,7 @@ void data_ui::init() {
     right_list_itc = elm_genlist_item_class_new();
     right_list_itc->item_style = "default";
     right_list_itc->func.text_get = right_list_text_get;
-    right_list_itc->func.content_get = right_list_content_get;
+    right_list_itc->func.content_get = NULL;
     right_list_itc->func.state_get = NULL;
     right_list_itc->func.del = NULL;
 
@@ -381,7 +364,7 @@ void data_ui::newFile() {
 }
 
 void data_ui::updateNewFileName(std::string fileName) {
-    newFileName = fileName;
+    newFileName = std::move(fileName);
     clearFocus();
 }
 
@@ -483,7 +466,7 @@ void data_ui::editRow() {
 }
 
 void data_ui::updateCurrentRowValue(int i, std::string value) {
-    currentRowValues[i] = value;
+    currentRowValues[i] = std::move(value);
 }
 
 void data_ui::saveCurrentRow() {
