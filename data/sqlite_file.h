@@ -56,7 +56,29 @@ public:
 
     std::vector<std::string> listSearchableColumns(std::string &table);
 
-    void setColumns(std::vector<std::string> vector, std::map<std::string,std::string> renames={}, std::string table="");
+    void setColumns(const std::vector<std::string> vector, const std::map<std::string,std::string> renames={}, std::string table="");
+
+private:
+
+    bool setColumnsBeginTransaction() const;
+
+    bool setColumnsExtractOldTableInfo(std::vector<std::string> &oldName, std::vector<std::string> &oldType,
+                                       std::vector<int> &oldPrimaryKey, std::vector<int> &oldNullPermitted,
+                                       std::vector<std::string> &oldDefaultValues, const std::string &table) const;
+
+    bool setColumnsCreateNewTable(const std::vector<std::string> &newColumns, const std::vector<std::string> &oldName,
+                                  const std::vector<std::string> &oldType, const std::vector<int> &oldPrimaryKey,
+                                  const std::string &table) const;
+
+    bool setColumnsCopyFromOldToNew(const std::vector<std::string> &newColumns, const std::map<std::string, std::string> &renames,
+                                    const std::vector<std::string> &oldName, const std::string &table) const;
+
+    bool setColumnsDropOldTable(const std::string &table) const;
+
+    bool setColumnsRenameTable(const std::string &table) const;
+
+    bool setColumnsCommitTransaction() const;
+
 };
 
 
