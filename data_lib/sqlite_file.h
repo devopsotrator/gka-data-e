@@ -48,6 +48,8 @@ public:
 
     std::string readRowTitle(int i, std::string table="");
 
+    void deleteRow(std::vector<std::string> vector, std::string table="");
+
     void newFile(std::string fileName);
 
     void setFilter(const std::string &string);

@@ -58,6 +58,8 @@ void data_ui::handleKeyDown(void *event_info) {
             newRow();
         } else if (!strcmp(ev->key, "E")) {
             editRow();
+        } else if (!strcmp(ev->key, "D")) {
+            deleteRow();
         }
     } else if (ctrl) {
         if (!strcmp(ev->key, "n")) {
@@ -451,6 +453,17 @@ static void edit_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.clearFocus();
 }
 
+static void delete_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+    elm_popup_dismiss((Evas_Object *) data);
+    ui.clearFocus();
+}
+
+static void delete_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+    elm_popup_dismiss((Evas_Object *) data);
+    ui.deleteCurrentRow();
+    ui.clearFocus();
+}
+
 void data_ui::newRow() {
     Evas_Object *popup = elm_popup_add(window);
     elm_object_part_text_set(popup, "title,text", _("New Entry"));
@@ -527,12 +540,43 @@ void data_ui::editRow() {
     populateAndShowEntryPopup(popup, cols);
 }
 
+void data_ui::deleteRow() {
+    Evas_Object *popup = elm_popup_add(window);
+    elm_object_part_text_set(popup, "title,text", _("Delete Entry"));
+
+    Evas_Object *label = elm_label_add(popup);
+    elm_object_text_set(label, _("Are you sure?"));
+    evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_show(label);
+    elm_object_content_set(popup, label);
+
+    Evas_Object *button = elm_button_add(popup);
+    elm_object_text_set(button, _("Cancel"));
+    elm_object_part_content_set(popup, "button1", button);
+    evas_object_smart_callback_add(button, "clicked", delete_entry_exit_cb, popup);
+
+    button = elm_button_add(popup);
+    elm_object_text_set(button, _("OK"));
+    elm_object_part_content_set(popup, "button2", button);
+    evas_object_smart_callback_add(button, "clicked", delete_entry_ok_cb, popup);
+
+    evas_object_show(popup);
+}
+
 void data_ui::updateCurrentRowValue(int i, std::string value) {
     currentRowValues[i] = std::move(value);
 }
 
 void data_ui::saveCurrentRow() {
     db.addRow(currentRowValues);
+
+    repopulateUI();
+}
+
+void data_ui::deleteCurrentRow() {
+    auto rows = db.readRow(selectedRow - 1);
+    db.deleteRow(rows);
 
     repopulateUI();
 }

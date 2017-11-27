@@ -78,6 +78,27 @@ TEST_F(SqliteFileTests, TablePopulation) {
     EXPECT_EQ(savedRow[3], row[3]);
 }
 
+TEST_F(SqliteFileTests, TableRowDelete) {
+    sqlite_file db;
+    db.file(":memory:");
+    std::string tableName;
+    std::vector<std::string> columns;
+    createTableT1(db, columns, tableName);
+
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("First Column");
+    row.emplace_back("");
+    row.emplace_back("Third Column");
+    db.addRow(row);
+    int rows = db.rowCount();
+    EXPECT_EQ(1, rows);
+    std::vector<std::string> savedRow = db.readRow(0);
+    db.deleteRow(savedRow);
+    rows = db.rowCount();
+    EXPECT_EQ(0, rows);
+}
+
 TEST_F(SqliteFileTests, TablePartialPopulation) {
     sqlite_file db;
     db.file(":memory:");

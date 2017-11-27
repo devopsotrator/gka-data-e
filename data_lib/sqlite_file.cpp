@@ -242,6 +242,47 @@ std::vector<std::string> sqlite_file::readRow(int rowIndex, std::string table) {
     return ret;
 }
 
+void sqlite_file::deleteRow(std::vector<std::string> vector, std::string table) {
+    std::vector<std::string> ret;
+    table = getTable(table);
+    if (table.empty()) {
+        return;
+    }
+
+    auto columns = listColumns(table);
+    std::string sql = "DELETE FROM " + table + " WHERE ";
+
+    int i = 1;
+    for (int b = 0; b <columns.size(); b++) {
+        auto &column = columns[b];
+        if (!(vector[b].empty())) {
+            if (b != 0) {
+                sql += " AND ";
+            }
+            sql += column + "=?" + std::to_string(i++);
+        }
+    }
+    sql += ";";
+    sqlite3_stmt* ppStmt = nullptr;
+    const char* pzTail = nullptr;
+    int rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+    }
+    i = 1;
+    for (auto &colValue : vector) {
+        if (!colValue.empty()) {
+            rc = sqlite3_bind_text(ppStmt, i++, colValue.c_str(), -1, SQLITE_TRANSIENT);
+            if (rc != SQLITE_OK) {
+                EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
+            }
+        }
+    }
+    while (sqlite3_step(ppStmt) == SQLITE_ROW) {
+    }
+    sqlite3_finalize(ppStmt);
+}
+
 std::string sqlite_file::readRowTitle(int i, std::string table) {
     std::vector<std::string> row = readRow(i, std::move(table));
 
@@ -475,3 +516,4 @@ bool sqlite_file::setColumnsCommitTransaction() const {
 std::string &sqlite_file::getFilter() {
     return filter;
 }
+

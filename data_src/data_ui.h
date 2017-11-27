@@ -68,6 +68,8 @@ public:
 
     void editRow();
 
+    void deleteCurrentRow();
+
     void updateCurrentRowValue(int i, std::string value);
 
     void saveCurrentRow();
@@ -114,6 +116,7 @@ public:
 
     Eina_Bool labelPreferencesAreValid();
 
+    void deleteRow();
 };
 
 extern data_ui ui;

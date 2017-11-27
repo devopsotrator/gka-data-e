@@ -40,7 +40,7 @@ static void menu_edit_entry_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNU
 }
 
 static void menu_delete_entry_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
-
+    ui.deleteRow();
 }
 
 static void menu_label_preferences_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
@@ -66,7 +66,7 @@ void data_menu::init(Evas_Object *window) {
 //    elm_menu_item_separator_add(menu, menu_it);
     elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("New entry")), menu_new_entry_cb, NULL);
     elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Edit entry")), menu_edit_entry_cb, NULL);
-//    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Delete entry")), menu_delete_entry_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Delete entry")), menu_delete_entry_cb, NULL);
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("Tools"), NULL, NULL);
     elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Label preferences")), menu_label_preferences_cb, NULL);
