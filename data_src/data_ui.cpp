@@ -73,14 +73,23 @@ void data_ui::handleKeyDown(void *event_info) {
         elm_object_text_set(searchEntry,"");
         db.setFilter("");
         repopulateUI();
-    } else if (!strcmp(ev->key, "Up")) {
     } else if (!strcmp(ev->key, "Return")) {
         if (shift) {
             prevButton();
         } else {
             nextButton();
         }
+    } else if (!strcmp(ev->key, "Up")) {
+        Evas_Coord x,y,w,h;
+        elm_scroller_region_get(scroller, &x, &y, &w, &h);
+        y -= 20;
+        y = MAX(y,0);
+        elm_scroller_region_show(scroller, x, y, w, h);
     } else if (!strcmp(ev->key, "Down")) {
+        Evas_Coord x,y,w,h;
+        elm_scroller_region_get(scroller, &x, &y, &w, &h);
+        y += 20;
+        elm_scroller_region_show(scroller, x, y, w, h);
     } else if (!strcmp(ev->key, "Left")) {
         auto pos = elm_entry_cursor_pos_get(searchEntry);
         if (pos == oldSearchEntryPos) {
@@ -150,7 +159,7 @@ void data_ui::init() {
     elm_object_part_content_set(panes, "left", leftBox);
 
     // Scroller for fields table
-    Evas_Object *scroller = elm_scroller_add(window);
+    scroller = elm_scroller_add(window);
     evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_scroller_bounce_set(scroller, EINA_FALSE, EINA_FALSE);
@@ -162,8 +171,7 @@ void data_ui::init() {
     fieldsTable = elm_table_add(window);
     evas_object_size_hint_weight_set(fieldsTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(fieldsTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_padding_set(fieldsTable, 5, 5, 5, 5);
-    elm_table_padding_set(fieldsTable, 6, 0);
+    elm_table_padding_set(fieldsTable, 3, 0);
     elm_table_align_set(fieldsTable, 0, 0);
     elm_table_homogeneous_set(fieldsTable, EINA_FALSE);
     evas_object_show(fieldsTable);
@@ -263,31 +271,43 @@ void data_ui::repopulateFieldsTable() {
         auto field_name = elm_label_add(fieldsTable);
         elm_object_text_set(field_name, cols[i].c_str());
         evas_object_size_hint_align_set(field_name, 1, 0);
+        evas_object_size_hint_padding_set(field_name, 2, 0, 2, 2);
         evas_object_show(field_name);
         elm_table_pack(fieldsTable, field_name, 0, i, 1, 1);
 
         if (selectedRow > db.rowCount()) {
             selectedRow = 0;
         }
+        auto arrowImage = elm_image_add(fieldsTable);
+        std::string arrowPath(elm_app_data_dir_get());
+        arrowPath += "/images/arrow.png";
+        elm_image_file_set(arrowImage, arrowPath.c_str(), NULL);
+        evas_object_size_hint_align_set(arrowImage, 1, 0);
+        evas_object_size_hint_padding_set(arrowImage, 0, 0, 5, 5);
+        evas_object_size_hint_min_set(arrowImage, 10 * elm_config_scale_get(), 10 * elm_config_scale_get());
+        evas_object_show(arrowImage);
+        elm_table_pack(fieldsTable, arrowImage, 1, i, 1, 1);
 
         if (selectedRow) {
             auto row = db.readRow(selectedRow - 1);
-            auto field_value = elm_label_add(fieldsTable);
+            auto field_value = elm_entry_add(fieldsTable);
             elm_object_text_set(field_value, row[i].c_str());
+            elm_entry_single_line_set(field_value, EINA_FALSE);
+            elm_entry_editable_set(field_value, EINA_FALSE);
             evas_object_size_hint_weight_set(field_value, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-            evas_object_size_hint_align_set(field_value, 0, EVAS_HINT_FILL);
-//            elm_label_line_wrap_set(field_value, ELM_WRAP_WORD); //TODO: We would like wordwrap, but this line makes the text disapear
+            evas_object_size_hint_align_set(field_value, EVAS_HINT_FILL, EVAS_HINT_FILL);
+            elm_object_focus_allow_set(field_value, EINA_FALSE);
             evas_object_show(field_value);
-            elm_table_pack(fieldsTable, field_value, 1, i, 1, 1);
+            elm_table_pack(fieldsTable, field_value, 2, i, 1, 1);
         }
     }
 }
 
-void data_ui::repopulateRightList() const {
+void data_ui::repopulateRightList(int selected) const {
     elm_genlist_clear(rightList);
 
     for (int i = 0; i < db.rowCount(); i++) {
-        elm_genlist_item_append(rightList,
+        auto item = elm_genlist_item_append(rightList,
                                 right_list_itc,
                                 (void *) (uintptr_t) i,   // Item data
                                 NULL,                    // Parent item for trees, NULL if none
@@ -295,6 +315,10 @@ void data_ui::repopulateRightList() const {
                                 row_selected_cb,        // Callback on selection of the item
                                 (void *) (uintptr_t) (i + 1)    // Data for that callback function
         );
+        if (i==selected) {
+            elm_genlist_item_selected_set(item, EINA_TRUE);
+            elm_genlist_item_show(item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+        }
     }
 }
 
@@ -416,7 +440,6 @@ static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *ev
     ui.updateCurrentRowValue((int) (uintptr_t) data, entryValue);
 }
 
-
 static void edit_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_popup_dismiss((Evas_Object *) data);
     ui.clearFocus();
@@ -457,7 +480,7 @@ void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<st
     for (int i = (db.intPrimaryKey ? 1 : 0); i < cols.size(); i++) {
         auto field_name = elm_label_add(popupTable);
         elm_object_text_set(field_name, cols[i].c_str());
-        evas_object_size_hint_align_set(field_name, 1, EVAS_HINT_FILL);
+        evas_object_size_hint_align_set(field_name, 1, 0);
         elm_table_pack(popupTable, field_name, 0, i, 1, 1);
         evas_object_show(field_name);
 
@@ -516,24 +539,29 @@ void data_ui::saveCurrentRow() {
 
 void data_ui::prevButton() {
     auto filter = elm_object_text_get(searchEntry);
-    db.setFilter(filter);
+    if (db.getFilter() != filter) {
+        db.setFilter(filter);
 
-    repopulateUI();
-
-
+        repopulateUI();
+    }
 }
 
 void data_ui::nextButton() {
     auto filter = elm_object_text_get(searchEntry);
-    db.setFilter(filter);
+    if (db.getFilter() != filter) {
+        db.setFilter(filter);
 
-    repopulateUI();
-
+        repopulateUI();
+    }
 }
 
 void data_ui::repopulateUI() {
+    auto it = elm_genlist_selected_item_get(rightList);
+    auto data = elm_object_item_data_get(it);
+    auto selectedIndex = (int) (uintptr_t) data;
+
     repopulateFieldsTable();
-    repopulateRightList();
+    repopulateRightList(selectedIndex);
 }
 
 void data_ui::labelPreferences() {

@@ -58,6 +58,8 @@ public:
 
     void setColumns(const std::vector<std::string> vector, const std::map<std::string,std::string> renames={}, std::string table="");
 
+    std::string &getFilter();
+
 private:
 
     bool setColumnsBeginTransaction() const;

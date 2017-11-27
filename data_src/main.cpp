@@ -3,8 +3,7 @@ static int _log_dom = -1; // must come before inclusion of Eina.h!
 #include <Eina.h>
 #include <Elementary.h>
 #include <Ecore_Getopt.h>
-#include <expat_config.h>
-#include "data/sqlite_file.h"
+#include "sqlite_file.h"
 #include "data_ui.h"
 
 static const Ecore_Getopt optdesc = {
@@ -58,6 +57,8 @@ elm_main(int argc, char **argv)
     {
         filename = argv[args];
     }
+    elm_app_compile_data_dir_set(PACKAGE_DATA_DIR);
+    elm_app_info_set((void*)elm_main, "gka_data_e", "images/arrow.png");
 
     ui.init();
     if (filename.empty()) {

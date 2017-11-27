@@ -31,6 +31,7 @@ public:
     Evas_Object *rightList;
     Evas_Object *fieldsTable;
     Evas_Object *window;
+    Evas_Object *scroller;
     Elm_Genlist_Item_Class *right_list_itc;
     int selectedRow;
     std::string newFileName;
@@ -53,7 +54,7 @@ public:
 
     void repopulateFieldsTable();
 
-    void repopulateRightList() const;
+    void repopulateRightList(int selected=0) const;
 
     void openFile();
 

@@ -471,3 +471,7 @@ bool sqlite_file::setColumnsCommitTransaction() const {
     }
     return true;
 }
+
+std::string &sqlite_file::getFilter() {
+    return filter;
+}
