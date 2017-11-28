@@ -8,6 +8,12 @@ Working towards keyboard friendly input as part of the http://gka.thinkglobally.
 
 ## Installation
 
+Install prerequisite packages:
+
+> $ sudo apt-get install libsqlite3-dev
+
+Note: also require recent efl which is probably not packaged.
+
 To make install and run from the command line:
 
 > $ mkdir build  
