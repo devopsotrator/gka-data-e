@@ -73,3 +73,7 @@ Not currently keyboard navigable, efl standard widget
 * **Ctrl-s** Save label changes
 * **Escape** Exit discarding changes
 
+### Add/Edit field
+
+* **Enter/Return** Action add/edit
+* **Escape** Exit add/edit
