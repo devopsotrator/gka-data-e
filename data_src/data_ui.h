@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <stack>
 #include "data_menu.h"
 
 #ifdef ENABLE_NLS
@@ -23,6 +24,16 @@ static const int DEFAULT_APP_WIDTH = 216 * 3;
 static const int DEFAULT_APP_HEIGHT = 108 * 3;
 static const int DEFAULT_DIALOG_WIDTH = 216 * 2;
 static const int DEFAULT_DIALOG_HEIGHT = DEFAULT_APP_HEIGHT;
+
+static const int  STACKMAXSIZE = 10;
+struct stack {
+    Evas_Object *sObject[STACKMAXSIZE];
+    Evas_Object *sFocus[STACKMAXSIZE];
+    int topIndex = -1;
+};
+
+typedef struct stack STACK;
+
 
 class data_ui {
 
@@ -42,6 +53,7 @@ public:
     int editableColumnsIndex;
     std::string editableColumnsEditLabel;
     std::map<std::string, std::string> renames;
+    STACK popupStack;
 
 public:
     void init();
@@ -64,7 +76,7 @@ public:
 
     void clearFocus();
 
-    void newRow();
+    void newEntry();
 
     void editRow();
 
@@ -76,7 +88,7 @@ public:
 
     std::string getTitleForFileName(const std::string &fileName) const;
 
-    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols) const;
+    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols);
 
     void handleKeyDown(void *event_info);
 
@@ -116,7 +128,19 @@ public:
 
     Eina_Bool labelPreferencesAreValid();
 
-    void deleteRow();
+    void deleteEntry();
+
+    void clearActivePopup();
+
+    void showPopup(Evas_Object *popup, Evas_Object *focusOn = nullptr);
+
+    void popupStackPush(Evas_Object *toPush, Evas_Object *focusOn);
+
+    Evas_Object *popupStackPop();
+
+    bool popupStackEmpty();
+
+    Evas_Object *popupStackTopFocus();
 };
 
 extern data_ui ui;
