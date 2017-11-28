@@ -187,13 +187,13 @@ static void label_preferences_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_U
             label_pref_edit_cb(data, obj, event_info);
         } else if (!strcmp(ev->key, "d")) {
             label_pref_delete_cb(data, obj, event_info);
+         } else if (!strcmp(ev->key, "s")) {
+            label_pref_ok_cb(data, obj, event_info);
         }
     }
 
     if (!strcmp(ev->key, "Escape")) {
         label_pref_exit_cb(data, obj, event_info);
-    } else if (!strcmp(ev->key, "Return")) {
-        label_pref_ok_cb(data, obj, event_info);
     }
 }
 
@@ -247,7 +247,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("Edit"));
+    elm_object_text_set(button, MENU_ELLIPSIS(_("Edit")));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -256,7 +256,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("Add"));
+    elm_object_text_set(button, MENU_ELLIPSIS(_("Add")));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);

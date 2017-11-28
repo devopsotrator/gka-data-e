@@ -34,6 +34,7 @@ struct stack {
 
 typedef struct stack STACK;
 
+#define MENU_ELLIPSIS(S) eina_slstr_printf("%s...", S)
 
 class data_ui {
 

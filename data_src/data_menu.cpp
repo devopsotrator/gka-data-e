@@ -5,8 +5,6 @@
 #include "data_menu.h"
 #include "data_ui.h"
 
-#define MENU_ELLIPSIS(S) eina_slstr_printf("%s...", S)
-
 static void menu_new_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.newFile();
 }
