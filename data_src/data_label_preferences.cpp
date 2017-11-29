@@ -119,6 +119,7 @@ static void label_pref_delete_cb(void *data, Evas_Object *obj, void *event_info)
 
 static void label_pref_exit_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.clearActivePopup();
+    ui.clearLabelPreferences();
     ui.clearFocus();
 }
 

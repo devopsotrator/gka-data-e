@@ -142,6 +142,8 @@ public:
     bool popupStackEmpty();
 
     Evas_Object *popupStackTopFocus();
+
+    void clearLabelPreferences();
 };
 
 extern data_ui ui;

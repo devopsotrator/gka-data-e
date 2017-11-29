@@ -668,6 +668,7 @@ void data_ui::deleteEntry() {
 
     Evas_Object *label = elm_label_add(popup);
     elm_object_text_set(label, _("Are you sure?"));
+    elm_object_focus_allow_set(label, EINA_FALSE);
     evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_show(label);
@@ -742,6 +743,11 @@ void data_ui::labelPreferences() {
 
 void data_ui::saveLabelPreferences() {
     db.setColumns(editableColumns, renames);
+    editableColumns.clear();
+}
+
+void data_ui::clearLabelPreferences() {
+    editableColumns.clear();
 }
 
 std::vector<std::string> data_ui::getEditableColumns() {
@@ -820,4 +826,5 @@ Eina_Bool data_ui::labelPreferencesAreValid() {
 
     return EINA_TRUE;
 }
+
 
