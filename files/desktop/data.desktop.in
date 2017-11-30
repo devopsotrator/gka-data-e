@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.1
+Type=Application
+Name=Data
+GenericName=Sqlite
+Comment=Simple Database
+MimeType=application/x-sqlite3;
+Icon=share/icons/hicolor/scalable/gka_data_e.svg
+TryExec=gka_data_e
+Exec=gka_data_e
+Categories=Utility;

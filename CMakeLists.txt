@@ -37,7 +37,7 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build
         EXCLUDE_FROM_ALL)
 
-add_subdirectory(images)
+add_subdirectory(files)
 add_subdirectory(data_src)
 add_subdirectory(data_lib)
 add_subdirectory(data_lib_tests)

@@ -51,7 +51,7 @@ void data_ui::handleKeyDown(void *event_info) {
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
@@ -403,7 +403,7 @@ static void file_new_ok_cb(void *data, Evas_Object *obj, void *event_info) {
 
 static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
     if (!strcmp(ev->key, "Escape")) {
         file_new_exit_cb(data, obj, event_info);
     } else if (!strcmp(ev->key, "Return")) {
@@ -450,7 +450,7 @@ void data_ui::newFile() {
 
 void data_ui::popupStackPush(Evas_Object *toPush, Evas_Object *focusOn) {
     if (popupStack.topIndex == (STACKMAXSIZE - 1)) {
-        EINA_LOG_ERR("PopupStackFull - Push requested");
+        EINA_LOG_INFO("PopupStackFull - Push requested");
         return;
     } else {
         popupStack.topIndex++;
@@ -464,7 +464,7 @@ Evas_Object *data_ui::popupStackPop() {
     Evas_Object *popped;
     Evas_Object *newFocus = nullptr;
     if (popupStackEmpty()) {
-        EINA_LOG_ERR("PopupStackEmpty - Pop requested");
+        EINA_LOG_INFO("PopupStackEmpty - Pop requested");
         return (nullptr);
     } else {
         Evas_Object *oldFocus = popupStackTopFocus();
@@ -478,10 +478,16 @@ Evas_Object *data_ui::popupStackPop() {
         if (newFocus) {
             elm_object_focus_allow_set(newFocus, EINA_TRUE);
             elm_object_focus_set(newFocus, EINA_TRUE);
+            auto type = elm_object_widget_type_get(newFocus);
+            EINA_LOG_INFO("New focus type: %s",type);
+            if (!strcmp(type, "Elm.Entry")) {
+                elm_entry_cursor_line_end_set(newFocus);
+            }
         } else {
             //Once were out of a popup stack tree go back to using the search entry as focus holder
             elm_object_focus_allow_set(searchEntry, EINA_TRUE);
             elm_object_focus_set(searchEntry, EINA_TRUE);
+            elm_entry_cursor_line_end_set(searchEntry);
         }
     }
     return (popped);
@@ -493,7 +499,7 @@ bool data_ui::popupStackEmpty() {
 
 Evas_Object *data_ui::popupStackTopFocus() {
     if (popupStackEmpty()) {
-        EINA_LOG_ERR("PopupStackEmpty - Top requested");
+        EINA_LOG_INFO("PopupStackEmpty - Top requested");
         return (nullptr);
     } else {
         return popupStack.sFocus[popupStack.topIndex];
@@ -504,6 +510,12 @@ static Eina_Bool delayed_set_focus(void *data) {
     Evas_Object *focusOn = static_cast<Evas_Object *>(data);
     elm_object_focus_allow_set(focusOn, EINA_TRUE);
     elm_object_focus_set(focusOn, EINA_TRUE);
+
+    auto type = elm_object_widget_type_get(focusOn);
+    EINA_LOG_INFO("FocusOn type: %s",type);
+    if (!strcmp(type, "Elm.Entry")) {
+        elm_entry_cursor_line_end_set(focusOn);
+    }
 }
 
 void data_ui::showPopup(Evas_Object *popup, Evas_Object *focusOn) {
@@ -517,7 +529,7 @@ void data_ui::showPopup(Evas_Object *popup, Evas_Object *focusOn) {
         evas_object_show(popup);
     }
     if (focusOn) {
-        ecore_timer_add(0.1,delayed_set_focus,focusOn);
+        ecore_timer_add(0.2,delayed_set_focus,focusOn);
     }
 }
 
@@ -605,6 +617,7 @@ void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<st
         }
         elm_entry_single_line_set(input, EINA_FALSE);
         elm_entry_editable_set(input, EINA_TRUE);
+        elm_entry_cursor_line_end_set(input);
         evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
         evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
         evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, edit_entry_key_up_cb, (void *) (uintptr_t) i);

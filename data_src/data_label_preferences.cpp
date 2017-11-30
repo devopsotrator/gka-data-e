@@ -57,7 +57,7 @@ static void label_pref_add_label_ok_cb(void *data, Evas_Object *obj, void *event
 static void label_pref_update_label_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
 
-    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (!strcmp(ev->key, "Escape")) {
         label_pref_addedit_label_exit_cb(data, obj, event_info);
@@ -86,6 +86,7 @@ static void label_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_entry_scrollable_set(input, EINA_TRUE);
     auto inputValue = ui.getEditLabel();
     elm_object_text_set(input, inputValue.c_str());
+    elm_entry_cursor_line_end_set(input);
     evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, label_pref_update_label_key_up_cb, NULL);
