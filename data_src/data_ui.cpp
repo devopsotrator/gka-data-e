@@ -516,6 +516,7 @@ static Eina_Bool delayed_set_focus(void *data) {
     if (!strcmp(type, "Elm.Entry")) {
         elm_entry_cursor_line_end_set(focusOn);
     }
+    return ECORE_CALLBACK_CANCEL;
 }
 
 void data_ui::showPopup(Evas_Object *popup, Evas_Object *focusOn) {
