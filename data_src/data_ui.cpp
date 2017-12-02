@@ -788,8 +788,10 @@ void data_ui::editColumnMoveDown() {
 
 void data_ui::editColumnDelete() {
     auto index = editableColumnsIndex;
-    editableColumns.erase(editableColumns.begin()+index);
-    editableColumnsIndex--;
+    if (index >= 0 && index < editableColumns.size()) {
+        editableColumns.erase(editableColumns.begin() + index);
+        editableColumnsIndex--;
+    }
 }
 
 void data_ui::setEditColumnSelection(int i) {
