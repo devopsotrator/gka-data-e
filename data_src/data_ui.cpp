@@ -790,7 +790,9 @@ void data_ui::editColumnDelete() {
     auto index = editableColumnsIndex;
     if (index >= 0 && index < editableColumns.size()) {
         editableColumns.erase(editableColumns.begin() + index);
-        editableColumnsIndex--;
+        if (index > 0) {
+            editableColumnsIndex--;
+        }
     }
 }
 
