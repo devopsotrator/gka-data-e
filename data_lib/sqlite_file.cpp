@@ -18,7 +18,7 @@ sqlite_file::~sqlite_file() {
 void sqlite_file::file(std::string fileName) {
     int rc = sqlite3_open_v2(fileName.c_str(), &handle, SQLITE_OPEN_READWRITE, nullptr);
     if (rc != SQLITE_OK) {
-        EINA_LOG_ERR("Could not open %s: %s", fileName.c_str(), sqlite3_errcode(handle));
+        EINA_LOG_ERR("Could not open %s", fileName.c_str());
     } else {
         state = DATA_CONNECT_TYPE_INIT;
     }
