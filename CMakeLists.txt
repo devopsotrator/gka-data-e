@@ -5,8 +5,6 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(Eina REQUIRED)
-find_package(Eo REQUIRED)
-find_package(Eolian REQUIRED)
 find_package(Ecore REQUIRED)
 find_package(Evas REQUIRED)
 find_package(Efl REQUIRED)

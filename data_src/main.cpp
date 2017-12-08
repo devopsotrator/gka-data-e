@@ -1,7 +1,7 @@
 #define EINA_LOG_DOMAIN_DEFAULT _log_dom
 static int _log_dom = -1; // must come before inclusion of Eina.h!
 #include <Eina.h>
-#include <Elementary.h>
+#include <Ecore.h>
 #include <Ecore_Getopt.h>
 #include "sqlite_file.h"
 #include "data_ui.h"

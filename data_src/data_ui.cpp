@@ -117,7 +117,13 @@ void data_ui::handleKeyDown(void *event_info) {
 
 void data_ui::clearActivePopup() {
     if (!popupStackEmpty()) {
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
         elm_popup_dismiss(popupStackPop());
+#else
+        auto popup = popupStackPop();
+        evas_object_hide(popup);
+        evas_object_del(popup);
+#endif
     }
 }
 
@@ -186,7 +192,9 @@ void data_ui::init() {
     evas_object_size_hint_weight_set(fieldsTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(fieldsTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_padding_set(fieldsTable, 3, 0);
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     elm_table_align_set(fieldsTable, 0, 0);
+#endif
     elm_table_homogeneous_set(fieldsTable, EINA_FALSE);
     evas_object_show(fieldsTable);
     elm_object_content_set(scroller, fieldsTable);
@@ -380,10 +388,14 @@ void data_ui::openFile() {
 
     elm_fileselector_expandable_set(fs, EINA_TRUE);
     elm_fileselector_folder_only_set(fs, EINA_FALSE);
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     elm_fileselector_path_set(fs, eina_environment_home_get());
+    elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
+#else
+    elm_fileselector_path_set(fs, "/home");
+#endif
     //http://fileformats.archiveteam.org/wiki/DB_(SQLite)
     elm_fileselector_mime_types_filter_append(fs, "application/x-sqlite3", "");
-    elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
 
     elm_win_resize_object_add(win, fs);
     evas_object_resize(win, DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
@@ -409,7 +421,11 @@ static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *even
     } else if (!strcmp(ev->key, "Return")) {
         file_new_ok_cb(data, obj, event_info);
     }
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     std::string newFilePath = eina_environment_home_get();
+#else
+    std::string newFilePath = "/tmp";
+#endif
     newFilePath += "/";
     newFilePath += elm_object_text_get(obj);
     std::regex fileType("(db$|sqlite$|sqlite3$)");
@@ -591,14 +607,20 @@ void data_ui::newEntry() {
 }
 
 void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols) {
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     elm_popup_scrollable_set(popup, EINA_TRUE);
+#else
+    elm_popup_content_text_wrap_type_set(popup, ELM_WRAP_MIXED);
+#endif
 
     Evas_Object *popupTable = elm_table_add(window);
     evas_object_size_hint_weight_set(popupTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(popupTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_size_hint_padding_set(popupTable, 5, 5, 5, 5);
     elm_table_padding_set(popupTable, 6, 0);
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     elm_table_align_set(popupTable, 0, 0);
+#endif
     elm_table_homogeneous_set(popupTable, EINA_FALSE);
     elm_object_content_set(popup, popupTable);
     evas_object_show(popupTable);

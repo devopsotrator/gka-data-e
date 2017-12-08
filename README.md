@@ -10,9 +10,27 @@ Working towards keyboard friendly input as part of the http://gka.thinkglobally.
 
 Install prerequisite packages:
 
-> $ sudo apt-get install libsqlite3-dev
+> $ sudo apt-get install build-essential cmake libsqlite3-dev
 
 Note: also require recent efl which is probably not packaged.
+
+### e22
+
+Build from source
+
+### Or use e17 packages
+
+```
+sudo apt-get install e17-dev libelementary-dev
+```
+
+Copy the handyfiles into place, you only need to do this if the build complains about missing cmake files:
+```
+sudo mkdir /usr/local/lib/cmake/
+sudo cp -r handyfiles/usr-local-lib-cmake/* /usr/local/lib/cmake/
+```
+
+## Build
 
 To make install and run from the command line:
 

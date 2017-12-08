@@ -176,7 +176,7 @@ static void label_preferences_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_U
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl) {
         if (!strcmp(ev->key, "u")) {
@@ -202,7 +202,9 @@ static void label_preferences_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_U
 void data_label_preferences::show(Evas_Object *window) {
     Evas_Object *popup = elm_popup_add(window);
     elm_object_part_text_set(popup, "title,text", _("Label preferences"));
+#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
     elm_popup_scrollable_set(popup, EINA_TRUE);
+#endif
     elm_object_focus_allow_set(popup, EINA_FALSE);
 
     auto hbox = elm_box_add(popup);

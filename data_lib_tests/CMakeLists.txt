@@ -1,6 +1,5 @@
 include_directories(
         ${EINA_INCLUDE_DIRS}
-        ${EOLIAN_INCLUDE_DIRS}
         ${EVAS_INCLUDE_DIRS}
         ${ELEMENTARY_INCLUDE_DIRS}
 )
