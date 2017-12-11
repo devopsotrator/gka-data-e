@@ -12,13 +12,15 @@ Install prerequisite packages:
 
 > $ sudo apt-get install build-essential cmake libsqlite3-dev
 
-Note: also require recent efl which is probably not packaged.
+### Enlightenment Foundation librarys
 
-### e22
+The project now supports building with any version of EFL from 1.7 onwards, the UI is a tiny bit nicer with the latest version.
 
-Build from source
+#### Build efl from source
 
-### Or use e17 packages
+See http://www.enlightenment.org/
+
+### Use e17 packages that come with Debian 9
 
 ```
 sudo apt-get install e17-dev libelementary-dev
@@ -39,7 +41,7 @@ To make install and run from the command line:
 > $ cmake ..  
 > $ make  
 > $ sudo make install  
-> $ gka-data-e  
+> $ gka_data_e  
 
 The project also works with CLion and EDI integrated development environments.
 
