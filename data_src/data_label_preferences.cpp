@@ -45,13 +45,13 @@ static void label_pref_addedit_label_exit_cb(void *data, Evas_Object *obj, void 
 }
 
 static void label_pref_edit_label_ok_cb(void *data, Evas_Object *obj, void *event_info) {
-    ui.clearActivePopup();
     ui.saveEditableLabel();
+    ui.clearActivePopup();
 }
 
 static void label_pref_add_label_ok_cb(void *data, Evas_Object *obj, void *event_info) {
-    ui.clearActivePopup();
     ui.addEditableLabel();
+    ui.clearActivePopup();
 }
 
 static void label_pref_update_label_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
