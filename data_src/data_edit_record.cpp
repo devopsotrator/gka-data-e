@@ -35,11 +35,6 @@ static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *ev
     ui.updateCurrentRowValue(currentIndex, entryValue);
 }
 
-static Elm_Entry_Filter_Accept_Set reject_tabs_set = {
-        .accepted = nullptr,
-        .rejected = "<tab/>"
-};
-
 static void entry_filter_out_tabs_cb(void *data, Evas_Object *entry, char **text) {
     if (!strcmp(*text, "<tab/>")) {
         char *insert = *text;
@@ -97,7 +92,6 @@ void data_edit_record::populateAndShowEntryPopup(Evas_Object *window, Evas_Objec
         evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
         evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
         evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, edit_entry_key_up_cb, (void *) (uintptr_t) i);
-        elm_entry_markup_filter_append(input, elm_entry_filter_accept_set, &reject_tabs_set); //NOTE: This fails
         elm_entry_markup_filter_append(input, entry_filter_out_tabs_cb, (void *) (uintptr_t) i);
         elm_table_pack(popupTable, input, 1, i, 1, 1);
         evas_object_show(input);
