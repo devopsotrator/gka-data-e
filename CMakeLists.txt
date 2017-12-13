@@ -10,7 +10,7 @@ find_package(Evas REQUIRED)
 find_package(Efl REQUIRED)
 find_package(Elementary REQUIRED)
 
-add_definitions(-DPACKAGE_VERSION="0.1" -DPACKAGE_DATA_DIR="${CMAKE_BINARY_DIR}")
+add_definitions(-DPACKAGE_VERSION="0.1" -DPACKAGE_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/gka/data-e")
 
 add_subdirectory(files)
 add_subdirectory(data_src)
