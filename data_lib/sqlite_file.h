@@ -21,9 +21,9 @@ typedef enum
 class sqlite_file {
 
 public:
-    sqlite3 *handle;
+    sqlite3 *handle{};
     Esql_Connect_Type state;
-    int intPrimaryKey; //0 = not set, 1-n+1 for column indexing
+    int intPrimaryKey{}; //0 = not set, 1-n+1 for column indexing
     std::string filter;
 
     void file(std::string fileName);
