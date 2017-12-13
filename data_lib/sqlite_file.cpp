@@ -517,3 +517,10 @@ std::string &sqlite_file::getFilter() {
     return filter;
 }
 
+sqlite3 *sqlite_file::getHandle() {
+    return handle;
+}
+
+int sqlite_file::getPrimaryKey() {
+    return intPrimaryKey;
+}

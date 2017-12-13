@@ -10,7 +10,7 @@
 #include "data_label_preferences.h"
 
 static sqlite_file db;
-data_ui ui;
+data_ui ui(db);
 
 static char *right_list_text_get_cb(void *data, Evas_Object *obj, const char *part) {
     if (strcmp(part, "elm.text") == 0) {
@@ -55,21 +55,25 @@ void data_ui::handleKeyDown(void *event_info) {
 
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
-            newEntry();
+            addRow();
         } else if (!strcmp(ev->key, "E")) {
             editRow();
         } else if (!strcmp(ev->key, "D")) {
             deleteEntry();
+        } else if (!strcmp(ev->key, "M")) {
+            zoomOut();
         }
     } else if (ctrl) {
         if (!strcmp(ev->key, "n")) {
             newFile();
         } else if (!strcmp(ev->key, "o")) {
             openFile();
-        } else if (!strcmp(ev->key, "e")) {
+        } else if (!strcmp(ev->key, "q")) {
             elm_exit();
         } else if (!strcmp(ev->key, "l")) {
             labelPreferences();
+        } else if (!strcmp(ev->key, "m")) {
+            zoomIn();
         }
     }
 
@@ -117,7 +121,7 @@ void data_ui::handleKeyDown(void *event_info) {
 
 void data_ui::clearActivePopup() {
     if (!popupStackEmpty()) {
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
         elm_popup_dismiss(popupStackPop());
 #else
         auto popup = popupStackPop();
@@ -192,7 +196,7 @@ void data_ui::init() {
     evas_object_size_hint_weight_set(fieldsTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(fieldsTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
     elm_table_padding_set(fieldsTable, 3, 0);
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
     elm_table_align_set(fieldsTable, 0, 0);
 #endif
     elm_table_homogeneous_set(fieldsTable, EINA_FALSE);
@@ -305,7 +309,7 @@ void data_ui::repopulateFieldsTable() {
         auto arrowImage = elm_image_add(fieldsTable);
         std::string arrowPath(elm_app_data_dir_get());
         arrowPath += "/images/arrow.png";
-        elm_image_file_set(arrowImage, arrowPath.c_str(), NULL);
+        elm_image_file_set(arrowImage, arrowPath.c_str(), nullptr);
         evas_object_size_hint_align_set(arrowImage, 1, 0);
         evas_object_size_hint_padding_set(arrowImage, 0, 0, 5, 5);
         evas_object_size_hint_min_set(arrowImage, 10 * elm_config_scale_get(), 10 * elm_config_scale_get());
@@ -473,7 +477,6 @@ void data_ui::popupStackPush(Evas_Object *toPush, Evas_Object *focusOn) {
         popupStack.sObject[popupStack.topIndex] = toPush;
         popupStack.sFocus[popupStack.topIndex] = focusOn;
     }
-    return;
 }
 
 Evas_Object *data_ui::popupStackPop() {
@@ -523,15 +526,15 @@ Evas_Object *data_ui::popupStackTopFocus() {
 }
 
 static Eina_Bool delayed_set_focus(void *data) {
-    Evas_Object *focusOn = static_cast<Evas_Object *>(data);
+    auto *focusOn = static_cast<Evas_Object *>(data);
     elm_object_focus_allow_set(focusOn, EINA_TRUE);
-    elm_object_focus_set(focusOn, EINA_TRUE);
 
     auto type = elm_object_widget_type_get(focusOn);
     EINA_LOG_INFO("FocusOn type: %s",type);
     if (!strcmp(type, "Elm.Entry")) {
         elm_entry_cursor_line_end_set(focusOn);
     }
+    elm_object_focus_set(focusOn, EINA_TRUE);
     return ECORE_CALLBACK_CANCEL;
 }
 
@@ -546,7 +549,7 @@ void data_ui::showPopup(Evas_Object *popup, Evas_Object *focusOn) {
         evas_object_show(popup);
     }
     if (focusOn) {
-        ecore_timer_add(0.2,delayed_set_focus,focusOn);
+        ecore_timer_add(0.3,delayed_set_focus,focusOn);
     }
 }
 
@@ -556,30 +559,6 @@ void data_ui::updateNewFileName(std::string fileName) {
 
 void data_ui::clearFocus() {
     elm_object_focus_set(searchEntry, EINA_TRUE);
-}
-
-static void edit_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
-    ui.clearActivePopup();
-    ui.clearFocus();
-}
-
-static void edit_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
-    ui.clearActivePopup();
-    ui.saveCurrentRow();
-    ui.clearFocus();
-}
-
-static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
-    auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    auto ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
-    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
-    if (!strcmp(ev->key, "Escape")) {
-        edit_entry_exit_cb(data, obj, event_info);
-    } else if (ctrl && !strcmp(ev->key, "s")) {
-        edit_entry_ok_cb(data, obj, event_info);
-    }
-    std::string entryValue = elm_object_text_get(obj);
-    ui.updateCurrentRowValue((int) (uintptr_t) data, entryValue);
 }
 
 static void delete_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
@@ -593,97 +572,6 @@ static void delete_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.clearFocus();
 }
 
-void data_ui::newEntry() {
-    Evas_Object *popup = elm_popup_add(window);
-    elm_object_part_text_set(popup, "title,text", _("New Entry"));
-
-    auto cols = db.listColumns();
-    currentRowValues.clear();
-    for (int i = 0; i < cols.size(); i++) {
-        currentRowValues.emplace_back("");
-    }
-
-    populateAndShowEntryPopup(popup, cols);
-}
-
-void data_ui::populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols) {
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
-    elm_popup_scrollable_set(popup, EINA_TRUE);
-#else
-    elm_popup_content_text_wrap_type_set(popup, ELM_WRAP_MIXED);
-#endif
-
-    Evas_Object *popupTable = elm_table_add(window);
-    evas_object_size_hint_weight_set(popupTable, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(popupTable, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_size_hint_padding_set(popupTable, 5, 5, 5, 5);
-    elm_table_padding_set(popupTable, 6, 0);
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
-    elm_table_align_set(popupTable, 0, 0);
-#endif
-    elm_table_homogeneous_set(popupTable, EINA_FALSE);
-    elm_object_content_set(popup, popupTable);
-    evas_object_show(popupTable);
-
-    Evas_Object *focusInput = nullptr;
-    for (int i = (db.intPrimaryKey ? 1 : 0); i < cols.size(); i++) {
-        auto field_name = elm_label_add(popupTable);
-        elm_object_text_set(field_name, cols[i].c_str());
-        evas_object_size_hint_align_set(field_name, 1, 0);
-        elm_table_pack(popupTable, field_name, 0, i, 1, 1);
-        evas_object_show(field_name);
-        elm_object_focus_allow_set(field_name, EINA_FALSE);
-
-        Evas_Object *input = elm_entry_add(popupTable);
-        if (!currentRowValues[i].empty()) {
-            elm_object_text_set(input, currentRowValues[i].c_str());
-        }
-        elm_entry_single_line_set(input, EINA_FALSE);
-        elm_entry_editable_set(input, EINA_TRUE);
-        elm_entry_cursor_line_end_set(input);
-        evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-        evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
-        evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, edit_entry_key_up_cb, (void *) (uintptr_t) i);
-        elm_table_pack(popupTable, input, 1, i, 1, 1);
-        evas_object_show(input);
-
-        if (i == (db.intPrimaryKey ? 1 : 0)) {
-            elm_object_focus_set(input, EINA_TRUE);
-            focusInput = input;
-        }
-    }
-
-    Evas_Object *button = elm_button_add(popup);
-    elm_object_text_set(button, _("Cancel"));
-    elm_object_focus_allow_set(button, EINA_FALSE);
-    elm_object_part_content_set(popup, "button1", button);
-    evas_object_smart_callback_add(button, "clicked", edit_entry_exit_cb, popup);
-
-    button = elm_button_add(popup);
-    elm_object_text_set(button, _("OK"));
-    elm_object_focus_allow_set(button, EINA_FALSE);
-    elm_object_part_content_set(popup, "button2", button);
-    evas_object_smart_callback_add(button, "clicked", edit_entry_ok_cb, popup);
-
-    elm_object_focus_allow_set(popup, EINA_FALSE);
-    elm_object_focus_allow_set(popupTable, EINA_FALSE);
-
-    showPopup(popup, focusInput);
-}
-
-void data_ui::editRow() {
-    Evas_Object *popup = elm_popup_add(window);
-    elm_object_part_text_set(popup, "title,text", _("Edit Entry"));
-
-    auto cols = db.listColumns();
-    auto rows = db.readRow(selectedRow - 1);
-    currentRowValues.clear();
-    for (int i = 0; i < cols.size(); i++) {
-        currentRowValues.emplace_back(rows[i]);
-    }
-
-    populateAndShowEntryPopup(popup, cols);
-}
 
 static void delete_entry_key_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
@@ -728,14 +616,20 @@ void data_ui::deleteEntry() {
     showPopup(popup, popup);
 }
 
-void data_ui::updateCurrentRowValue(int i, std::string value) {
-    currentRowValues[i] = std::move(value);
+void data_ui::updateCurrentRowValue(int currentRow, std::string value) {
+    dataEditRecord.updateCurrentRowValue(currentRow, value);
 }
 
 void data_ui::saveCurrentRow() {
-    db.addRow(currentRowValues);
-    clearActivePopup();
-    repopulateUI();
+    dataEditRecord.saveCurrentRow();
+}
+
+void data_ui::addRow() {
+    dataEditRecord.addRow(window);
+}
+
+void data_ui::editRow() {
+    dataEditRecord.editRow(window,selectedRow);
 }
 
 void data_ui::deleteCurrentRow() {
@@ -865,6 +759,25 @@ Eina_Bool data_ui::labelPreferencesAreValid() {
     }
 
     return EINA_TRUE;
+}
+
+data_ui::data_ui(sqlite_file &_db) : db(_db), dataEditRecord(_db) {
+
+}
+
+void data_ui::editColumnTabFocus(int currentFocus) {
+    dataEditRecord.editColumnTabFocus(currentFocus);
+}
+
+void data_ui::zoomOut() {
+    auto scale = elm_config_scale_get();
+    elm_config_scale_set(scale-0.1);
+}
+
+void data_ui::zoomIn() {
+    auto scale = elm_config_scale_get();
+    elm_config_scale_set(scale+0.1);
+
 }
 
 

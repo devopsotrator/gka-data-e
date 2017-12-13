@@ -53,7 +53,7 @@ Typing regular characters enters into the search box.
 * **Enter** and **Shift-Enter** move forwards and backwards between records that match this search term.
 * **Ctrl-n** New file
 * **Ctrl-o** Open file
-* **Ctrl-e** Exit
+* **Ctrl-q** Exit
 * **Ctrl-Shift-N** New record
 * **Ctrl-Shift-E** Edit record
 * **Ctrl-Shift-D** Delete record

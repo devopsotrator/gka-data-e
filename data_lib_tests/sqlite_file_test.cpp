@@ -99,9 +99,9 @@ TEST_CASE("sqlite tables") {
         SECTION("partial population") {
             std::string sql = "INSERT INTO " + tableName + "(b,d) VALUES('First Column','Third Column');";
             char *sqliteErrMsg = nullptr;
-            int rc = sqlite3_exec(db.handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+            int rc = sqlite3_exec(db.getHandle(), sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
             if (rc != SQLITE_OK) {
-                EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(db.handle), sqliteErrMsg);
+                EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(db.getHandle()), sqliteErrMsg);
                 sqlite3_free(sqliteErrMsg);
             }
             int rows = db.rowCount();

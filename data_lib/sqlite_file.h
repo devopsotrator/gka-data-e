@@ -21,11 +21,6 @@ typedef enum
 class sqlite_file {
 
 public:
-    sqlite3 *handle{};
-    Esql_Connect_Type state;
-    int intPrimaryKey{}; //0 = not set, 1-n+1 for column indexing
-    std::string filter;
-
     void file(std::string fileName);
 
     virtual ~sqlite_file();
@@ -62,6 +57,10 @@ public:
 
     std::string &getFilter();
 
+    sqlite3 *getHandle();
+
+    int getPrimaryKey();
+
 private:
 
     bool setColumnsBeginTransaction() const;
@@ -83,6 +82,11 @@ private:
 
     bool setColumnsCommitTransaction() const;
 
+private:
+    sqlite3 *handle{};
+    Esql_Connect_Type state = DATA_CONNECT_TYPE_NONE;
+    int intPrimaryKey = 0; //0 = not set, 1-n+1 for column indexing
+    std::string filter;
 };
 
 

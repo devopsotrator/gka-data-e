@@ -94,13 +94,13 @@ static void label_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_object_content_set(popup, input);
 
     Evas_Object *button = elm_button_add(popup);
-    elm_object_text_set(button, _("Cancel"));
+    elm_object_text_set(button, _("Cancel (esc)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button1", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_addedit_label_exit_cb, popup);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("OK"));
+    elm_object_text_set(button, _("OK (enter)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button2", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_edit_label_ok_cb, popup);
@@ -150,13 +150,13 @@ static void label_pref_add_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_object_content_set(popup, input);
 
     Evas_Object *button = elm_button_add(popup);
-    elm_object_text_set(button, _("Cancel"));
+    elm_object_text_set(button, _("Cancel (esc)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button1", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_addedit_label_exit_cb, popup);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("OK"));
+    elm_object_text_set(button, _("OK (enter)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button2", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_add_label_ok_cb, popup);
@@ -233,7 +233,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(box);
 
     Evas_Object *button = elm_button_add(popup);
-    elm_object_text_set(button, _("Move up"));
+    elm_object_text_set(button, _("Move up (ctrl-u)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -242,7 +242,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("Move down"));
+    elm_object_text_set(button, _("Move down (ctrl-j)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -251,7 +251,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, MENU_ELLIPSIS(_("Edit")));
+    elm_object_text_set(button, MENU_ELLIPSIS(_("Edit (ctrl-e)")));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -260,7 +260,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, MENU_ELLIPSIS(_("Add")));
+    elm_object_text_set(button, MENU_ELLIPSIS(_("Add (ctrl-a)")));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -269,7 +269,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("Delete"));
+    elm_object_text_set(button, _("Delete (ctrl-d)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -278,13 +278,13 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("Cancel"));
+    elm_object_text_set(button, _("Cancel (esc)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button1", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_exit_cb, popup);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, _("OK"));
+    elm_object_text_set(button, _("OK (ctrl-s)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button2", button);
     evas_object_smart_callback_add(button, "clicked", label_pref_ok_cb, popup);

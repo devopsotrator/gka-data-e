@@ -11,6 +11,7 @@
 #include <stack>
 #include <Elementary.h>
 #include "data_menu.h"
+#include "data_edit_record.h"
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -60,8 +61,17 @@ public:
     std::string editableColumnsEditLabel;
     std::map<std::string, std::string> renames;
     STACK popupStack;
+    data_edit_record dataEditRecord;
+
+    void editColumnTabFocus(int i);
+
+    void zoomIn();
+
+    void zoomOut();
 
 public:
+    data_ui(sqlite_file &_db);
+
     void init();
 
     void setFile(std::string fileName);
@@ -82,19 +92,19 @@ public:
 
     void clearFocus();
 
-    void newEntry();
+    void addRow();
 
     void editRow();
 
     void deleteCurrentRow();
 
-    void updateCurrentRowValue(int i, std::string value);
+    void updateCurrentRowValue(int currentRow, std::string value);
 
     void saveCurrentRow();
 
     std::string getTitleForFileName(const std::string &fileName) const;
 
-    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols);
+//    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols);
 
     void handleKeyDown(void *event_info);
 
@@ -149,6 +159,10 @@ public:
     Evas_Object *popupStackTopFocus();
 
     void clearLabelPreferences();
+
+private:
+    sqlite_file &db;
+
 };
 
 extern data_ui ui;
