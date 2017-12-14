@@ -60,8 +60,8 @@ void data_menu::init(Evas_Object *window) {
     menu = elm_win_main_menu_get(window);
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("File"), NULL, NULL);
-    elm_menu_item_add(menu, menu_it, "document-new", MENU_ELLIPSIS(_("Create new file (ctrl-n)")), menu_new_cb, NULL);
-    elm_menu_item_add(menu, menu_it, "document-open", MENU_ELLIPSIS(_("Open file (ctrl-o)")), menu_open_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "document-new", _("Create new file... (ctrl-n)"), menu_new_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "document-open", _("Open file... (ctrl-o)"), menu_open_cb, NULL);
     elm_menu_item_separator_add(menu, menu_it);
     elm_menu_item_add(menu, menu_it, "application-exit", _("Close (ctrl-q)"), menu_close_cb, NULL);
 
@@ -70,17 +70,16 @@ void data_menu::init(Evas_Object *window) {
     menuCopy = elm_menu_item_add(menu, menu_it, "edit-copy", _("Copy (ctrl-c)"), menu_copy_cb, NULL);
     elm_menu_item_add(menu, menu_it, "edit-paste", _("Paste (ctrl-v)"), menu_paste_cb, NULL);
     elm_menu_item_separator_add(menu, menu_it);
-    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("New entry (ctrl-shift-N)")), menu_new_entry_cb, NULL);
-    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Edit entry (ctrl-shift-E)")), menu_edit_entry_cb, NULL);
-    menuDelete = elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Delete entry (ctrl-shift-D)")), menu_delete_entry_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", _("New entry... (ctrl-shift-N)"), menu_new_entry_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", _("Edit entry... (ctrl-shift-E)"), menu_edit_entry_cb, NULL);
+    menuDelete = elm_menu_item_add(menu, menu_it, "", _("Delete entry... (ctrl-shift-D)"), menu_delete_entry_cb, NULL);
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("View"), NULL, NULL);
-    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Zoom In (ctrl-m)")), menu_view_zoom_in_cb, NULL);
-    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Zoom Out (ctrl-shift-M)")), menu_view_zoom_out_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", _("Zoom In... (ctrl-m)"), menu_view_zoom_in_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", _("Zoom Out... (ctrl-shift-M)"), menu_view_zoom_out_cb, NULL);
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("Tools"), NULL, NULL);
-    elm_menu_item_add(menu, menu_it, "", MENU_ELLIPSIS(_("Label preferences (ctrl-l)")), menu_label_preferences_cb, NULL);
-
+    elm_menu_item_add(menu, menu_it, "", _("Label preferences... (ctrl-l)"), menu_label_preferences_cb, NULL);
 }
 
 void data_menu::updateMenuStates(Eina_Bool itemAvailable) {

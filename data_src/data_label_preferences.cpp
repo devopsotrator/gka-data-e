@@ -251,7 +251,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, MENU_ELLIPSIS(_("Edit (ctrl-e)")));
+    elm_object_text_set(button, _("Edit... (ctrl-e)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -260,7 +260,7 @@ void data_label_preferences::show(Evas_Object *window) {
     evas_object_show(button);
 
     button = elm_button_add(popup);
-    elm_object_text_set(button, MENU_ELLIPSIS(_("Add (ctrl-a)")));
+    elm_object_text_set(button, _("Add... (ctrl-a)"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     evas_object_size_hint_weight_set(button, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(button, EVAS_HINT_FILL, EVAS_HINT_FILL);

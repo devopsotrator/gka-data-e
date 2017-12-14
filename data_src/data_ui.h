@@ -36,12 +36,6 @@ struct stack {
 
 typedef struct stack STACK;
 
-#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
-#define MENU_ELLIPSIS(S) eina_slstr_printf("%s...", S)
-#else
-#define MENU_ELLIPSIS(S) S
-#endif
-
 class data_ui {
 
 public:
