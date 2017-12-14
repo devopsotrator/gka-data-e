@@ -15,9 +15,9 @@ public:
     void updateMenuStates(Eina_Bool itemAvailable = EINA_FALSE);
 
 private:
-    Elm_Widget_Item *menuCut;
-    Elm_Widget_Item *menuDelete;
-    Elm_Widget_Item *menuCopy;
+    Elm_Object_Item *menuCut;
+    Elm_Object_Item *menuDelete;
+    Elm_Object_Item *menuCopy;
 };
 
 

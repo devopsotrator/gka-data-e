@@ -6,7 +6,6 @@
 #include <Elementary.h>
 #include <regex>
 #include <unordered_set>
-#include <elm_code_widget_selection.h>
 #include "data_ui.h"
 #include "data_label_preferences.h"
 
