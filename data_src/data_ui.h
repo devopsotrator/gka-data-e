@@ -105,9 +105,9 @@ public:
 
     void nextButton();
 
-    void prevItem();
+    bool prevItem();
 
-    void nextItem();
+    bool nextItem();
 
     void repopulateUI();
 
@@ -181,10 +181,10 @@ private:
     std::vector<Evas_Object*> currentEditors;
     int currentEditorWithCursorIndex;
     std::vector<Evas_Object*> currentArrows;
-    int editorSelectionBeganIn;
-    int editorSelectionBeganAt;
-    int editorSelectionEndIn;
-    int editorSelectionEndAt;
+    unsigned long editorSelectionBeganIn;
+    unsigned long editorSelectionBeganAt;
+    unsigned long editorSelectionEndIn;
+    unsigned long editorSelectionEndAt;
     bool editorSelectionActive;
 };
 

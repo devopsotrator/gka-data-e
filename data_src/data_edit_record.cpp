@@ -31,8 +31,10 @@ static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *ev
     } else if (!strcmp(ev->key, "ISO_Left_Tab")) {
         ui.editColumnTabFocus(currentIndex-1);
     }
-    std::string entryValue = elm_object_text_get(obj);
+    auto text = elm_entry_markup_to_utf8(elm_object_text_get(obj));
+    std::string entryValue = text;
     ui.updateCurrentRowValue(currentIndex, entryValue);
+    free(text);
 }
 
 static void entry_filter_out_tabs_cb(void *data, Evas_Object *entry, char **text) {
@@ -84,7 +86,9 @@ void data_edit_record::populateAndShowEntryPopup(Evas_Object *window, Evas_Objec
         Evas_Object *input = elm_entry_add(popupTable);
         currentRowEditors.push_back(input);
         if (!currentRowValues[i].empty()) {
-            elm_object_text_set(input, currentRowValues[i].c_str());
+            auto text = elm_entry_utf8_to_markup(currentRowValues[i].c_str());
+            elm_object_text_set(input, text);
+            free(text);
         }
         elm_entry_single_line_set(input, EINA_FALSE);
         elm_entry_editable_set(input, EINA_TRUE);

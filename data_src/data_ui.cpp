@@ -143,20 +143,22 @@ void data_ui::clearActivePopup() {
     }
 }
 
-void data_ui::nextItem() {
+bool data_ui::nextItem() {
     auto sIt = elm_genlist_selected_item_get(rightList);
     auto it = elm_genlist_item_next_get(sIt);
-    if (!it) it = elm_genlist_first_item_get(rightList);
+    if (!it) return false;
     elm_genlist_item_selected_set(it, EINA_TRUE);
     elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+    return true;
 }
 
-void data_ui::prevItem() {
+bool data_ui::prevItem() {
     auto sIt = elm_genlist_selected_item_get(rightList);
     auto it = elm_genlist_item_prev_get(sIt);
-    if (!it) it = elm_genlist_last_item_get(rightList);
+    if (!it) return false;
     elm_genlist_item_selected_set(it, EINA_TRUE);
     elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+    return true;
 }
 
 void data_ui::init() {
@@ -339,7 +341,9 @@ void data_ui::repopulateFieldsTable() {
         if (selectedRow) {
             auto row = db.readRow(selectedRow - 1);
             auto field_value = elm_entry_add(fieldsTable);
-            elm_object_text_set(field_value, row[i].c_str());
+            auto text = elm_entry_utf8_to_markup(row[i].c_str());
+            elm_object_text_set(field_value, text);
+            free(text);
             elm_entry_single_line_set(field_value, EINA_FALSE);
             elm_entry_editable_set(field_value, EINA_FALSE);
             evas_object_size_hint_weight_set(field_value, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -670,6 +674,41 @@ void data_ui::prevButton() {
 
         repopulateUI();
     }
+
+    std::string toFind = filter;
+    std::transform(toFind.begin(), toFind.end(), toFind.begin(), ::tolower);
+    unsigned long currentEditor = editorSelectionBeganIn;
+    bool stringFound = false;
+    do {
+        do {
+            auto editor = currentEditors[currentEditor];
+            auto utf8text = elm_entry_markup_to_utf8(elm_entry_entry_get(editor));
+            std::string text = utf8text;
+            free(utf8text);
+            std::transform(text.begin(), text.end(), text.begin(), ::tolower);
+            unsigned long startAt = text.length();
+            if (currentEditor == editorSelectionBeganIn) {
+                startAt = editorSelectionBeganAt - 1;
+            }
+            auto pos = text.rfind(toFind, startAt);
+            if (pos != std::string::npos) {
+                editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
+                editorSelectionBeganAt = pos;
+                editorSelectionEndAt = pos + strlen(filter);
+                stringFound = true;
+            } else {
+                currentEditor--;
+            }
+        } while (!stringFound && (currentEditor < currentEditors.size()));
+        if (!stringFound) {
+            if (prevItem()) {
+                currentEditor = currentEditors.size() - 1;
+                editorSelectionEndIn = 0;
+                editorSelectionEndAt = 0;
+            }
+        }
+    } while (!stringFound && (currentEditor < currentEditors.size()));
+    updateEditorSelection();
 }
 
 void data_ui::nextButton() {
@@ -679,6 +718,41 @@ void data_ui::nextButton() {
 
         repopulateUI();
     }
+
+    std::string toFind = filter;
+    std::transform(toFind.begin(), toFind.end(), toFind.begin(), ::tolower);
+    unsigned long currentEditor = editorSelectionEndIn;
+    bool stringFound = false;
+    do {
+        do {
+            auto editor = currentEditors[currentEditor];
+            auto utf8text = elm_entry_markup_to_utf8(elm_entry_entry_get(editor));
+            std::string text = utf8text;
+            free(utf8text);
+            std::transform(text.begin(), text.end(), text.begin(), ::tolower);
+            unsigned long startAt = 0;
+            if (currentEditor == editorSelectionEndIn) {
+                startAt = editorSelectionEndAt;
+            }
+            auto pos = text.find(toFind, startAt);
+            if (pos != std::string::npos) {
+                editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
+                editorSelectionBeganAt = pos;
+                editorSelectionEndAt = pos + strlen(filter);
+                stringFound = true;
+            } else {
+                currentEditor++;
+            }
+        } while (!stringFound && (currentEditor < currentEditors.size()));
+        if (!stringFound) {
+            if (nextItem()) {
+                currentEditor = 0;
+                editorSelectionEndIn = 0;
+                editorSelectionEndAt = 0;
+            }
+        }
+    } while (!stringFound && (currentEditor < currentEditors.size()));
+    updateEditorSelection();
 }
 
 void data_ui::repopulateUI() {
@@ -987,6 +1061,8 @@ void data_ui::cursorLeft(Eina_Bool shift) {
 }
 
 void data_ui::cursorRight(Eina_Bool shift) {
+    auto empty = elm_entry_is_empty(searchEntry);
+
     auto pos = elm_entry_cursor_pos_get(searchEntry);
     if (pos == oldSearchEntryPos) {
         nextItem();
