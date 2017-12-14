@@ -6,6 +6,7 @@
 #include <Elementary.h>
 #include <regex>
 #include <unordered_set>
+#include <elm_code_widget_selection.h>
 #include "data_ui.h"
 #include "data_label_preferences.h"
 
@@ -43,6 +44,28 @@ static void window_cb_key_down(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas
     ui.handleKeyDown(event_info);
 }
 
+static void window_cb_key_up(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info) {
+    ui.handleKeyUp(event_info);
+}
+
+void data_ui::handleKeyUp(void *event_info) {
+    auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
+    Eina_Bool ctrl, alt, shift;
+
+    ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
+    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
+    shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
+
+    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+
+    if (!strcmp(ev->key, "Shift_R") || !strcmp(ev->key, "Shift_L")) {
+        if (editorSelectionActive) {
+            updateEditorSelection();
+            editorSelectionActive = false;
+        }
+    }
+}
+
 void data_ui::handleKeyDown(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     Eina_Bool ctrl, alt, shift;
@@ -51,7 +74,7 @@ void data_ui::handleKeyDown(void *event_info) {
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
@@ -74,6 +97,12 @@ void data_ui::handleKeyDown(void *event_info) {
             labelPreferences();
         } else if (!strcmp(ev->key, "m")) {
             zoomIn();
+        } else if (!strcmp(ev->key, "x")) {
+            cut();
+        } else if (!strcmp(ev->key, "c")) {
+            copy();
+        } else if (!strcmp(ev->key, "v")) {
+            paste();
         }
     }
 
@@ -92,30 +121,13 @@ void data_ui::handleKeyDown(void *event_info) {
             nextButton();
         }
     } else if (!strcmp(ev->key, "Up")) {
-        Evas_Coord x,y,w,h;
-        elm_scroller_region_get(scroller, &x, &y, &w, &h);
-        y -= 20;
-        y = MAX(y,0);
-        elm_scroller_region_show(scroller, x, y, w, h);
+        cursorUp(shift);
     } else if (!strcmp(ev->key, "Down")) {
-        Evas_Coord x,y,w,h;
-        elm_scroller_region_get(scroller, &x, &y, &w, &h);
-        y += 20;
-        elm_scroller_region_show(scroller, x, y, w, h);
+        cursorDown(shift);
     } else if (!strcmp(ev->key, "Left")) {
-        auto pos = elm_entry_cursor_pos_get(searchEntry);
-        if (pos == oldSearchEntryPos) {
-            prevItem();
-            clearFocus();
-        }
-        oldSearchEntryPos = pos;
+        cursorLeft(shift);
     } else if (!strcmp(ev->key, "Right")) {
-        auto pos = elm_entry_cursor_pos_get(searchEntry);
-        if (pos == oldSearchEntryPos) {
-            nextItem();
-            clearFocus();
-        }
-        oldSearchEntryPos = pos;
+        cursorRight(shift);
     }
 }
 
@@ -248,6 +260,7 @@ void data_ui::init() {
     elm_panes_content_left_size_set(panes, 0.7);
 
     evas_object_event_callback_add(searchEntry, EVAS_CALLBACK_KEY_DOWN, window_cb_key_down, searchEntry);
+    evas_object_event_callback_add(searchEntry, EVAS_CALLBACK_KEY_UP, window_cb_key_up, searchEntry);
     elm_object_focus_allow_set(window, EINA_FALSE);
     elm_object_focus_allow_set(panes, EINA_FALSE);
     elm_object_focus_allow_set(scroller, EINA_FALSE);
@@ -295,6 +308,11 @@ void data_ui::repopulateFieldsTable() {
     elm_table_clear(fieldsTable, EINA_TRUE);
     auto cols = db.listColumns();
 
+    if (selectedRow > db.rowCount()) {
+        selectedRow = 0;
+    }
+    currentEditors.clear();
+    currentArrows.clear();
     for (int i = 0; i < cols.size(); i++) {
         auto field_name = elm_label_add(fieldsTable);
         elm_object_text_set(field_name, cols[i].c_str());
@@ -303,9 +321,6 @@ void data_ui::repopulateFieldsTable() {
         evas_object_show(field_name);
         elm_table_pack(fieldsTable, field_name, 0, i, 1, 1);
 
-        if (selectedRow > db.rowCount()) {
-            selectedRow = 0;
-        }
         auto arrowImage = elm_image_add(fieldsTable);
         std::string arrowPath(elm_app_data_dir_get());
         arrowPath += "/images/arrow.png";
@@ -313,8 +328,13 @@ void data_ui::repopulateFieldsTable() {
         evas_object_size_hint_align_set(arrowImage, 1, 0);
         evas_object_size_hint_padding_set(arrowImage, 0, 0, 5, 5);
         evas_object_size_hint_min_set(arrowImage, 10 * elm_config_scale_get(), 10 * elm_config_scale_get());
-        evas_object_show(arrowImage);
+        if (i == currentEditorWithCursorIndex) {
+            evas_object_show(arrowImage);
+        } else {
+            evas_object_hide(arrowImage);
+        }
         elm_table_pack(fieldsTable, arrowImage, 1, i, 1, 1);
+        currentArrows.push_back(arrowImage);
 
         if (selectedRow) {
             auto row = db.readRow(selectedRow - 1);
@@ -327,8 +347,13 @@ void data_ui::repopulateFieldsTable() {
             elm_object_focus_allow_set(field_value, EINA_FALSE);
             evas_object_show(field_value);
             elm_table_pack(fieldsTable, field_value, 2, i, 1, 1);
+
+//            evas_object_smart_callback_add(field_value, "cursor,changed", edit_entry_ok_cb, popup);
+
+            currentEditors.push_back(field_value);
         }
     }
+    menu.updateMenuStates(selectedRow);
 }
 
 void data_ui::repopulateRightList(int selected) const {
@@ -392,7 +417,7 @@ void data_ui::openFile() {
 
     elm_fileselector_expandable_set(fs, EINA_TRUE);
     elm_fileselector_folder_only_set(fs, EINA_FALSE);
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
     elm_fileselector_path_set(fs, eina_environment_home_get());
     elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
 #else
@@ -425,7 +450,7 @@ static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *even
     } else if (!strcmp(ev->key, "Return")) {
         file_new_ok_cb(data, obj, event_info);
     }
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
     std::string newFilePath = eina_environment_home_get();
 #else
     std::string newFilePath = "/tmp";
@@ -780,4 +805,192 @@ void data_ui::zoomIn() {
 
 }
 
+void data_ui::copy() {
+    if (elm_entry_selection_get(searchEntry)) {
+        //handled automatically by searchEntry as it has the focus
+    } else {
+        for (auto field_value : currentEditors) {
+            if (elm_entry_selection_get(field_value)) {
+                elm_entry_selection_copy(field_value);
+                EINA_LOG_ERR("copy %s",elm_entry_selection_get(field_value));
+            }
+        }
+    }
+}
 
+void data_ui::cut() {
+    //handled automatically by searchEntry as it has the focus, cannot be done on the editor field values
+}
+
+void data_ui::paste() {
+    //handled automatically by searchEntry as it has the focus
+}
+
+void data_ui::cursorUp(Eina_Bool shift) {
+    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < currentEditors.size()) {
+        auto editor = currentEditors[currentEditorWithCursorIndex];
+        auto oldPos = elm_entry_cursor_pos_get(editor);
+        if (shift) {
+            if (!editorSelectionActive) {
+                editorSelectionActive = true;
+                editorSelectionBeganIn = currentEditorWithCursorIndex;
+                editorSelectionBeganAt = oldPos;
+                editorSelectionEndIn = -1;
+                editorSelectionEndAt = -1;
+            }
+        } else {
+            if (editorSelectionActive) {
+                editorSelectionActive = false;
+                editorSelectionBeganIn = -1;
+                editorSelectionBeganAt = -1;
+                editorSelectionEndIn = -1;
+                editorSelectionEndAt = -1;
+            }
+        }
+        elm_entry_cursor_up(editor);
+        auto newPos = elm_entry_cursor_pos_get(editor);
+        if (newPos == oldPos && currentEditorWithCursorIndex > 0) {
+            auto arrowImage = currentArrows[currentEditorWithCursorIndex];
+            evas_object_hide(arrowImage);
+            currentEditorWithCursorIndex--;
+            arrowImage = currentArrows[currentEditorWithCursorIndex];
+            evas_object_show(arrowImage);
+            if (editorSelectionActive) {
+                elm_entry_cursor_end_set(editor);
+                elm_entry_cursor_line_begin_set(editor);
+                editorSelectionEndAt = elm_entry_cursor_pos_get(editor);
+                elm_entry_cursor_pos_set(editor, newPos);
+            }
+        } else if (newPos == oldPos) {
+            if (editorSelectionActive) {
+                editorSelectionEndAt = 0;
+            }
+        } else {
+            if (editorSelectionActive) {
+                editorSelectionEndAt = newPos;
+            }
+        }
+        if (editorSelectionActive) {
+            editorSelectionEndIn = currentEditorWithCursorIndex;
+        }
+
+    }
+    //Update Arrow UI element?
+    updateEditorSelection();
+}
+
+void data_ui::updateEditorSelection() {
+    EINA_LOG_ERR("a: %d, bi: %d, ba: %d, ei: %d, ea: %d",editorSelectionActive,editorSelectionBeganIn,editorSelectionBeganAt,editorSelectionEndIn,editorSelectionEndAt);
+    if (editorSelectionBeganIn >= 0) {
+        if (editorSelectionBeganIn > editorSelectionEndIn) {
+            for (int editorIndex = editorSelectionEndIn; editorIndex <= editorSelectionBeganIn; editorIndex++) {
+                auto editor = currentEditors[editorIndex];
+                int originalPos = elm_entry_cursor_pos_get(editor);
+                int beginPos = 0;
+                if (editorIndex == editorSelectionEndIn) {
+                    beginPos = editorSelectionEndAt;
+                }
+                if (beginPos != editorSelectionBeganAt || editorIndex != editorSelectionBeganIn) {
+                    elm_entry_cursor_pos_set(editor, beginPos);
+                    elm_entry_cursor_selection_begin(editor);
+                    if (editorIndex == editorSelectionBeganIn) {
+                        elm_entry_cursor_pos_set(editor, editorSelectionBeganAt);
+                    } else {
+                        elm_entry_cursor_end_set(editor);
+                    }
+                    elm_entry_cursor_selection_end(editor);
+                    elm_entry_cursor_pos_set(editor, originalPos);
+                    return;
+                }
+            }
+        }
+        for (int editorIndex = editorSelectionBeganIn; editorIndex <= editorSelectionEndIn; editorIndex++) {
+            auto editor = currentEditors[editorIndex];
+            int originalPos = elm_entry_cursor_pos_get(editor);
+            int beginPos = 0;
+            if (editorIndex == editorSelectionBeganIn) {
+                beginPos = editorSelectionBeganAt;
+            }
+            if (beginPos != editorSelectionEndAt || editorIndex != editorSelectionEndIn) {
+                elm_entry_cursor_pos_set(editor, beginPos);
+                elm_entry_cursor_selection_begin(editor);
+                if (editorIndex == editorSelectionEndIn) {
+                    elm_entry_cursor_pos_set(editor, editorSelectionEndAt);
+                } else {
+                    elm_entry_cursor_end_set(editor);
+                }
+                elm_entry_cursor_selection_end(editor);
+                elm_entry_cursor_pos_set(editor, originalPos);
+            }
+        }
+    }
+}
+
+void data_ui::cursorDown(Eina_Bool shift) {
+    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < currentEditors.size()) {
+        auto editor = currentEditors[currentEditorWithCursorIndex];
+        auto oldPos = elm_entry_cursor_pos_get(editor);
+        if (shift) {
+            if (!editorSelectionActive) {
+                editorSelectionActive = true;
+                editorSelectionBeganIn = currentEditorWithCursorIndex;
+                editorSelectionBeganAt = oldPos;
+                editorSelectionEndIn = -1;
+                editorSelectionEndAt = -1;
+            }
+        } else {
+            if (editorSelectionActive) {
+                editorSelectionActive = false;
+                editorSelectionBeganIn = -1;
+                editorSelectionBeganAt = -1;
+                editorSelectionEndIn = -1;
+                editorSelectionEndAt = -1;
+            }
+        }
+        elm_entry_cursor_down(editor);
+        auto newPos = elm_entry_cursor_pos_get(editor);
+        if (newPos == oldPos && currentEditorWithCursorIndex < currentEditors.size()-1) {
+            auto arrowImage = currentArrows[currentEditorWithCursorIndex];
+            evas_object_hide(arrowImage);
+            currentEditorWithCursorIndex++;
+            arrowImage = currentArrows[currentEditorWithCursorIndex];
+            evas_object_show(arrowImage);
+            if (editorSelectionActive) {
+                editorSelectionEndAt = 0;
+            }
+        } else if (newPos == oldPos) {
+            if (editorSelectionActive) {
+                elm_entry_cursor_end_set(editor);
+                editorSelectionEndAt = elm_entry_cursor_pos_get(editor);
+                elm_entry_cursor_pos_set(editor, newPos);
+            }
+        } else {
+            if (editorSelectionActive) {
+                editorSelectionEndAt = newPos;
+            }
+        }
+        if (editorSelectionActive) {
+            editorSelectionEndIn = currentEditorWithCursorIndex;
+        }
+    }
+    //Update Arrow UI element?
+    updateEditorSelection();
+}
+
+void data_ui::cursorLeft(Eina_Bool shift) {
+    auto pos = elm_entry_cursor_pos_get(searchEntry);
+    if (pos == oldSearchEntryPos) {
+        prevItem();
+        clearFocus();
+    }
+    oldSearchEntryPos = pos;
+}
+
+void data_ui::cursorRight(Eina_Bool shift) {
+    auto pos = elm_entry_cursor_pos_get(searchEntry);
+    if (pos == oldSearchEntryPos) {
+        nextItem();
+        clearFocus();
+    }
+    oldSearchEntryPos = pos;
+}

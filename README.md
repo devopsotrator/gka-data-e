@@ -2,7 +2,7 @@
 
 Simple Sqlite3 database editor.
 
-Currently supports opening and editing of databases with a single table, with an INTEGER PRIMARY KEY. 
+Currently supports opening and editing of databases with a single table, with an INTEGER PRIMARY KEY.
 
 Working towards keyboard friendly input as part of the http://gka.thinkglobally.org project.
 
@@ -49,7 +49,7 @@ The project also works with CLion and EDI integrated development environments.
 
 ### Main window
 
-Typing regular characters enters into the search box. 
+Typing regular characters enters into the search box.
 * **Enter** and **Shift-Enter** move forwards and backwards between records that match this search term.
 * **Ctrl-n** New file
 * **Ctrl-o** Open file

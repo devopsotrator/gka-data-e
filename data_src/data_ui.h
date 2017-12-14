@@ -36,7 +36,7 @@ struct stack {
 
 typedef struct stack STACK;
 
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
 #define MENU_ELLIPSIS(S) eina_slstr_printf("%s...", S)
 #else
 #define MENU_ELLIPSIS(S) S
@@ -53,7 +53,6 @@ public:
     Elm_Genlist_Item_Class *right_list_itc;
     int selectedRow;
     std::string newFileName;
-    std::vector<std::string> currentRowValues;
     data_menu menu;
     int oldSearchEntryPos;
     std::vector<std::string> editableColumns;
@@ -62,12 +61,6 @@ public:
     std::map<std::string, std::string> renames;
     STACK popupStack;
     data_edit_record dataEditRecord;
-
-    void editColumnTabFocus(int i);
-
-    void zoomIn();
-
-    void zoomOut();
 
 public:
     data_ui(sqlite_file &_db);
@@ -104,7 +97,7 @@ public:
 
     std::string getTitleForFileName(const std::string &fileName) const;
 
-//    void populateAndShowEntryPopup(Evas_Object *popup, const std::vector<std::string> &cols);
+    void handleKeyUp(void *event_info);
 
     void handleKeyDown(void *event_info);
 
@@ -160,9 +153,39 @@ public:
 
     void clearLabelPreferences();
 
+    void editColumnTabFocus(int i);
+
+    void zoomIn();
+
+    void zoomOut();
+
+    void cut();
+
+    void copy();
+
+    void paste();
+
+private:
+    void cursorUp(Eina_Bool i);
+
+    void cursorDown(Eina_Bool i);
+
+    void cursorLeft(Eina_Bool shift);
+
+    void cursorRight(Eina_Bool shift);
+
+    void updateEditorSelection();
+
 private:
     sqlite_file &db;
-
+    std::vector<Evas_Object*> currentEditors;
+    int currentEditorWithCursorIndex;
+    std::vector<Evas_Object*> currentArrows;
+    int editorSelectionBeganIn;
+    int editorSelectionBeganAt;
+    int editorSelectionEndIn;
+    int editorSelectionEndAt;
+    bool editorSelectionActive;
 };
 
 extern data_ui ui;

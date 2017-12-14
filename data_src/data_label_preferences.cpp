@@ -202,7 +202,7 @@ static void label_preferences_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_U
 void data_label_preferences::show(Evas_Object *window) {
     Evas_Object *popup = elm_popup_add(window);
     elm_object_part_text_set(popup, "title,text", _("Label preferences"));
-#if ELM_VERSION_MAJOR>1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
     elm_popup_scrollable_set(popup, EINA_TRUE);
 #endif
     elm_object_focus_allow_set(popup, EINA_FALSE);
