@@ -56,7 +56,7 @@ void data_ui::handleKeyUp(void *event_info) {
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+//    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (!strcmp(ev->key, "Shift_R") || !strcmp(ev->key, "Shift_L")) {
         if (editorSelectionActive) {
@@ -964,7 +964,7 @@ void data_ui::cursorUp(Eina_Bool shift) {
 }
 
 void data_ui::updateEditorSelection() {
-    EINA_LOG_ERR("a: %d, bi: %d, ba: %d, ei: %d, ea: %d",editorSelectionActive,editorSelectionBeganIn,editorSelectionBeganAt,editorSelectionEndIn,editorSelectionEndAt);
+//    EINA_LOG_ERR("a: %d, bi: %d, ba: %d, ei: %d, ea: %d",editorSelectionActive,editorSelectionBeganIn,editorSelectionBeganAt,editorSelectionEndIn,editorSelectionEndAt);
     if (editorSelectionBeganIn >= 0) {
         if (editorSelectionBeganIn > editorSelectionEndIn) {
             for (int editorIndex = editorSelectionEndIn; editorIndex <= editorSelectionBeganIn; editorIndex++) {
