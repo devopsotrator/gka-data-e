@@ -21,7 +21,7 @@ static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *ev
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     auto ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
     auto currentIndex = (int) (uintptr_t) data;
-    EINA_LOG_ERR("KeyUp[%d]: %s - %s - %s", currentIndex, ev->key, ev->compose, ev->string);
+//    EINA_LOG_ERR("KeyUp[%d]: %s - %s - %s", currentIndex, ev->key, ev->compose, ev->string);
     if (!strcmp(ev->key, "Escape")) {
         edit_entry_exit_cb(data, obj, event_info);
     } else if (ctrl && !strcmp(ev->key, "s")) {
@@ -144,6 +144,9 @@ void data_edit_record::editRow(Evas_Object *window, int selectedRow) {
     auto cols = db.listColumns();
     auto rows = db.readRow(selectedRow - 1);
     currentRowValues.clear();
+    if (rows.empty()) {
+        return;
+    }
     for (int i = 0; i < cols.size(); i++) {
         currentRowValues.emplace_back(rows[i]);
     }

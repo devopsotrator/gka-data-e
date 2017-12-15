@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include "data_ui.h"
 #include "data_label_preferences.h"
+#include "data_table_preferences.h"
 
 static sqlite_file db;
 data_ui ui(db);
@@ -21,7 +22,7 @@ static char *right_list_text_get_cb(void *data, Evas_Object *obj, const char *pa
         snprintf(buf, MAX_LIST_LENGTH, "%s", firstLine.c_str());
 
         return buf;
-    } else return NULL;
+    } else return nullptr;
 }
 
 static void row_selected_cb(void *data, Evas_Object *obj, void *event_info) {
@@ -73,7 +74,7 @@ void data_ui::handleKeyDown(void *event_info) {
     alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+//    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
@@ -94,6 +95,8 @@ void data_ui::handleKeyDown(void *event_info) {
             elm_exit();
         } else if (!strcmp(ev->key, "l")) {
             labelPreferences();
+        } else if (!strcmp(ev->key, "t")) {
+            tablePreferences();
         } else if (!strcmp(ev->key, "m")) {
             zoomIn();
         } else if (!strcmp(ev->key, "x")) {
@@ -281,6 +284,8 @@ void data_ui::init() {
 
 void data_ui::setFile(std::string fileName) {
     db.file(fileName);
+    db.setTable("");
+
     elm_win_title_set(window, getTitleForFileName(fileName).c_str());
 
     repopulateUI();
@@ -298,6 +303,8 @@ void data_ui::setNewFile() {
         newFileName = "data.db";
     }
     db.newFile(newFileName);
+    db.setTable("");
+
     elm_win_title_set(window, getTitleForFileName(newFileName).c_str());
 
     repopulateUI();
@@ -600,7 +607,6 @@ static void delete_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.clearFocus();
 }
 
-
 static void delete_entry_key_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     auto ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
@@ -769,6 +775,11 @@ void data_ui::labelPreferences() {
     label_preferences.show(window);
 }
 
+void data_ui::tablePreferences() {
+    table_preferences.clearTablePreferences();
+    table_preferences.show(window);
+}
+
 void data_ui::saveLabelPreferences() {
     db.setColumns(editableColumns, renames);
     editableColumns.clear();
@@ -859,7 +870,7 @@ Eina_Bool data_ui::labelPreferencesAreValid() {
     return EINA_TRUE;
 }
 
-data_ui::data_ui(sqlite_file &_db) : db(_db), dataEditRecord(_db) {
+data_ui::data_ui(sqlite_file &_db) : db(_db), dataEditRecord(_db), table_preferences(_db) {
 
 }
 
@@ -1068,4 +1079,8 @@ void data_ui::cursorRight(Eina_Bool shift) {
         clearFocus();
     }
     oldSearchEntryPos = pos;
+}
+
+data_table_preferences& data_ui::getTablePref() {
+    return table_preferences;
 }

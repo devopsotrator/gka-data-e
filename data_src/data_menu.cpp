@@ -53,6 +53,10 @@ static void menu_label_preferences_cb(void *data EINA_UNUSED, Evas_Object *obj E
     ui.labelPreferences();
 }
 
+static void menu_table_preferences_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
+    ui.tablePreferences();
+}
+
 void data_menu::init(Evas_Object *window) {
     Evas_Object *menu;
     Elm_Object_Item *menu_it;
@@ -80,6 +84,7 @@ void data_menu::init(Evas_Object *window) {
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("Tools"), NULL, NULL);
     elm_menu_item_add(menu, menu_it, "", _("Label preferences... (ctrl-l)"), menu_label_preferences_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "", _("Table preferences... (ctrl-t)"), menu_table_preferences_cb, NULL);
 }
 
 void data_menu::updateMenuStates(Eina_Bool itemAvailable) {

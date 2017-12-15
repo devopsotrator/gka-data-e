@@ -12,6 +12,7 @@
 #include <Elementary.h>
 #include "data_menu.h"
 #include "data_edit_record.h"
+#include "data_table_preferences.h"
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
@@ -39,29 +40,13 @@ typedef struct stack STACK;
 class data_ui {
 
 public:
-    Evas_Object *searchEntry;
-    Evas_Object *rightList;
-    Evas_Object *fieldsTable;
-    Evas_Object *window;
-    Evas_Object *scroller;
-    Elm_Genlist_Item_Class *right_list_itc;
-    int selectedRow;
-    std::string newFileName;
-    data_menu menu;
-    int oldSearchEntryPos;
-    std::vector<std::string> editableColumns;
-    int editableColumnsIndex;
-    std::string editableColumnsEditLabel;
-    std::map<std::string, std::string> renames;
-    STACK popupStack;
-    data_edit_record dataEditRecord;
-
-public:
     data_ui(sqlite_file &_db);
 
     void init();
 
     void setFile(std::string fileName);
+
+    data_table_preferences& getTablePref();
 
     void rowSelected(int i);
 
@@ -159,6 +144,8 @@ public:
 
     void paste();
 
+    void tablePreferences();
+
 private:
     void cursorUp(Eina_Bool i);
 
@@ -172,6 +159,22 @@ private:
 
 private:
     sqlite_file &db;
+    Evas_Object *searchEntry;
+    Evas_Object *rightList;
+    Evas_Object *fieldsTable;
+    Evas_Object *window;
+    Evas_Object *scroller;
+    Elm_Genlist_Item_Class *right_list_itc;
+    int selectedRow;
+    std::string newFileName;
+    data_menu menu;
+    int oldSearchEntryPos;
+    std::vector<std::string> editableColumns;
+    int editableColumnsIndex;
+    std::string editableColumnsEditLabel;
+    std::map<std::string, std::string> renames;
+    STACK popupStack;
+    data_edit_record dataEditRecord;
     std::vector<Evas_Object*> currentEditors;
     int currentEditorWithCursorIndex;
     std::vector<Evas_Object*> currentArrows;
@@ -180,6 +183,7 @@ private:
     unsigned long editorSelectionEndIn;
     unsigned long editorSelectionEndAt;
     bool editorSelectionActive;
+    data_table_preferences table_preferences;
 };
 
 extern data_ui ui;

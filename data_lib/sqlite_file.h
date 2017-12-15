@@ -59,7 +59,13 @@ public:
 
     sqlite3 *getHandle();
 
-    int getPrimaryKey(const std::string &table);
+    int getPrimaryKey(std::string table="");
+
+    void addTable(std::string tableName);
+
+    void deleteTable(const std::string &tableName);
+
+    bool renameTable(std::string oldTableName, std::string newTableName)const;
 
 private:
 
@@ -88,6 +94,8 @@ private:
     Esql_Connect_Type state = DATA_CONNECT_TYPE_NONE;
     std::map<std::string,int> intPrimaryKeys;
     std::string filter;
+
+    bool setColumnsRollbackTransaction() const;
 };
 
 

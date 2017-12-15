@@ -59,14 +59,14 @@ TEST_CASE("sqlite tables") {
         SECTION("populate table") {
             std::vector<std::string> row;
             row.emplace_back("");
-            row.emplace_back("First Column");
+            row.emplace_back("First\nColumn");
             row.emplace_back("Second Column");
             row.emplace_back("Third Column");
             db.addRow(row);
 
             SECTION("check title for listing views") {
                 std::string savedTitle = db.readRowTitle(0);
-                REQUIRE(savedTitle == "First Column");
+                REQUIRE(savedTitle == "First");
             }
 
             SECTION("check full row") {
@@ -217,6 +217,14 @@ TEST_CASE("sqlite table column") {
         REQUIRE(savedRow[2] == "Test URL");
         REQUIRE(savedRow[3] == "Test Notes");
     }
+    SECTION("column add before first") {
+        newColumns.emplace(std::begin(newColumns), "newColumn");
+        db.setColumns(newColumns);
+        int rows = db.rowCount();
+        REQUIRE(1 == rows);
+        auto savedColumns = db.listColumns();
+        REQUIRE(savedColumns[0] == "newColumn");
+    }
 }
 
 TEST_CASE("multiple tables") {
@@ -262,5 +270,46 @@ TEST_CASE("multiple tables") {
     db.addRow(row2);
     std::string savedTitle3 = db.readRowTitle(1);
     REQUIRE(savedTitle3 == "Test Subject3");
+}
 
+TEST_CASE("multiple tables a/r/d") {
+    sqlite_file db;
+    db.file(":memory:");
+
+    std::string table1Name;
+    std::vector<std::string> columns1;
+    createTableT1(db, columns1, table1Name);
+
+    std::string table2Name;
+    std::vector<std::string> columns2;
+    createTableT2(db, columns2, table2Name);
+
+    auto tables = db.listTables();
+    REQUIRE(tables.size() == 2);
+    REQUIRE(tables[0] == "t1");
+    REQUIRE(tables[1] == "t2");
+
+    SECTION("add empty table") {
+        db.addTable("newTable");
+        tables = db.listTables();
+        REQUIRE(tables.size() == 3);
+        REQUIRE(tables[0] == "newTable");
+        REQUIRE(tables[1] == "t1");
+        REQUIRE(tables[2] == "t2");
+    }
+
+    SECTION("delete table") {
+        db.deleteTable("t1");
+        tables = db.listTables();
+        REQUIRE(tables.size() == 1);
+        REQUIRE(tables[0] == "t2");
+    }
+
+    SECTION("rename table") {
+        db.renameTable("t1","newName");
+        tables = db.listTables();
+        REQUIRE(tables.size() == 2);
+        REQUIRE(tables[0] == "newName");
+        REQUIRE(tables[1] == "t2");
+    }
 }

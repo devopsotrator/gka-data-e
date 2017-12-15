@@ -288,14 +288,20 @@ void sqlite_file::deleteRow(std::vector<std::string> vector, std::string table) 
 }
 
 std::string sqlite_file::readRowTitle(int i, std::string tableName) {
+    std::string ret;
     tableName = getTable(tableName);
     std::vector<std::string> row = readRow(i, tableName);
 
     if (intPrimaryKeys[tableName] == 0 + 1) {
-        return row[1];
+        ret = row[1];
     } else {
-        return row[0];
+        ret = row[0];
     }
+    auto newLinePos = ret.find('\n');
+    if (newLinePos) {
+        ret = ret.substr(0,newLinePos);
+    }
+    return ret;
 }
 
 void sqlite_file::setFilter(const std::string &string) {
@@ -347,6 +353,7 @@ void sqlite_file::setColumns(const std::vector<std::string> newColumns, const st
         return;
     }
     if (!setColumnsBeginTransaction()) {
+        setColumnsRollbackTransaction();
         return;
     }
 
@@ -452,23 +459,28 @@ bool sqlite_file::setColumnsCopyFromOldToNew(const std::vector<std::string> &new
                                              const std::map<std::string, std::string> &renames,
                                              const std::vector<std::string> &oldName, const std::string &table) const {
     std::string sql = "INSERT INTO new_" + table + "(";
+    bool sqlColumnAdded = false;
     for (auto &column : newColumns) {
         if ((find(oldName.begin(), oldName.end(), column) != end(oldName)) || (renames.find(column) != renames.end())) {
-            if (column != newColumns[0])
+            if (column != newColumns[0] && sqlColumnAdded)
                 sql += ", ";
             sql += column;
+            sqlColumnAdded = true;
         }
     }
     sql += ") SELECT ";
+    sqlColumnAdded = false;
     for (auto &column : newColumns) {
         if (find(oldName.begin(), oldName.end(), column) != end(oldName)) {
-            if (column != newColumns[0])
+            if (column != newColumns[0] && sqlColumnAdded)
                 sql += ", ";
             sql += column;
+            sqlColumnAdded = true;
         } else if (renames.find(column) != renames.end()) {
-            if (column != newColumns[0])
+            if (column != newColumns[0] && sqlColumnAdded)
                 sql += ", ";
             sql += renames.find(column)->second;
+            sqlColumnAdded = true;
         }
     }
     sql += " FROM " + table + ";";
@@ -496,9 +508,12 @@ bool sqlite_file::setColumnsDropOldTable(const std::string &table) const {
 }
 
 bool sqlite_file::setColumnsRenameTable(const std::string &table) const {
+    return renameTable("new_" + table, table);
+}
+
+bool sqlite_file::setColumnsCommitTransaction() const {
     char *sqliteErrMsg = nullptr;
-    std::string sql = "ALTER TABLE new_" + table + " RENAME TO " + table;
-    int rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    int rc=sqlite3_exec(handle, "COMMIT TRANSACTION", nullptr, nullptr, &sqliteErrMsg);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
         sqlite3_free(sqliteErrMsg);
@@ -507,9 +522,9 @@ bool sqlite_file::setColumnsRenameTable(const std::string &table) const {
     return true;
 }
 
-bool sqlite_file::setColumnsCommitTransaction() const {
+bool sqlite_file::setColumnsRollbackTransaction() const {
     char *sqliteErrMsg = nullptr;
-    int rc=sqlite3_exec(handle, "COMMIT TRANSACTION", nullptr, nullptr, &sqliteErrMsg);
+    int rc=sqlite3_exec(handle, "ROLLBACK TRANSACTION", nullptr, nullptr, &sqliteErrMsg);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
         sqlite3_free(sqliteErrMsg);
@@ -526,7 +541,30 @@ sqlite3 *sqlite_file::getHandle() {
     return handle;
 }
 
-int sqlite_file::getPrimaryKey(const std::string &table) {
+int sqlite_file::getPrimaryKey(std::string table) {
+    table = getTable(table);
     return intPrimaryKeys[table];
+}
+
+void sqlite_file::addTable(std::string tableName) {
+    std::vector<std::string> columns;
+    columns.emplace_back("id INTEGER PRIMARY KEY");
+    createTable(tableName, columns);
+}
+
+void sqlite_file::deleteTable(const std::string &tableName) {
+    setColumnsDropOldTable(tableName);
+}
+
+bool sqlite_file::renameTable(std::string oldTableName, std::string newTableName) const {
+    char *sqliteErrMsg = nullptr;
+    std::string sql = "ALTER TABLE " + oldTableName + " RENAME TO " + newTableName;
+    int rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
+    if (rc!=SQLITE_OK) {
+        EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
+        sqlite3_free(sqliteErrMsg);
+        return false;
+    }
+    return true;
 }
 
