@@ -40,7 +40,7 @@ void sqlite_file::newFile(std::string fileName) {
             EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle), sqliteErrMsg);
             sqlite3_free(sqliteErrMsg);
         }
-        intPrimaryKey = 0 + 1;
+        intPrimaryKeys["notes"] = 0 + 1;
     }
 }
 
@@ -61,10 +61,10 @@ std::vector<std::string> sqlite_file::listTables() {
     return ret;
 }
 
-void sqlite_file::createTable(std::string &string, std::vector<std::string> &vector) {
+void sqlite_file::createTable(std::string &tableName, std::vector<std::string> &vector) {
     char *sqliteErrMsg = nullptr;
 
-    std::string sql = "CREATE TABLE IF NOT EXISTS " + string + " (";
+    std::string sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
     for (const auto &field : vector) {
         if (field != vector[0])
             sql += ",";
@@ -79,22 +79,21 @@ void sqlite_file::createTable(std::string &string, std::vector<std::string> &vec
     if (!vector.empty()) {
         for (auto i=0; i < vector.size(); i++) {
             if (strcasestr(vector[i].c_str(), "INTEGER PRIMARY KEY") != NULL) {
-                intPrimaryKey = i + 1;
+                intPrimaryKeys[tableName] = i + 1;
             }
         }
     }
 }
 
-std::vector<std::string> sqlite_file::listColumns(std::string table) {
-    intPrimaryKey = 0;
-
+std::vector<std::string> sqlite_file::listColumns(std::string tableName) {
     std::vector<std::string> ret;
-    table = getTable(table);
-    if (table.empty()) {
+    tableName = getTable(tableName);
+    if (tableName.empty()) {
         return ret;
     }
+    intPrimaryKeys[tableName] = 0;
 
-    std::string sql = "PRAGMA TABLE_INFO("+table+");";
+    std::string sql = "PRAGMA TABLE_INFO("+tableName+");";
     sqlite3_stmt* ppStmt = nullptr;
     const char* pzTail = nullptr;
     int rc=sqlite3_prepare_v2(handle, sql.c_str(), -1, &ppStmt, &pzTail);
@@ -108,7 +107,7 @@ std::vector<std::string> sqlite_file::listColumns(std::string table) {
         auto primaryKey = sqlite3_column_int(ppStmt, 5);
         auto type = reinterpret_cast<const char*>(sqlite3_column_text(ppStmt, 2));
         if (primaryKey && strcmp(type, "INTEGER")==0) {
-            intPrimaryKey = primaryKey;
+            intPrimaryKeys[tableName] = primaryKey;
         }
     }
     while (sqlite3_step(ppStmt) == SQLITE_ROW) {
@@ -119,12 +118,13 @@ std::vector<std::string> sqlite_file::listColumns(std::string table) {
     return ret;
 }
 
-void sqlite_file::addRow(std::vector<std::string> &vector) {
-    if (current_table.empty()) {
-        current_table = listTables()[0];
+void sqlite_file::addRow(std::vector<std::string> &vector, std::string table) {
+    table = getTable(table);
+    if (table.empty()) {
+        return;
     }
 
-    std::string sql = "INSERT OR REPLACE INTO " + current_table + " VALUES(";
+    std::string sql = "INSERT OR REPLACE INTO " + table + " VALUES(";
     for (int i=1; i<=vector.size(); i++) {
         if (i != 1)
             sql += ",";
@@ -184,6 +184,10 @@ int sqlite_file::rowCount(std::string table) {
     return ret;
 }
 
+void sqlite_file::setTable(std::string string) {
+    current_table = string;
+}
+
 std::string &sqlite_file::getTable(std::string &table) {
     if (table.empty()) {
         if (!current_table.empty()) {
@@ -207,7 +211,7 @@ std::vector<std::string> sqlite_file::readRow(int rowIndex, std::string table) {
     std::vector<std::string> toBind;
 
     std::string sql = "SELECT * FROM "+table+where(table,toBind);
-    auto nextBind = toBind.size() + 1;
+    int nextBind = static_cast<int>(toBind.size() + 1);
     sql += " LIMIT 1 OFFSET ?" + std::to_string(nextBind) + ";";
     sqlite3_stmt* ppStmt = nullptr;
     const char* pzTail = nullptr;
@@ -283,10 +287,11 @@ void sqlite_file::deleteRow(std::vector<std::string> vector, std::string table) 
     sqlite3_finalize(ppStmt);
 }
 
-std::string sqlite_file::readRowTitle(int i, std::string table) {
-    std::vector<std::string> row = readRow(i, std::move(table));
+std::string sqlite_file::readRowTitle(int i, std::string tableName) {
+    tableName = getTable(tableName);
+    std::vector<std::string> row = readRow(i, tableName);
 
-    if (intPrimaryKey == 0 + 1) {
+    if (intPrimaryKeys[tableName] == 0 + 1) {
         return row[1];
     } else {
         return row[0];
@@ -521,6 +526,7 @@ sqlite3 *sqlite_file::getHandle() {
     return handle;
 }
 
-int sqlite_file::getPrimaryKey() {
-    return intPrimaryKey;
+int sqlite_file::getPrimaryKey(const std::string &table) {
+    return intPrimaryKeys[table];
 }
+

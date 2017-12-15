@@ -27,13 +27,13 @@ public:
 
     std::vector<std::string> listTables();
 
-    void createTable(std::string &string, std::vector<std::string> &vector);
+    void createTable(std::string &tableName, std::vector<std::string> &vector);
 
-    std::vector<std::string> listColumns(std::string table="");
+    std::vector<std::string> listColumns(std::string tableName="");
 
-    void addRow(std::vector<std::string> &vector);
+    void addRow(std::vector<std::string> &vector, std::string table="");
 
-    std::string current_table;
+    void setTable(std::string string);
 
     int rowCount(std::string string="");
 
@@ -41,7 +41,7 @@ public:
 
     std::string &getTable(std::string &table);
 
-    std::string readRowTitle(int i, std::string table="");
+    std::string readRowTitle(int i, std::string tableName="");
 
     void deleteRow(std::vector<std::string> vector, std::string table="");
 
@@ -53,13 +53,13 @@ public:
 
     std::vector<std::string> listSearchableColumns(std::string &table);
 
-    void setColumns(const std::vector<std::string> vector, const std::map<std::string,std::string> renames={}, std::string table="");
+    void setColumns(std::vector<std::string> vector, std::map<std::string,std::string> renames={}, std::string table="");
 
     std::string &getFilter();
 
     sqlite3 *getHandle();
 
-    int getPrimaryKey();
+    int getPrimaryKey(const std::string &table);
 
 private:
 
@@ -83,9 +83,10 @@ private:
     bool setColumnsCommitTransaction() const;
 
 private:
+    std::string current_table;
     sqlite3 *handle{};
     Esql_Connect_Type state = DATA_CONNECT_TYPE_NONE;
-    int intPrimaryKey = 0; //0 = not set, 1-n+1 for column indexing
+    std::map<std::string,int> intPrimaryKeys;
     std::string filter;
 };
 

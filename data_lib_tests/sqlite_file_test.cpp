@@ -170,7 +170,7 @@ TEST_CASE("sqlite table search next") {
     REQUIRE(savedTitle == "Subject2");
 }
 
-TEST_CASE("sqlite table column reorder") {
+TEST_CASE("sqlite table column") {
     sqlite_file db;
     db.newFile(":memory:");
 
@@ -182,60 +182,85 @@ TEST_CASE("sqlite table column reorder") {
     db.addRow(row);
     auto oldColumns = db.listColumns();
     auto newColumns = db.listColumns();
-    std::swap(newColumns[1], newColumns[2]);
-    std::swap(newColumns[0], newColumns[3]);
-    db.setColumns(newColumns);
-    int rows = db.rowCount();
-    REQUIRE(1 == rows);
+
+    SECTION("column reorder") {
+        std::swap(newColumns[1], newColumns[2]);
+        std::swap(newColumns[0], newColumns[3]);
+        db.setColumns(newColumns);
+        int rows = db.rowCount();
+        REQUIRE(1 == rows);
+        std::string savedTitle = db.readRowTitle(0);
+        REQUIRE(savedTitle == "Test URL");
+    }
+    SECTION("column add") {
+        newColumns.emplace_back("newColumn");
+        db.setColumns(newColumns);
+        int rows = db.rowCount();
+        REQUIRE(1 == rows);
+        auto savedColumns = db.listColumns();
+        REQUIRE(savedColumns[savedColumns.size()-1] == "newColumn");
+    }
+    SECTION("column rename") {
+        std::string fromColumn("notes");
+        std::string toColumn("comments");
+        std::replace(newColumns.begin(), newColumns.end(), fromColumn, toColumn);
+        std::map<std::string,std::string> renames;
+        renames.emplace(toColumn,fromColumn);
+        db.setColumns(newColumns, renames);
+        int rows = db.rowCount();
+        REQUIRE(1 == rows);
+        auto savedColumns = db.listColumns();
+        REQUIRE(savedColumns[savedColumns.size()-1] == "comments");
+        auto savedRow = db.readRow(0);
+        REQUIRE(savedRow[0] == "1");
+        REQUIRE(savedRow[1] == "Test Subject");
+        REQUIRE(savedRow[2] == "Test URL");
+        REQUIRE(savedRow[3] == "Test Notes");
+    }
+}
+
+TEST_CASE("multiple tables") {
+    sqlite_file db;
+    db.file(":memory:");
+
+    std::string table1Name;
+    std::vector<std::string> columns1;
+    createTableT1(db, columns1, table1Name);
+
+    std::string table2Name;
+    std::vector<std::string> columns2;
+    createTableT2(db, columns2, table2Name);
+
+    auto tables = db.listTables();
+    REQUIRE(tables.size() == 2);
+    REQUIRE(tables[0] == "t1");
+    REQUIRE(tables[1] == "t2");
+
+    //Default table
+    std::vector<std::string> row;
+    row.emplace_back("");
+    row.emplace_back("Test Subject");
+    row.emplace_back("12/3/45");
+    row.emplace_back("Test Notes");
+    db.addRow(row);
     std::string savedTitle = db.readRowTitle(0);
-    REQUIRE(savedTitle == "Test URL");
-}
+    REQUIRE(savedTitle == "Test Subject");
 
-TEST_CASE("sqlite table column add") {
-    sqlite_file db;
-    db.newFile(":memory:");
+    //Second table
+    std::vector<std::string> row2;
+    row2.emplace_back("Test Subject2");
+    row2.emplace_back("12/3/2005");
+    row2.emplace_back("");
+    row2.emplace_back("Test Notes2");
+    db.addRow(row2,"t2");
+    std::string savedTitle2 = db.readRowTitle(0,"t2");
+    REQUIRE(savedTitle2 == "Test Subject2");
 
-    std::vector<std::string> row;
-    row.emplace_back("");
-    row.emplace_back("Test Subject");
-    row.emplace_back("Test URL");
-    row.emplace_back("Test Notes");
-    db.addRow(row);
-    auto oldColumns = db.listColumns();
-    auto newColumns = db.listColumns();
-    newColumns.emplace_back("newColumn");
-    db.setColumns(newColumns);
-    int rows = db.rowCount();
-    REQUIRE(1 == rows);
-    auto savedColumns = db.listColumns();
-    REQUIRE(savedColumns[savedColumns.size()-1] == "newColumn");
-}
+    //Default table after switching
+    db.setTable("t2");
+    row2[0] = "Test Subject3";
+    db.addRow(row2);
+    std::string savedTitle3 = db.readRowTitle(1);
+    REQUIRE(savedTitle3 == "Test Subject3");
 
-TEST_CASE("sqlite table column rename") {
-    sqlite_file db;
-    db.newFile(":memory:");
-
-    std::vector<std::string> row;
-    row.emplace_back("");
-    row.emplace_back("Test Subject");
-    row.emplace_back("Test URL");
-    row.emplace_back("Test Notes");
-    db.addRow(row);
-    auto oldColumns = db.listColumns();
-    auto newColumns = db.listColumns();
-    std::string fromColumn("notes");
-    std::string toColumn("comments");
-    std::replace(newColumns.begin(), newColumns.end(), fromColumn, toColumn);
-    std::map<std::string,std::string> renames;
-    renames.emplace(toColumn,fromColumn);
-    db.setColumns(newColumns, renames);
-    int rows = db.rowCount();
-    REQUIRE(1 == rows);
-    auto savedColumns = db.listColumns();
-    REQUIRE(savedColumns[savedColumns.size()-1] == "comments");
-    auto savedRow = db.readRow(0);
-    REQUIRE(savedRow[0] == "1");
-    REQUIRE(savedRow[1] == "Test Subject");
-    REQUIRE(savedRow[2] == "Test URL");
-    REQUIRE(savedRow[3] == "Test Notes");
 }
