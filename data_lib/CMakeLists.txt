@@ -7,7 +7,7 @@ include_directories(
 
 link_directories (${PC_LIBELEMENTARY_LIBRARY_DIRS})
 
-add_library(data_lib sqlite_file.cpp)
+add_library(data_lib sqlite_file.cpp csv_file.cpp csv_file.h)
 
 target_include_directories (data_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -6,6 +6,7 @@
 #include <Elementary.h>
 #include <regex>
 #include <unordered_set>
+#include <csv_file.h>
 #include "data_ui.h"
 #include "data_label_preferences.h"
 #include "data_table_preferences.h"
@@ -105,6 +106,10 @@ void data_ui::handleKeyDown(void *event_info) {
             copy();
         } else if (!strcmp(ev->key, "v")) {
             paste();
+        } else if (!strcmp(ev->key, "i")) {
+            importCsv();
+        } else if (!strcmp(ev->key, "p")) {
+            exportCsv();
         }
     }
 
@@ -282,7 +287,7 @@ void data_ui::init() {
     menu.init(window);
 }
 
-void data_ui::setFile(std::string fileName) {
+void data_ui::setSqliteFile(std::string fileName) {
     db.file(fileName);
     db.setTable("");
 
@@ -397,24 +402,36 @@ static void file_open_exit_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.clearFocus();
 }
 
-static void file_open_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_open_sqlite_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     evas_object_del((Evas_Object *) data);
 
     if (event_info) {
         struct stat s;
         if (stat((const char *) event_info, &s) == 0) {
             if (s.st_mode & S_IFREG) {
-                ui.setFile((const char *) event_info);
+                ui.setSqliteFile((const char *) event_info);
             }
         }
     }
 }
 
-void data_ui::openFile() {
-    Evas_Object *win = elm_win_add(window, "settings", ELM_WIN_BASIC);
-    if (!win) return;
+static void file_open_csv_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+    evas_object_del((Evas_Object *) data);
 
-    elm_win_title_set(win, _("Open File"));
+    if (event_info) {
+        struct stat s;
+        if (stat((const char *) event_info, &s) == 0) {
+            if (s.st_mode & S_IFREG) {
+                ui.setCsvFile((const char *) event_info);
+                ui.newFile(true);
+            }
+        }
+    }
+}
+
+Evas_Object *data_ui::standardFileOpener(Evas_Object *win, const char *title, Evas_Smart_Cb okFunc) {
+
+    elm_win_title_set(win, title);
     elm_win_focus_highlight_enabled_set(win, EINA_TRUE);
     evas_object_smart_callback_add(win, "delete,request", file_open_exit_cb, win);
 
@@ -422,24 +439,112 @@ void data_ui::openFile() {
     evas_object_size_hint_weight_set(fs, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(fs, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_smart_callback_add(fs, "delete,request", file_open_exit_cb, win);
-    evas_object_smart_callback_add(fs, "done", file_open_ok_cb, win);
+    evas_object_smart_callback_add(fs, "done", okFunc, win);
     evas_object_show(fs);
 
     elm_fileselector_expandable_set(fs, EINA_TRUE);
     elm_fileselector_folder_only_set(fs, EINA_FALSE);
-#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
+#if ELM_VERSION_MAJOR >= 1 && ELM_VERSION_MINOR >= 20
     elm_fileselector_path_set(fs, eina_environment_home_get());
     elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
 #else
     elm_fileselector_path_set(fs, "/home");
 #endif
-    //http://fileformats.archiveteam.org/wiki/DB_(SQLite)
-    elm_fileselector_mime_types_filter_append(fs, "application/x-sqlite3", "");
+    return fs;
+}
 
+void data_ui::showFileOpener(Evas_Object *win, Evas_Object *fs) {
     elm_win_resize_object_add(win, fs);
     evas_object_resize(win, DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
     elm_win_center(win, EINA_TRUE, EINA_TRUE);
     evas_object_show(win);
+}
+
+void data_ui::openFile() {
+    Evas_Object *win = elm_win_add(window, "settings", ELM_WIN_BASIC);
+    if (!win) return;
+
+    Evas_Object *fs = standardFileOpener(win, _("Open File"), file_open_sqlite_ok_cb);
+
+    //http://fileformats.archiveteam.org/wiki/DB_(SQLite)
+    elm_fileselector_mime_types_filter_append(fs, "application/x-sqlite3", "");
+
+    showFileOpener(win, fs);
+}
+
+void data_ui::importCsv() {
+    Evas_Object *win = elm_win_add(window, "import", ELM_WIN_BASIC);
+    if (!win) return;
+
+    Evas_Object *fs = standardFileOpener(win, _("Import CSV File"), file_open_csv_ok_cb);
+
+    //http://fileformats.archiveteam.org/wiki/CSV
+    elm_fileselector_mime_types_filter_append(fs, "text/csv", "");
+    elm_fileselector_mime_types_filter_append(fs, "application/csv", "");
+    elm_fileselector_mime_types_filter_append(fs, "text/comma-separated-values", "");
+
+    showFileOpener(win, fs);
+}
+
+static void file_export_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.clearActivePopup();
+    ui.clearFocus();
+}
+
+static void file_export_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.clearActivePopup();
+    ui.exportFile();
+}
+
+static void file_export_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+    auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
+    EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+    if (!strcmp(ev->key, "Escape")) {
+        file_export_exit_cb(data, obj, event_info);
+    } else if (!strcmp(ev->key, "Return")) {
+        file_export_ok_cb(data, obj, event_info);
+    }
+#if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
+    std::string newFilePath = eina_environment_home_get();
+#else
+    std::string newFilePath = "/tmp";
+#endif
+    newFilePath += "/";
+    newFilePath += elm_object_text_get(obj);
+    std::regex fileType("(csv$)");
+    if (!std::regex_search(newFilePath, fileType)) {
+        newFilePath += ".csv";
+    }
+    ui.updateExportFileName(newFilePath);
+}
+
+void data_ui::exportCsv() {
+    Evas_Object *popup = elm_popup_add(window);
+    elm_object_part_text_set(popup, "title,text", _("Export CSV to File"));
+
+    Evas_Object *input = elm_entry_add(popup);
+    elm_entry_single_line_set(input, EINA_TRUE);
+    elm_entry_editable_set(input, EINA_TRUE);
+    elm_entry_scrollable_set(input, EINA_TRUE);
+    evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, file_export_key_up_cb, NULL);
+    evas_object_show(input);
+    elm_object_content_set(popup, input);
+
+    Evas_Object *button = elm_button_add(popup);
+    elm_object_text_set(button, _("Cancel"));
+    elm_object_focus_allow_set(button, EINA_FALSE);
+    elm_object_part_content_set(popup, "button1", button);
+    evas_object_smart_callback_add(button, "clicked", file_export_exit_cb, popup);
+
+    button = elm_button_add(popup);
+    elm_object_text_set(button, _("OK"));
+    elm_object_focus_allow_set(button, EINA_FALSE);
+    elm_object_part_content_set(popup, "button2", button);
+    evas_object_smart_callback_add(button, "clicked", file_export_ok_cb, popup);
+
+    showPopup(popup, input);
 }
 
 static void file_new_exit_cb(void *data, Evas_Object *obj, void *event_info) {
@@ -452,13 +557,24 @@ static void file_new_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.setNewFile();
 }
 
+static void file_import_new_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.clearActivePopup();
+    ui.setNewFile();
+    ui.importCsvFile();
+}
+
 static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
     if (!strcmp(ev->key, "Escape")) {
         file_new_exit_cb(data, obj, event_info);
     } else if (!strcmp(ev->key, "Return")) {
-        file_new_ok_cb(data, obj, event_info);
+        bool forImport = (bool)(uintptr_t) data;
+        if (forImport) {
+            file_import_new_ok_cb(data, obj, event_info);
+        } else {
+            file_new_ok_cb(data, obj, event_info);
+        }
     }
 #if ELM_VERSION_MAJOR>=1 && ELM_VERSION_MINOR>=20
     std::string newFilePath = eina_environment_home_get();
@@ -474,9 +590,13 @@ static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *even
     ui.updateNewFileName(newFilePath);
 }
 
-void data_ui::newFile() {
+void data_ui::newFile(bool forImport) {
     Evas_Object *popup = elm_popup_add(window);
-    elm_object_part_text_set(popup, "title,text", _("New File"));
+    if (forImport) {
+        elm_object_part_text_set(popup, "title,text", _("Import to New File"));
+    } else {
+        elm_object_part_text_set(popup, "title,text", _("New File"));
+    }
 
     Evas_Object *input = elm_entry_add(popup);
     elm_entry_single_line_set(input, EINA_TRUE);
@@ -484,7 +604,7 @@ void data_ui::newFile() {
     elm_entry_scrollable_set(input, EINA_TRUE);
     evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, file_new_key_up_cb, NULL);
+    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, file_new_key_up_cb, (void *) (uintptr_t) forImport);
     evas_object_show(input);
     elm_object_content_set(popup, input);
 
@@ -498,7 +618,11 @@ void data_ui::newFile() {
     elm_object_text_set(button, _("OK"));
     elm_object_focus_allow_set(button, EINA_FALSE);
     elm_object_part_content_set(popup, "button2", button);
-    evas_object_smart_callback_add(button, "clicked", file_new_ok_cb, popup);
+    if (forImport) {
+        evas_object_smart_callback_add(button, "clicked", file_import_new_ok_cb, popup);
+    } else {
+        evas_object_smart_callback_add(button, "clicked", file_new_ok_cb, popup);
+    }
 
     showPopup(popup, input);
 }
@@ -957,9 +1081,8 @@ void data_ui::cursorUp(Eina_Bool shift) {
         if (editorSelectionActive) {
             editorSelectionEndIn = currentEditorWithCursorIndex;
         }
-
+        updateArrowGeometry();
     }
-    //Update Arrow UI element?
     updateEditorSelection();
 }
 
@@ -1056,9 +1179,25 @@ void data_ui::cursorDown(Eina_Bool shift) {
         if (editorSelectionActive) {
             editorSelectionEndIn = currentEditorWithCursorIndex;
         }
+        updateArrowGeometry();
     }
-    //Update Arrow UI element?
     updateEditorSelection();
+}
+
+void data_ui::updateArrowGeometry() {
+    auto editor = currentEditors[currentEditorWithCursorIndex];
+    int cx,cy,cw,ch;
+    if (elm_entry_cursor_geometry_get(editor, &cx, &cy, &cw, &ch)) {
+        auto arrowImage = currentArrows[currentEditorWithCursorIndex];
+        Evas_Coord ax,ay,aw,ah;
+        evas_object_geometry_get(arrowImage, &ax, &ay, &aw, &ah);
+        Evas_Coord ex,ey,ew,eh;
+        evas_object_geometry_get(editor, &ex, &ey, &ew, &eh);
+//        EINA_LOG_ERR("cx: %d, cy: %d, cw: %d, ch: %d",cx,cy,cw,cy);
+//        EINA_LOG_ERR("ex: %d, ey: %d, ew: %d, eh: %d",ex,ey,ew,ey);
+//        EINA_LOG_ERR("ax: %d, ay: %d, aw: %d, ah: %d",ax,ay,aw,ay);
+        evas_object_geometry_set(arrowImage, ax, ey+cy, aw, ah);
+    }
 }
 
 void data_ui::cursorLeft(Eina_Bool shift) {
@@ -1083,4 +1222,21 @@ void data_ui::cursorRight(Eina_Bool shift) {
 
 data_table_preferences& data_ui::getTablePref() {
     return table_preferences;
+}
+
+void data_ui::exportFile() {
+    csv_file::exportCsv(db, exportFileName);
+}
+
+void data_ui::updateExportFileName(std::string fileName) {
+    exportFileName = fileName;
+}
+
+void data_ui::importCsvFile() {
+    csv_file::importCsv(db, importFileName);
+    repopulateUI();
+}
+
+void data_ui::setCsvFile(std::string fileName) {
+    importFileName = fileName;
 }

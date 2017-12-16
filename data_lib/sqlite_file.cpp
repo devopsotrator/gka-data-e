@@ -24,7 +24,7 @@ void sqlite_file::file(std::string fileName) {
     }
 }
 
-void sqlite_file::newFile(std::string fileName) {
+void sqlite_file::newFile(std::string fileName, bool ignoreEmpty) {
     int rc = sqlite3_open_v2(fileName.c_str(), &handle, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
     if (rc != SQLITE_OK) {
         EINA_LOG_ERR("Could not open %s: %s", fileName.c_str(), sqlite3_errcode(handle));
@@ -32,7 +32,7 @@ void sqlite_file::newFile(std::string fileName) {
         state = DATA_CONNECT_TYPE_INIT;
     }
 
-    if (listTables().empty()) {
+    if (listTables().empty() && !ignoreEmpty) {
         char *sqliteErrMsg = nullptr;
         std::string sql = "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, title TEXT, url TEXT, notes TEXT);";
         rc = sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
@@ -71,6 +71,7 @@ void sqlite_file::createTable(std::string &tableName, std::vector<std::string> &
         sql += field;
     }
     sql += ");";
+//    EINA_LOG_ERR("SQL:%s", sql.c_str());
     int rc=sqlite3_exec(handle, sql.c_str(), nullptr, nullptr, &sqliteErrMsg);
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s\n%s", rc, sqlite3_errmsg(handle),sqliteErrMsg);
@@ -131,6 +132,7 @@ void sqlite_file::addRow(std::vector<std::string> &vector, std::string table) {
         sql += "?"+std::to_string(i);
     }
     sql += ");";
+//    EINA_LOG_ERR("SQL:%s", sql.c_str());
 
     sqlite3_stmt* ppStmt = nullptr;
     const char* pzTail = nullptr;

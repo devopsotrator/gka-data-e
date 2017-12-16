@@ -45,7 +45,7 @@ public:
 
     void deleteRow(std::vector<std::string> vector, std::string table="");
 
-    void newFile(std::string fileName);
+    void newFile(std::string fileName, bool ignoreEmpty=false);
 
     void setFilter(const std::string &string);
 

@@ -44,7 +44,7 @@ public:
 
     void init();
 
-    void setFile(std::string fileName);
+    void setSqliteFile(std::string fileName);
 
     data_table_preferences& getTablePref();
 
@@ -58,7 +58,7 @@ public:
 
     void openFile();
 
-    void newFile();
+    void newFile(bool forImport=false);
 
     void updateNewFileName(std::string fileName);
 
@@ -146,6 +146,18 @@ public:
 
     void tablePreferences();
 
+    void importCsv();
+
+    void exportFile();
+
+    void updateExportFileName(std::string fileName);
+
+    void exportCsv();
+
+    void importCsvFile();
+
+    void setCsvFile(std::string fileName);
+
 private:
     void cursorUp(Eina_Bool i);
 
@@ -156,6 +168,12 @@ private:
     void cursorRight(Eina_Bool shift);
 
     void updateEditorSelection();
+
+    Evas_Object *standardFileOpener(Evas_Object *win, const char *title, Evas_Smart_Cb okFunc);
+
+    void showFileOpener(Evas_Object *win, Evas_Object *fs);
+
+    void updateArrowGeometry();
 
 private:
     sqlite_file &db;
@@ -184,6 +202,9 @@ private:
     unsigned long editorSelectionEndAt;
     bool editorSelectionActive;
     data_table_preferences table_preferences;
+    std::string exportFileName;
+    std::string importFileName;
+
 };
 
 extern data_ui ui;

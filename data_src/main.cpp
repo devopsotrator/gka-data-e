@@ -64,7 +64,7 @@ elm_main(int argc, char **argv)
     if (filename.empty()) {
         ui.setNewFile();
     } else {
-        ui.setFile(filename);
+        ui.setSqliteFile(filename);
     }
 
     elm_run();

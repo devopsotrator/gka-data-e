@@ -9,8 +9,16 @@ static void menu_new_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, vo
     ui.newFile();
 }
 
-static void menu_open_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
+static void menu_open_sqlite_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.openFile();
+}
+
+static void menu_import_csv_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
+    ui.importCsv();
+}
+
+static void menu_export_csv_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
+    ui.exportCsv();
 }
 
 static void menu_close_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
@@ -65,7 +73,10 @@ void data_menu::init(Evas_Object *window) {
 
     menu_it = elm_menu_item_add(menu, NULL, NULL, _("File"), NULL, NULL);
     elm_menu_item_add(menu, menu_it, "document-new", _("Create new file... (ctrl-n)"), menu_new_cb, NULL);
-    elm_menu_item_add(menu, menu_it, "document-open", _("Open file... (ctrl-o)"), menu_open_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "document-open", _("Open file... (ctrl-o)"), menu_open_sqlite_cb, NULL);
+    elm_menu_item_separator_add(menu, menu_it);
+    elm_menu_item_add(menu, menu_it, "document-import", _("Import CSV file... (ctrl-i)"), menu_import_csv_cb, NULL);
+    elm_menu_item_add(menu, menu_it, "document-export", _("Export CSV file... (ctrl-p)"), menu_export_csv_cb, NULL);
     elm_menu_item_separator_add(menu, menu_it);
     elm_menu_item_add(menu, menu_it, "application-exit", _("Close (ctrl-q)"), menu_close_cb, NULL);
 
