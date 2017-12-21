@@ -12,7 +12,7 @@ class data_menu {
 
 public:
     void init(Evas_Object *);
-    void updateMenuStates(Eina_Bool itemAvailable = EINA_FALSE);
+    void updateMenuStates(int itemAvailable = 0);
 
 private:
     Elm_Object_Item *menuCut;

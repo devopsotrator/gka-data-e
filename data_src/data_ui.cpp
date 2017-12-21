@@ -6,6 +6,7 @@
 #include <Elementary.h>
 #include <regex>
 #include <unordered_set>
+#include <utility>
 #include <csv_file.h>
 #include "data_ui.h"
 #include "data_label_preferences.h"
@@ -39,6 +40,15 @@ static void previous_button_cb(void *data, Evas_Object *obj, void *event_info) {
 
 static void next_button_cb(void *data, Evas_Object *obj, void *event_info) {
     ui.nextButton();
+}
+
+static void scroller_scroll_cb(void *data, Evas_Object *obj, void *event_info) {
+    ui.scrollerScrolled();
+}
+
+static void edit_entry_clicked_cb(void *data, Evas_Object *obj, void *event_info) {
+    auto i = (int) (uintptr_t) data;
+    ui.entryClicked(i);
 }
 
 static void window_cb_key_down(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info) {
@@ -176,9 +186,9 @@ void data_ui::init() {
     right_list_itc = elm_genlist_item_class_new();
     right_list_itc->item_style = "default";
     right_list_itc->func.text_get = right_list_text_get_cb;
-    right_list_itc->func.content_get = NULL;
-    right_list_itc->func.state_get = NULL;
-    right_list_itc->func.del = NULL;
+    right_list_itc->func.content_get = nullptr;
+    right_list_itc->func.state_get = nullptr;
+    right_list_itc->func.del = nullptr;
 
     Evas_Object *panes;
 
@@ -211,6 +221,7 @@ void data_ui::init() {
     elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_AUTO);
     evas_object_show(scroller);
     elm_box_pack_end(leftBox, scroller);
+    evas_object_smart_callback_add(scroller, "scroll", scroller_scroll_cb, nullptr);
 
     // Create fields table
     fieldsTable = elm_table_add(window);
@@ -254,7 +265,7 @@ void data_ui::init() {
     evas_object_size_hint_align_set(prevButton, 1, 1);
     elm_box_pack_end(searchBox, prevButton);
     evas_object_show(prevButton);
-    evas_object_smart_callback_add(prevButton, "clicked", previous_button_cb, NULL);
+    evas_object_smart_callback_add(prevButton, "clicked", previous_button_cb, nullptr);
 
     Evas_Object *nextButton = elm_button_add(window);
     elm_object_text_set(nextButton, _("Next"));
@@ -262,7 +273,7 @@ void data_ui::init() {
     evas_object_size_hint_align_set(nextButton, 1, 1);
     elm_box_pack_end(searchBox, nextButton);
     evas_object_show(nextButton);
-    evas_object_smart_callback_add(nextButton, "clicked", next_button_cb, NULL);
+    evas_object_smart_callback_add(nextButton, "clicked", next_button_cb, nullptr);
 
     elm_box_pack_end(leftBox, searchBox);
 
@@ -340,7 +351,8 @@ void data_ui::repopulateFieldsTable() {
         elm_image_file_set(arrowImage, arrowPath.c_str(), nullptr);
         evas_object_size_hint_align_set(arrowImage, 1, 0);
         evas_object_size_hint_padding_set(arrowImage, 0, 0, 5, 5);
-        evas_object_size_hint_min_set(arrowImage, 10 * elm_config_scale_get(), 10 * elm_config_scale_get());
+        evas_object_size_hint_min_set(arrowImage, static_cast<Evas_Coord>(10 * elm_config_scale_get()),
+                                      static_cast<Evas_Coord>(10 * elm_config_scale_get()));
         if (i == currentEditorWithCursorIndex) {
             evas_object_show(arrowImage);
         } else {
@@ -362,8 +374,7 @@ void data_ui::repopulateFieldsTable() {
             elm_object_focus_allow_set(field_value, EINA_FALSE);
             evas_object_show(field_value);
             elm_table_pack(fieldsTable, field_value, 2, i, 1, 1);
-
-//            evas_object_smart_callback_add(field_value, "cursor,changed", edit_entry_ok_cb, popup);
+            evas_object_smart_callback_add(field_value, "clicked", edit_entry_clicked_cb, (void *) (uintptr_t) i);
 
             currentEditors.push_back(field_value);
         }
@@ -377,10 +388,10 @@ void data_ui::repopulateRightList(int selected) const {
     for (int i = 0; i < db.rowCount(); i++) {
         auto item = elm_genlist_item_append(rightList,
                                 right_list_itc,
-                                (void *) (uintptr_t) i,   // Item data
-                                NULL,                    // Parent item for trees, NULL if none
+                                (void *) (uintptr_t) i,  // Item data
+                                nullptr,                 // Parent item for trees, NULL if none
                                 ELM_GENLIST_ITEM_NONE,   // Item type; this is the common one
-                                row_selected_cb,        // Callback on selection of the item
+                                row_selected_cb,         // Callback on selection of the item
                                 (void *) (uintptr_t) (i + 1)    // Data for that callback function
         );
         if (i==selected) {
@@ -406,7 +417,7 @@ static void file_open_sqlite_ok_cb(void *data, Evas_Object *obj, void *event_inf
     evas_object_del((Evas_Object *) data);
 
     if (event_info) {
-        struct stat s;
+        struct stat s{};
         if (stat((const char *) event_info, &s) == 0) {
             if (s.st_mode & S_IFREG) {
                 ui.setSqliteFile((const char *) event_info);
@@ -419,7 +430,7 @@ static void file_open_csv_ok_cb(void *data, Evas_Object *obj, void *event_info) 
     evas_object_del((Evas_Object *) data);
 
     if (event_info) {
-        struct stat s;
+        struct stat s{};
         if (stat((const char *) event_info, &s) == 0) {
             if (s.st_mode & S_IFREG) {
                 ui.setCsvFile((const char *) event_info);
@@ -528,7 +539,7 @@ void data_ui::exportCsv() {
     elm_entry_scrollable_set(input, EINA_TRUE);
     evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, file_export_key_up_cb, NULL);
+    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, file_export_key_up_cb, nullptr);
     evas_object_show(input);
     elm_object_content_set(popup, input);
 
@@ -775,7 +786,7 @@ void data_ui::deleteEntry() {
 }
 
 void data_ui::updateCurrentRowValue(int currentRow, std::string value) {
-    dataEditRecord.updateCurrentRowValue(currentRow, value);
+    dataEditRecord.updateCurrentRowValue(currentRow, std::move(value));
 }
 
 void data_ui::saveCurrentRow() {
@@ -806,7 +817,7 @@ void data_ui::prevButton() {
 
     std::string toFind = filter;
     std::transform(toFind.begin(), toFind.end(), toFind.begin(), ::tolower);
-    unsigned long currentEditor = editorSelectionBeganIn;
+    int currentEditor = editorSelectionBeganIn;
     bool stringFound = false;
     do {
         do {
@@ -815,15 +826,15 @@ void data_ui::prevButton() {
             std::string text = utf8text;
             free(utf8text);
             std::transform(text.begin(), text.end(), text.begin(), ::tolower);
-            unsigned long startAt = text.length();
+            auto startAt = static_cast<int>(text.length());
             if (currentEditor == editorSelectionBeganIn) {
                 startAt = editorSelectionBeganAt - 1;
             }
-            auto pos = text.rfind(toFind, startAt);
+            auto pos = static_cast<int>(text.rfind(toFind, static_cast<unsigned long>(startAt)));
             if (pos != std::string::npos) {
                 editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
                 editorSelectionBeganAt = pos;
-                editorSelectionEndAt = pos + strlen(filter);
+                editorSelectionEndAt = static_cast<int>(pos + strlen(filter));
                 stringFound = true;
             } else {
                 currentEditor--;
@@ -831,13 +842,14 @@ void data_ui::prevButton() {
         } while (!stringFound && (currentEditor < currentEditors.size()));
         if (!stringFound) {
             if (prevItem()) {
-                currentEditor = currentEditors.size() - 1;
+                currentEditor = static_cast<int>(currentEditors.size() - 1);
                 editorSelectionEndIn = 0;
                 editorSelectionEndAt = 0;
             }
         }
     } while (!stringFound && (currentEditor < currentEditors.size()));
     updateEditorSelection();
+    updateFoundItemDisplay(stringFound, currentEditor);
 }
 
 void data_ui::nextButton() {
@@ -850,7 +862,7 @@ void data_ui::nextButton() {
 
     std::string toFind = filter;
     std::transform(toFind.begin(), toFind.end(), toFind.begin(), ::tolower);
-    unsigned long currentEditor = editorSelectionEndIn;
+    int currentEditor = editorSelectionEndIn;
     bool stringFound = false;
     do {
         do {
@@ -859,15 +871,15 @@ void data_ui::nextButton() {
             std::string text = utf8text;
             free(utf8text);
             std::transform(text.begin(), text.end(), text.begin(), ::tolower);
-            unsigned long startAt = 0;
+            int startAt = 0;
             if (currentEditor == editorSelectionEndIn) {
                 startAt = editorSelectionEndAt;
             }
-            auto pos = text.find(toFind, startAt);
+            auto pos = static_cast<int>(text.find(toFind, static_cast<unsigned long>(startAt)));
             if (pos != std::string::npos) {
                 editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
                 editorSelectionBeganAt = pos;
-                editorSelectionEndAt = pos + strlen(filter);
+                editorSelectionEndAt = static_cast<int>(pos + strlen(filter));
                 stringFound = true;
             } else {
                 currentEditor++;
@@ -882,6 +894,7 @@ void data_ui::nextButton() {
         }
     } while (!stringFound && (currentEditor < currentEditors.size()));
     updateEditorSelection();
+    updateFoundItemDisplay(stringFound, currentEditor);
 }
 
 void data_ui::repopulateUI() {
@@ -1047,22 +1060,18 @@ void data_ui::cursorUp(Eina_Bool shift) {
                 editorSelectionEndAt = -1;
             }
         } else {
-            if (editorSelectionActive) {
+//            if (editorSelectionActive) {
                 editorSelectionActive = false;
                 editorSelectionBeganIn = -1;
                 editorSelectionBeganAt = -1;
                 editorSelectionEndIn = -1;
                 editorSelectionEndAt = -1;
-            }
+//            }
         }
         elm_entry_cursor_up(editor);
         auto newPos = elm_entry_cursor_pos_get(editor);
         if (newPos == oldPos && currentEditorWithCursorIndex > 0) {
-            auto arrowImage = currentArrows[currentEditorWithCursorIndex];
-            evas_object_hide(arrowImage);
-            currentEditorWithCursorIndex--;
-            arrowImage = currentArrows[currentEditorWithCursorIndex];
-            evas_object_show(arrowImage);
+            updateCurrentEditorAndArrowVisibilityForIndex(currentEditorWithCursorIndex-1);
             if (editorSelectionActive) {
                 elm_entry_cursor_end_set(editor);
                 elm_entry_cursor_line_begin_set(editor);
@@ -1081,9 +1090,11 @@ void data_ui::cursorUp(Eina_Bool shift) {
         if (editorSelectionActive) {
             editorSelectionEndIn = currentEditorWithCursorIndex;
         }
+        updateScrollPositions();
         updateArrowGeometry();
     }
     updateEditorSelection();
+
 }
 
 void data_ui::updateEditorSelection() {
@@ -1146,22 +1157,18 @@ void data_ui::cursorDown(Eina_Bool shift) {
                 editorSelectionEndAt = -1;
             }
         } else {
-            if (editorSelectionActive) {
+//            if (editorSelectionActive) {
                 editorSelectionActive = false;
                 editorSelectionBeganIn = -1;
                 editorSelectionBeganAt = -1;
                 editorSelectionEndIn = -1;
                 editorSelectionEndAt = -1;
-            }
+//            }
         }
         elm_entry_cursor_down(editor);
         auto newPos = elm_entry_cursor_pos_get(editor);
         if (newPos == oldPos && currentEditorWithCursorIndex < currentEditors.size()-1) {
-            auto arrowImage = currentArrows[currentEditorWithCursorIndex];
-            evas_object_hide(arrowImage);
-            currentEditorWithCursorIndex++;
-            arrowImage = currentArrows[currentEditorWithCursorIndex];
-            evas_object_show(arrowImage);
+            updateCurrentEditorAndArrowVisibilityForIndex(currentEditorWithCursorIndex+1);
             if (editorSelectionActive) {
                 editorSelectionEndAt = 0;
             }
@@ -1179,6 +1186,7 @@ void data_ui::cursorDown(Eina_Bool shift) {
         if (editorSelectionActive) {
             editorSelectionEndIn = currentEditorWithCursorIndex;
         }
+        updateScrollPositions();
         updateArrowGeometry();
     }
     updateEditorSelection();
@@ -1189,14 +1197,16 @@ void data_ui::updateArrowGeometry() {
     int cx,cy,cw,ch;
     if (elm_entry_cursor_geometry_get(editor, &cx, &cy, &cw, &ch)) {
         auto arrowImage = currentArrows[currentEditorWithCursorIndex];
-        Evas_Coord ax,ay,aw,ah;
-        evas_object_geometry_get(arrowImage, &ax, &ay, &aw, &ah);
+//        Evas_Coord ax,ay,aw,ah;
+//        evas_object_geometry_get(arrowImage, &ax, &ay, &aw, &ah);
         Evas_Coord ex,ey,ew,eh;
         evas_object_geometry_get(editor, &ex, &ey, &ew, &eh);
 //        EINA_LOG_ERR("cx: %d, cy: %d, cw: %d, ch: %d",cx,cy,cw,cy);
 //        EINA_LOG_ERR("ex: %d, ey: %d, ew: %d, eh: %d",ex,ey,ew,ey);
 //        EINA_LOG_ERR("ax: %d, ay: %d, aw: %d, ah: %d",ax,ay,aw,ay);
-        evas_object_geometry_set(arrowImage, ax, ey+cy, aw, ah);
+//        evas_object_geometry_set(arrowImage, ax, ey+cy, aw, ah);
+
+        evas_object_size_hint_padding_set(arrowImage, 0, 0, cy, 5);
     }
 }
 
@@ -1229,7 +1239,7 @@ void data_ui::exportFile() {
 }
 
 void data_ui::updateExportFileName(std::string fileName) {
-    exportFileName = fileName;
+    exportFileName = std::move(fileName);
 }
 
 void data_ui::importCsvFile() {
@@ -1238,5 +1248,78 @@ void data_ui::importCsvFile() {
 }
 
 void data_ui::setCsvFile(std::string fileName) {
-    importFileName = fileName;
+    importFileName = std::move(fileName);
+}
+
+static Eina_Bool delayed_retry_scroll_pos(void *data) {
+    ui.updateScrollPositions();
+    return ECORE_CALLBACK_CANCEL;
+}
+
+void data_ui::updateScrollPositions() {
+    Evas_Coord scw, sch;
+    elm_scroller_child_size_get(scroller, &scw, &sch);
+    Evas_Coord sx,sy,sw,sh;
+    elm_scroller_region_get(scroller, &sx, &sy, &sw, &sh);
+    auto editor = currentEditors[currentEditorWithCursorIndex];
+    int cx,cy,cw,ch;
+    if (elm_entry_cursor_geometry_get(editor, &cx, &cy, &cw, &ch)) {
+        Evas_Coord ex,ey,ew,eh;
+        evas_object_geometry_get(editor, &ex, &ey, &ew, &eh);
+//        EINA_LOG_ERR("cx: %d, cy: %d, cw: %d, ch: %d",cx,cy,cw,cy);
+//        EINA_LOG_ERR("ex: %d, ey: %d, ew: %d, eh: %d",ex,ey,ew,ey);
+//        EINA_LOG_ERR("sx: %d, sy: %d, sw: %d, sh: %d, scw: %d, sch: %d",sx,sy,sw,sh,scw,sch);
+
+        if (ex == 0 && ey == 0 && ew == 0 && eh == 0) {
+            ecore_timer_add(0.3, delayed_retry_scroll_pos, nullptr);
+            return;
+        }
+
+        Evas_Coord newSyDown = (ey+cy+sy) - 6;
+        Evas_Coord newSyUp = (ey+cy+sy) - (sh*.9);
+        if (((ey+cy+sy) > (sh*.9)) && (newSyUp > sy)) {
+            sy = newSyUp;
+        }
+        if (newSyDown < (sy)) {
+            sy = newSyDown;
+        }
+//        EINA_LOG_ERR("sy: %d, syU: %d, syD: %d", sy, newSyUp, newSyDown);
+        elm_scroller_region_show(scroller, sx, sy, sw, sh);
+    }
+}
+
+void data_ui::scrollerScrolled() {
+    updateArrowGeometry();
+}
+
+void data_ui::entryClicked(int i) {
+//    EINA_LOG_ERR("i: %d", i);
+    editorSelectionActive = false;
+    editorSelectionBeganIn = -1;
+    editorSelectionBeganAt = -1;
+    editorSelectionEndIn = -1;
+    editorSelectionEndAt = -1;
+
+    updateCurrentEditorAndArrowVisibilityForIndex(i);
+    updateScrollPositions();
+    updateArrowGeometry();
+    updateEditorSelection();
+}
+
+void data_ui::updateCurrentEditorAndArrowVisibilityForIndex(int index) {
+    auto arrowImage = currentArrows[currentEditorWithCursorIndex];
+    evas_object_hide(arrowImage);
+    currentEditorWithCursorIndex = index;
+    arrowImage = currentArrows[currentEditorWithCursorIndex];
+    evas_object_show(arrowImage);
+}
+
+void data_ui::updateFoundItemDisplay(bool found, int editorIndex) {
+    if (found) {
+        updateCurrentEditorAndArrowVisibilityForIndex(editorIndex);
+        auto editor = currentEditors[currentEditorWithCursorIndex];
+        elm_entry_cursor_pos_set(editor,editorSelectionBeganAt);
+        updateScrollPositions();
+        updateArrowGeometry();
+    }
 }

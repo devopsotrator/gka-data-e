@@ -98,10 +98,9 @@ void data_menu::init(Evas_Object *window) {
     elm_menu_item_add(menu, menu_it, "", _("Table preferences... (ctrl-t)"), menu_table_preferences_cb, NULL);
 }
 
-void data_menu::updateMenuStates(Eina_Bool itemAvailable) {
+void data_menu::updateMenuStates(int itemAvailable) {
     elm_object_item_disabled_set(menuCut, EINA_TRUE);
-    elm_object_item_disabled_set(menuCopy, !itemAvailable);
-    elm_object_item_disabled_set(menuDelete, !itemAvailable);
-
+    elm_object_item_disabled_set(menuCopy, static_cast<Eina_Bool>(itemAvailable == 0));
+    elm_object_item_disabled_set(menuDelete, static_cast<Eina_Bool>(itemAvailable == 0));
 }
 

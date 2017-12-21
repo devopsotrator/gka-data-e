@@ -158,6 +158,12 @@ public:
 
     void setCsvFile(std::string fileName);
 
+    void scrollerScrolled();
+
+    void entryClicked(int i);
+
+    void updateScrollPositions();
+
 private:
     void cursorUp(Eina_Bool i);
 
@@ -174,6 +180,10 @@ private:
     void showFileOpener(Evas_Object *win, Evas_Object *fs);
 
     void updateArrowGeometry();
+
+    void updateFoundItemDisplay(bool found, int editorIndex);
+
+    void updateCurrentEditorAndArrowVisibilityForIndex(int index);
 
 private:
     sqlite_file &db;
@@ -196,10 +206,10 @@ private:
     std::vector<Evas_Object*> currentEditors;
     int currentEditorWithCursorIndex;
     std::vector<Evas_Object*> currentArrows;
-    unsigned long editorSelectionBeganIn;
-    unsigned long editorSelectionBeganAt;
-    unsigned long editorSelectionEndIn;
-    unsigned long editorSelectionEndAt;
+    int editorSelectionBeganIn;
+    int editorSelectionBeganAt;
+    int editorSelectionEndIn;
+    int editorSelectionEndAt;
     bool editorSelectionActive;
     data_table_preferences table_preferences;
     std::string exportFileName;
