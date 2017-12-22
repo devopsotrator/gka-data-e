@@ -87,6 +87,15 @@ void data_ui::handleKeyDown(void *event_info) {
 
 //    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
+    if (!strcmp(ev->key, "Alt_L")) {
+        menu.flipMenuActive();
+    }
+
+    if (menu.isMenuActive()) {
+        menu.handleKeyDown(ev);
+        return;
+    }
+
     if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
             addRow();
@@ -1060,13 +1069,11 @@ void data_ui::cursorUp(Eina_Bool shift) {
                 editorSelectionEndAt = -1;
             }
         } else {
-//            if (editorSelectionActive) {
-                editorSelectionActive = false;
-                editorSelectionBeganIn = -1;
-                editorSelectionBeganAt = -1;
-                editorSelectionEndIn = -1;
-                editorSelectionEndAt = -1;
-//            }
+            editorSelectionActive = false;
+            editorSelectionBeganIn = -1;
+            editorSelectionBeganAt = -1;
+            editorSelectionEndIn = -1;
+            editorSelectionEndAt = -1;
         }
         elm_entry_cursor_up(editor);
         auto newPos = elm_entry_cursor_pos_get(editor);
@@ -1157,13 +1164,11 @@ void data_ui::cursorDown(Eina_Bool shift) {
                 editorSelectionEndAt = -1;
             }
         } else {
-//            if (editorSelectionActive) {
-                editorSelectionActive = false;
-                editorSelectionBeganIn = -1;
-                editorSelectionBeganAt = -1;
-                editorSelectionEndIn = -1;
-                editorSelectionEndAt = -1;
-//            }
+            editorSelectionActive = false;
+            editorSelectionBeganIn = -1;
+            editorSelectionBeganAt = -1;
+            editorSelectionEndIn = -1;
+            editorSelectionEndAt = -1;
         }
         elm_entry_cursor_down(editor);
         auto newPos = elm_entry_cursor_pos_get(editor);
@@ -1322,4 +1327,8 @@ void data_ui::updateFoundItemDisplay(bool found, int editorIndex) {
         updateScrollPositions();
         updateArrowGeometry();
     }
+}
+
+data_menu data_ui::getMenu() {
+    menu;
 }

@@ -164,6 +164,8 @@ public:
 
     void updateScrollPositions();
 
+    data_menu getMenu();
+
 private:
     void cursorUp(Eina_Bool i);
 
@@ -214,7 +216,6 @@ private:
     data_table_preferences table_preferences;
     std::string exportFileName;
     std::string importFileName;
-
 };
 
 extern data_ui ui;
