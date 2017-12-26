@@ -369,6 +369,8 @@ void data_menu::cursorLeft() {
     Elm_Object_Item *prev = elm_menu_item_prev_get(elm_menu_selected_item_get(menu));
 //    EINA_LOG_ERR("prevSet %x",prev);
     elm_menu_item_selected_set(prev, EINA_TRUE);
+    Evas_Object *cO = elm_menu_item_object_get(prev);
+    elm_layout_signal_emit(cO,"elm,action,open", "");
 }
 
 void data_menu::cursorRight() {
@@ -376,6 +378,8 @@ void data_menu::cursorRight() {
     Elm_Object_Item *next = elm_menu_item_next_get(elm_menu_selected_item_get(menu));
 //    EINA_LOG_ERR("nextSet %x",next);
     elm_menu_item_selected_set(next, EINA_TRUE);
+    Evas_Object *cO = elm_menu_item_object_get(next);
+    elm_layout_signal_emit(cO,"elm,action,open", "");
 }
 
 void data_menu::menuDismissed() {
