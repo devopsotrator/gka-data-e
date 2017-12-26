@@ -103,6 +103,7 @@ void data_menu::init(Evas_Object *window) {
 void data_menu::updateMenuStates(int itemAvailable) {
     elm_object_item_disabled_set(menuEditCut, EINA_TRUE);
     elm_object_item_disabled_set(menuEditCopy, static_cast<Eina_Bool>(itemAvailable == 0));
+    elm_object_item_disabled_set(menuEditEntry, static_cast<Eina_Bool>(itemAvailable == 0));
     elm_object_item_disabled_set(menuEditDelete, static_cast<Eina_Bool>(itemAvailable == 0));
 }
 
