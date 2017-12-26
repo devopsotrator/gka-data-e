@@ -38,30 +38,30 @@ private:
 
     Elm_Object_Item *menuFile;
     Elm_Object_Item *menuFileNew;
-    Elm_Widget_Item *menuFileOpen;
-    Elm_Widget_Item *menuFileImport;
-    Elm_Widget_Item *menuFileExport;
-    Elm_Widget_Item *menuFileClose;
+    Elm_Object_Item *menuFileOpen;
+    Elm_Object_Item *menuFileImport;
+    Elm_Object_Item *menuFileExport;
+    Elm_Object_Item *menuFileClose;
 
     Elm_Object_Item *menuEdit;
     Elm_Object_Item *menuEditCut;
     Elm_Object_Item *menuEditCopy;
-    Elm_Widget_Item *menuEditPaste;
+    Elm_Object_Item *menuEditPaste;
     Elm_Object_Item *menuEditDelete;
-    Elm_Widget_Item *menuEditNewEntry;
-    Elm_Widget_Item *menuEditEntry;
+    Elm_Object_Item *menuEditNewEntry;
+    Elm_Object_Item *menuEditEntry;
 
     Elm_Object_Item *menuView;
     Elm_Object_Item *menuViewZoomIn;
-    Elm_Widget_Item *menuViewZoomOut;
+    Elm_Object_Item *menuViewZoomOut;
 
     Elm_Object_Item *menuTools;
     Elm_Object_Item *menuToolsLabelPref;
-    Elm_Widget_Item *menuToolsTablePref;
+    Elm_Object_Item *menuToolsTablePref;
 
     bool menuActive;
 
-    Elm_Widget_Item * findSelectedItem();
+    Elm_Object_Item *findSelectedItem();
 };
 
 

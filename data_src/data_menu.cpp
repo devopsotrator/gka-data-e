@@ -111,15 +111,15 @@ void data_menu::flipMenuActive() {
 //    EINA_LOG_ERR("flipMenuActive %d",menuActive);
     menuActive = !menuActive;
     if (menuActive) {
-        Elm_Widget_Item *cMenu = elm_menu_selected_item_get(menu);
+        Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
         if (cMenu == nullptr) {
             cMenu = menuFile;
         }
         elm_menu_item_selected_set(cMenu, EINA_TRUE);
-        Efl_Canvas_Object *cO = elm_menu_item_object_get(menuFile);
+        Evas_Object *cO = elm_menu_item_object_get(menuFile);
         elm_layout_signal_emit(cO,"elm,action,open", "");
     } else {
-        Elm_Widget_Item *cMenu = elm_menu_selected_item_get(menu);
+        Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
         elm_menu_item_selected_set(cMenu, EINA_FALSE);
         elm_menu_close(menu);
     }
@@ -142,16 +142,16 @@ void data_menu::handleKeyDown(Evas_Event_Key_Down *ev) {
     } else if (!strcmp(ev->key, "Right")) {
         cursorRight();
     } else if (!strcmp(ev->key, "Return")) {
-        Efl_Canvas_Object *cO = elm_menu_item_object_get(findSelectedItem());
+        Evas_Object *cO = elm_menu_item_object_get(findSelectedItem());
         elm_layout_signal_emit(cO,"elm,action,click", "");
         menuActive = false;
         elm_menu_item_selected_set(elm_menu_selected_item_get(menu), EINA_FALSE);
     }
 }
 
-Elm_Widget_Item *data_menu::findSelectedItem() {
-    Elm_Widget_Item *cMenu = elm_menu_selected_item_get(menu);
-    Elm_Widget_Item *selected = nullptr;
+Elm_Object_Item *data_menu::findSelectedItem() {
+    Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
+    Elm_Object_Item *selected = nullptr;
     if (cMenu == menuFile) {
         if (elm_menu_item_selected_get(menuFileNew)) {
             selected = menuFileNew;
@@ -221,8 +221,8 @@ Elm_Widget_Item *data_menu::findSelectedItem() {
 }
 
 void data_menu::cursorUp() {
-    Elm_Widget_Item *cMenu = elm_menu_selected_item_get(menu);
-    Elm_Widget_Item *prev = nullptr;
+    Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
+    Elm_Object_Item *prev = nullptr;
     if (cMenu == menuFile) {
         if (elm_menu_item_selected_get(menuFileNew)) {
             prev = menuFileNew;
@@ -292,8 +292,8 @@ void data_menu::cursorUp() {
 }
 
 void data_menu::cursorDown() {
-    Elm_Widget_Item *cMenu = elm_menu_selected_item_get(menu);
-    Elm_Widget_Item *next = nullptr;
+    Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
+    Elm_Object_Item *next = nullptr;
     if (cMenu == menuFile) {
         if (elm_menu_item_selected_get(menuFileNew)) {
             next = menuFileOpen;
@@ -364,14 +364,14 @@ void data_menu::cursorDown() {
 
 void data_menu::cursorLeft() {
 //    EINA_LOG_ERR("selected menu item %x",elm_menu_selected_item_get(menu));
-    Elm_Widget_Item *prev = elm_menu_item_prev_get(elm_menu_selected_item_get(menu));
+    Elm_Object_Item *prev = elm_menu_item_prev_get(elm_menu_selected_item_get(menu));
 //    EINA_LOG_ERR("prevSet %x",prev);
     elm_menu_item_selected_set(prev, EINA_TRUE);
 }
 
 void data_menu::cursorRight() {
 //    EINA_LOG_ERR("selected menu item %x",elm_menu_selected_item_get(menu));
-    Elm_Widget_Item *next = elm_menu_item_next_get(elm_menu_selected_item_get(menu));
+    Elm_Object_Item *next = elm_menu_item_next_get(elm_menu_selected_item_get(menu));
 //    EINA_LOG_ERR("nextSet %x",next);
     elm_menu_item_selected_set(next, EINA_TRUE);
 }
