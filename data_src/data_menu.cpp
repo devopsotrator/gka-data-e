@@ -137,6 +137,8 @@ void data_menu::handleKeyDown(Evas_Event_Key_Down *ev) {
         cursorUp();
     } else if (!strcmp(ev->key, "Down")) {
         cursorDown();
+    } else if (!strcmp(ev->key, "Escape")) {
+        flipMenuActive();
     } else if (!strcmp(ev->key, "Left")) {
         cursorLeft();
     } else if (!strcmp(ev->key, "Right")) {
