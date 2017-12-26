@@ -208,15 +208,21 @@ void data_ui::init() {
     evas_object_show(panes);
 
     // Create right hand pane
-    rightList = elm_genlist_add(window);
+    filterAppliedLabel = elm_label_add(window);
+    elm_object_text_set(filterAppliedLabel, _("[Filter Applied]"));
+    evas_object_hide(filterAppliedLabel);
 
+    rightList = elm_genlist_add(window);
     elm_genlist_homogeneous_set(rightList, EINA_TRUE);
     elm_genlist_multi_select_set(rightList, EINA_FALSE);
     evas_object_size_hint_weight_set(rightList, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(rightList, EVAS_HINT_FILL, EVAS_HINT_FILL);
     evas_object_show(rightList);
 
-    elm_object_part_content_set(panes, "right", rightList);
+    rightBox = elm_box_add(window);
+    elm_box_pack_end(rightBox, rightList);
+
+    elm_object_part_content_set(panes, "right", rightBox);
 
     // Created fields and search box
     Evas_Object *leftBox = elm_box_add(window);
@@ -407,6 +413,15 @@ void data_ui::repopulateRightList(int selected) const {
             elm_genlist_item_selected_set(item, EINA_TRUE);
             elm_genlist_item_show(item, ELM_GENLIST_ITEM_SCROLLTO_IN);
         }
+    }
+    if (db.getFilter().length() > 0) {
+        if (!evas_object_visible_get(filterAppliedLabel)) {
+            evas_object_show(filterAppliedLabel);
+            elm_box_pack_start(rightBox, filterAppliedLabel);
+        }
+    } else {
+        evas_object_hide(filterAppliedLabel);
+        elm_box_unpack(rightBox, filterAppliedLabel);
     }
 }
 

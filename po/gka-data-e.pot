@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gka-data-e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-26 12:26+0000\n"
+"POT-Creation-Date: 2017-12-26 14:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,11 +30,11 @@ msgstr ""
 msgid "Add... (ctrl-a)"
 msgstr ""
 
-#: data_src/data_ui.cpp:772
+#: data_src/data_ui.cpp:787
 msgid "Are you sure?"
 msgstr ""
 
-#: data_src/data_ui.cpp:556 data_src/data_ui.cpp:632 data_src/data_ui.cpp:780
+#: data_src/data_ui.cpp:571 data_src/data_ui.cpp:647 data_src/data_ui.cpp:795
 msgid "Cancel"
 msgstr ""
 
@@ -67,7 +67,7 @@ msgstr ""
 msgid "Data"
 msgstr ""
 
-#: data_src/data_ui.cpp:322
+#: data_src/data_ui.cpp:328
 msgid "Data: "
 msgstr ""
 
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Delete (ctrl-d)"
 msgstr ""
 
-#: data_src/data_ui.cpp:769
+#: data_src/data_ui.cpp:784
 msgid "Delete Entry"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Export CSV file... (ctrl-p)"
 msgstr ""
 
-#: data_src/data_ui.cpp:543
+#: data_src/data_ui.cpp:558
 msgid "Export CSV to File"
 msgstr ""
 
@@ -121,11 +121,11 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: data_src/data_ui.cpp:256
+#: data_src/data_ui.cpp:262
 msgid "Find: "
 msgstr ""
 
-#: data_src/data_ui.cpp:499
+#: data_src/data_ui.cpp:514
 msgid "Import CSV File"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid "Import CSV file... (ctrl-i)"
 msgstr ""
 
-#: data_src/data_ui.cpp:616
+#: data_src/data_ui.cpp:631
 msgid "Import to New File"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgstr ""
 msgid "New Entry"
 msgstr ""
 
-#: data_src/data_ui.cpp:618
+#: data_src/data_ui.cpp:633
 msgid "New File"
 msgstr ""
 
@@ -165,11 +165,11 @@ msgstr ""
 msgid "New entry... (ctrl-shift-N)"
 msgstr ""
 
-#: data_src/data_ui.cpp:280
+#: data_src/data_ui.cpp:286
 msgid "Next"
 msgstr ""
 
-#: data_src/data_ui.cpp:562 data_src/data_ui.cpp:638 data_src/data_ui.cpp:786
+#: data_src/data_ui.cpp:577 data_src/data_ui.cpp:653 data_src/data_ui.cpp:801
 msgid "OK"
 msgstr ""
 
@@ -185,7 +185,7 @@ msgstr ""
 msgid "OK (enter)"
 msgstr ""
 
-#: data_src/data_ui.cpp:487
+#: data_src/data_ui.cpp:502
 msgid "Open File"
 msgstr ""
 
@@ -197,7 +197,7 @@ msgstr ""
 msgid "Paste (ctrl-v)"
 msgstr ""
 
-#: data_src/data_ui.cpp:272
+#: data_src/data_ui.cpp:278
 msgid "Prev"
 msgstr ""
 
@@ -227,4 +227,8 @@ msgstr ""
 
 #: data_src/data_menu.cpp:96
 msgid "Zoom Out... (ctrl-shift-M)"
+msgstr ""
+
+#: data_src/data_ui.cpp:212
+msgid "[Filter Applied]"
 msgstr ""

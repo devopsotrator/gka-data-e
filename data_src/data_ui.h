@@ -192,6 +192,8 @@ private:
 
 private:
     sqlite_file &db;
+    Evas_Object *filterAppliedLabel;
+    Evas_Object *rightBox;
     Evas_Object *searchEntry;
     Evas_Object *rightList;
     Evas_Object *fieldsTable;
