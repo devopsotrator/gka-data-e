@@ -13,6 +13,9 @@
 #include "data_menu.h"
 #include "data_edit_record.h"
 #include "data_table_preferences.h"
+#include "config.h"
+
+#define ENABLE_NLS
 
 #ifdef ENABLE_NLS
 # include <libintl.h>

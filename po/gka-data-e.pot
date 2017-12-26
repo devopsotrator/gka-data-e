@@ -1,0 +1,230 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR GKA
+# This file is distributed under the same license as the gka-data-e package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gka-data-e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-26 12:26+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data_src/data_label_preferences.cpp:140
+msgid "Add Label"
+msgstr ""
+
+#: data_src/data_table_preferences.cpp:137
+msgid "Add Table"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:263
+#: data_src/data_table_preferences.cpp:258
+msgid "Add... (ctrl-a)"
+msgstr ""
+
+#: data_src/data_ui.cpp:772
+msgid "Are you sure?"
+msgstr ""
+
+#: data_src/data_ui.cpp:556 data_src/data_ui.cpp:632 data_src/data_ui.cpp:780
+msgid "Cancel"
+msgstr ""
+
+#: data_src/data_edit_record.cpp:110 data_src/data_label_preferences.cpp:97
+#: data_src/data_label_preferences.cpp:153
+#: data_src/data_label_preferences.cpp:281
+#: data_src/data_table_preferences.cpp:94
+#: data_src/data_table_preferences.cpp:150
+#: data_src/data_table_preferences.cpp:276
+msgid "Cancel (esc)"
+msgstr ""
+
+#: data_src/data_menu.cpp:83
+msgid "Close (ctrl-q)"
+msgstr ""
+
+#: data_src/data_menu.cpp:87
+msgid "Copy (ctrl-c)"
+msgstr ""
+
+#: data_src/data_menu.cpp:77
+msgid "Create new file... (ctrl-n)"
+msgstr ""
+
+#: data_src/data_menu.cpp:86
+msgid "Cut (ctrl-x)"
+msgstr ""
+
+#: data_src/data_ui.cpp:191
+msgid "Data"
+msgstr ""
+
+#: data_src/data_ui.cpp:322
+msgid "Data: "
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:272
+#: data_src/data_table_preferences.cpp:267
+msgid "Delete (ctrl-d)"
+msgstr ""
+
+#: data_src/data_ui.cpp:769
+msgid "Delete Entry"
+msgstr ""
+
+#: data_src/data_menu.cpp:92
+msgid "Delete entry... (ctrl-shift-D)"
+msgstr ""
+
+#: data_src/data_menu.cpp:85
+msgid "Edit"
+msgstr ""
+
+#: data_src/data_edit_record.cpp:142
+msgid "Edit Entry"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:81
+msgid "Edit Label"
+msgstr ""
+
+#: data_src/data_table_preferences.cpp:78
+msgid "Edit Table"
+msgstr ""
+
+#: data_src/data_menu.cpp:91
+msgid "Edit entry... (ctrl-shift-E)"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:254
+#: data_src/data_table_preferences.cpp:249
+msgid "Edit... (ctrl-e)"
+msgstr ""
+
+#: data_src/data_menu.cpp:81
+msgid "Export CSV file... (ctrl-p)"
+msgstr ""
+
+#: data_src/data_ui.cpp:543
+msgid "Export CSV to File"
+msgstr ""
+
+#: data_src/data_menu.cpp:76
+msgid "File"
+msgstr ""
+
+#: data_src/data_ui.cpp:256
+msgid "Find: "
+msgstr ""
+
+#: data_src/data_ui.cpp:499
+msgid "Import CSV File"
+msgstr ""
+
+#: data_src/data_menu.cpp:80
+msgid "Import CSV file... (ctrl-i)"
+msgstr ""
+
+#: data_src/data_ui.cpp:616
+msgid "Import to New File"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:204
+msgid "Label preferences"
+msgstr ""
+
+#: data_src/data_menu.cpp:99
+msgid "Label preferences... (ctrl-l)"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:245
+msgid "Move down (ctrl-j)"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:236
+msgid "Move up (ctrl-u)"
+msgstr ""
+
+#: data_src/data_edit_record.cpp:129
+msgid "New Entry"
+msgstr ""
+
+#: data_src/data_ui.cpp:618
+msgid "New File"
+msgstr ""
+
+#: data_src/data_menu.cpp:90
+msgid "New entry... (ctrl-shift-N)"
+msgstr ""
+
+#: data_src/data_ui.cpp:280
+msgid "Next"
+msgstr ""
+
+#: data_src/data_ui.cpp:562 data_src/data_ui.cpp:638 data_src/data_ui.cpp:786
+msgid "OK"
+msgstr ""
+
+#: data_src/data_edit_record.cpp:116 data_src/data_label_preferences.cpp:287
+#: data_src/data_table_preferences.cpp:282
+msgid "OK (ctrl-s)"
+msgstr ""
+
+#: data_src/data_label_preferences.cpp:103
+#: data_src/data_label_preferences.cpp:159
+#: data_src/data_table_preferences.cpp:100
+#: data_src/data_table_preferences.cpp:156
+msgid "OK (enter)"
+msgstr ""
+
+#: data_src/data_ui.cpp:487
+msgid "Open File"
+msgstr ""
+
+#: data_src/data_menu.cpp:78
+msgid "Open file... (ctrl-o)"
+msgstr ""
+
+#: data_src/data_menu.cpp:88
+msgid "Paste (ctrl-v)"
+msgstr ""
+
+#: data_src/data_ui.cpp:272
+msgid "Prev"
+msgstr ""
+
+#: data_src/data_table_preferences.cpp:240
+msgid "Set Table (ctrl-t)"
+msgstr ""
+
+#: data_src/data_table_preferences.cpp:208
+msgid "Table preferences"
+msgstr ""
+
+#: data_src/data_menu.cpp:100
+msgid "Table preferences... (ctrl-t)"
+msgstr ""
+
+#: data_src/data_menu.cpp:98
+msgid "Tools"
+msgstr ""
+
+#: data_src/data_menu.cpp:94
+msgid "View"
+msgstr ""
+
+#: data_src/data_menu.cpp:95
+msgid "Zoom In... (ctrl-m)"
+msgstr ""
+
+#: data_src/data_menu.cpp:96
+msgid "Zoom Out... (ctrl-shift-M)"
+msgstr ""

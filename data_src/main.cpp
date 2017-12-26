@@ -24,10 +24,9 @@ static const Ecore_Getopt optdesc = {
 };
 
 EAPI_MAIN int
-elm_main(int argc, char **argv)
-{
+elm_main(int argc, char **argv) {
     Eina_Bool quit_option = EINA_FALSE;
-    const char *project_path = NULL;
+    const char *project_path = nullptr;
 
     Ecore_Getopt_Value values[] = {
             ECORE_GETOPT_VALUE_BOOL(quit_option),
@@ -36,6 +35,13 @@ elm_main(int argc, char **argv)
             ECORE_GETOPT_VALUE_BOOL(quit_option),
             ECORE_GETOPT_VALUE_NONE
     };
+
+#ifdef ENABLE_NLS
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+    textdomain(PACKAGE);
+#endif
 
     eina_init();
     _log_dom = eina_log_domain_register("gka-data", EINA_COLOR_GREEN);
