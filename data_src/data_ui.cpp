@@ -824,6 +824,10 @@ void data_ui::prevButton() {
         repopulateUI();
     }
 
+    if (currentEditors.size() == 0) {
+        return;
+    }
+
     std::string toFind = filter;
     std::transform(toFind.begin(), toFind.end(), toFind.begin(), ::tolower);
     int currentEditor = editorSelectionBeganIn;
@@ -867,6 +871,10 @@ void data_ui::nextButton() {
         db.setFilter(filter);
 
         repopulateUI();
+    }
+
+    if (currentEditors.size() == 0) {
+        return;
     }
 
     std::string toFind = filter;
@@ -1106,7 +1114,7 @@ void data_ui::cursorUp(Eina_Bool shift) {
 
 void data_ui::updateEditorSelection() {
 //    EINA_LOG_ERR("a: %d, bi: %d, ba: %d, ei: %d, ea: %d",editorSelectionActive,editorSelectionBeganIn,editorSelectionBeganAt,editorSelectionEndIn,editorSelectionEndAt);
-    if (editorSelectionBeganIn >= 0) {
+    if (editorSelectionBeganIn >= 0 && currentEditors.size() > 0) {
         if (editorSelectionBeganIn > editorSelectionEndIn) {
             for (int editorIndex = editorSelectionEndIn; editorIndex <= editorSelectionBeganIn; editorIndex++) {
                 auto editor = currentEditors[editorIndex];
