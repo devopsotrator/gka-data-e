@@ -75,11 +75,13 @@ void data_edit_record::populateAndShowEntryPopup(Evas_Object *window, Evas_Objec
 
     Evas_Object *focusInput = nullptr;
     currentRowEditors.clear();
-    for (int i = (db.getPrimaryKey() ? 1 : 0); i < cols.size(); i++) {
+    int startingRow = db.getPrimaryKey() == 1 ? 1 : 0;
+    int tableRow = 0;
+    for (int i = startingRow; i < cols.size(); i++,tableRow++) {
         auto field_name = elm_label_add(popupTable);
         elm_object_text_set(field_name, cols[i].c_str());
         evas_object_size_hint_align_set(field_name, 1, 0);
-        elm_table_pack(popupTable, field_name, 0, i, 1, 1);
+        elm_table_pack(popupTable, field_name, 0, tableRow, 1, 1);
         evas_object_show(field_name);
         elm_object_focus_allow_set(field_name, EINA_FALSE);
 
@@ -97,13 +99,14 @@ void data_edit_record::populateAndShowEntryPopup(Evas_Object *window, Evas_Objec
         evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
         evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, edit_entry_key_up_cb, (void *) (uintptr_t) i);
         elm_entry_markup_filter_append(input, entry_filter_out_tabs_cb, (void *) (uintptr_t) i);
-        elm_table_pack(popupTable, input, 1, i, 1, 1);
+        elm_table_pack(popupTable, input, 1, tableRow, 1, 1);
         evas_object_show(input);
 
-        if (i == (db.getPrimaryKey() ? 1 : 0)) {
+        if (i == startingRow) {
             elm_object_focus_set(input, EINA_TRUE);
             focusInput = input;
         }
+
     }
 
     Evas_Object *button = elm_button_add(popup);

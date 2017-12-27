@@ -743,7 +743,7 @@ void data_ui::showPopup(Evas_Object *popup, Evas_Object *focusOn) {
         evas_object_show(popup);
     }
     if (focusOn) {
-        ecore_timer_add(0.3,delayed_set_focus,focusOn);
+        ecore_timer_add(0.3, delayed_set_focus, focusOn);
     }
 }
 
