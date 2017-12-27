@@ -331,7 +331,12 @@ std::string data_ui::getTitleForFileName(const std::string &fileName) const {
 void data_ui::setNewFile() {
     ui.clearActivePopup();
     if (newFileName.empty()) {
-        newFileName = "data.db";
+#if ELM_VERSION_MAJOR >= 1 && ELM_VERSION_MINOR >= 20
+        newFileName = eina_environment_home_get();
+#else
+        newFileName = getenv("HOME");
+#endif
+        newFileName += "/data.db";
     }
     db.newFile(newFileName);
     db.setTable("");
@@ -483,7 +488,7 @@ Evas_Object *data_ui::standardFileOpener(Evas_Object *win, const char *title, Ev
     elm_fileselector_path_set(fs, eina_environment_home_get());
     elm_fileselector_sort_method_set(fs, ELM_FILESELECTOR_SORT_BY_FILENAME_ASC);
 #else
-    elm_fileselector_path_set(fs, "/home");
+    elm_fileselector_path_set(fs, getenv("HOME"));
 #endif
     return fs;
 }
