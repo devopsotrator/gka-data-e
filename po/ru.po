@@ -7,28 +7,28 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-27 12:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: \n"
+"Last-Translator: Adam Boardman\n"
+"Language: Russian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data_src/data_label_preferences.cpp:140
 msgid "Add Label"
-msgstr ""
+msgstr "Добавить ярлык"
 
 #: data_src/data_table_preferences.cpp:137
 msgid "Add Table"
-msgstr ""
+msgstr "Добавить таблицу"
 
 #: data_src/data_label_preferences.cpp:263
 #: data_src/data_table_preferences.cpp:258
 msgid "Add... (ctrl-a)"
-msgstr ""
+msgstr "Добавить... (ctrl-a)"
 
 #: data_src/data_ui.cpp:787
 msgid "Are you sure?"
-msgstr ""
+msgstr "Ты уверен?"
 
 #: data_src/data_ui.cpp:571 data_src/data_ui.cpp:647 data_src/data_ui.cpp:795
 msgid "Cancel"
@@ -41,190 +41,190 @@ msgstr ""
 #: data_src/data_table_preferences.cpp:150
 #: data_src/data_table_preferences.cpp:276
 msgid "Cancel (esc)"
-msgstr ""
+msgstr "Отмена (esc)"
 
 #: data_src/data_menu.cpp:83
 msgid "Close (ctrl-q)"
-msgstr ""
+msgstr "Закрыть (ctrl-q)"
 
 #: data_src/data_menu.cpp:87
 msgid "Copy (ctrl-c)"
-msgstr ""
+msgstr "копия (ctrl-c)"
 
 #: data_src/data_menu.cpp:77
 msgid "Create new file... (ctrl-n)"
-msgstr ""
+msgstr "Создать новый файл... (ctrl-n)"
 
 #: data_src/data_menu.cpp:86
 msgid "Cut (ctrl-x)"
-msgstr ""
+msgstr "Резать (ctrl-x)"
 
 #: data_src/data_ui.cpp:191
 msgid "Data"
-msgstr ""
+msgstr "Данные"
 
 #: data_src/data_ui.cpp:328
 msgid "Data: "
-msgstr ""
+msgstr "Данные: "
 
 #: data_src/data_label_preferences.cpp:272
 #: data_src/data_table_preferences.cpp:267
 msgid "Delete (ctrl-d)"
-msgstr ""
+msgstr "Удалить (ctrl-d)"
 
 #: data_src/data_ui.cpp:784
 msgid "Delete Entry"
-msgstr ""
+msgstr "Удалить запись"
 
 #: data_src/data_menu.cpp:92
 msgid "Delete entry... (ctrl-shift-D)"
-msgstr ""
+msgstr "Удалить запись... (ctrl-shift-D)"
 
 #: data_src/data_menu.cpp:85
 msgid "Edit"
-msgstr ""
+msgstr "Изменить"
 
 #: data_src/data_edit_record.cpp:145
 msgid "Edit Entry"
-msgstr ""
+msgstr "Изменить запись"
 
 #: data_src/data_label_preferences.cpp:81
 msgid "Edit Label"
-msgstr ""
+msgstr "Изменить ярлык"
 
 #: data_src/data_table_preferences.cpp:78
 msgid "Edit Table"
-msgstr ""
+msgstr "Изменить таблицу"
 
 #: data_src/data_menu.cpp:91
 msgid "Edit entry... (ctrl-shift-E)"
-msgstr ""
+msgstr "Изменить запись... (ctrl-shift-E)"
 
 #: data_src/data_label_preferences.cpp:254
 #: data_src/data_table_preferences.cpp:249
 msgid "Edit... (ctrl-e)"
-msgstr ""
+msgstr "Изменить... (ctrl-e)"
 
 #: data_src/data_menu.cpp:81
 msgid "Export CSV file... (ctrl-p)"
-msgstr ""
+msgstr "Экспорт CSV-файла... (ctrl-p)"
 
 #: data_src/data_ui.cpp:558
 msgid "Export CSV to File"
-msgstr ""
+msgstr "Экспорт CSV в файл"
 
 #: data_src/data_menu.cpp:76
 msgid "File"
-msgstr ""
+msgstr "файл"
 
 #: data_src/data_ui.cpp:262
 msgid "Find: "
-msgstr ""
+msgstr "Находить: "
 
 #: data_src/data_ui.cpp:514
 msgid "Import CSV File"
-msgstr ""
+msgstr "Импортировать файл CSV"
 
 #: data_src/data_menu.cpp:80
 msgid "Import CSV file... (ctrl-i)"
-msgstr ""
+msgstr "Импортировать файл CSV... (ctrl-i)"
 
 #: data_src/data_ui.cpp:631
 msgid "Import to New File"
-msgstr ""
+msgstr "Импорт в новый файл"
 
 #: data_src/data_label_preferences.cpp:204
 msgid "Label preferences"
-msgstr ""
+msgstr "Настройки ярлыков"
 
 #: data_src/data_menu.cpp:99
 msgid "Label preferences... (ctrl-l)"
-msgstr ""
+msgstr "Настройки ярлыков... (ctrl-l)"
 
 #: data_src/data_label_preferences.cpp:245
 msgid "Move down (ctrl-j)"
-msgstr ""
+msgstr "Переместить вниз (ctrl-j)"
 
 #: data_src/data_label_preferences.cpp:236
 msgid "Move up (ctrl-u)"
-msgstr ""
+msgstr "Переместить вверх (ctrl-u)"
 
 #: data_src/data_edit_record.cpp:132
 msgid "New Entry"
-msgstr ""
+msgstr "Новая запись"
 
 #: data_src/data_ui.cpp:633
 msgid "New File"
-msgstr ""
+msgstr "Новый файл"
 
 #: data_src/data_menu.cpp:90
 msgid "New entry... (ctrl-shift-N)"
-msgstr ""
+msgstr "Новая запись... (ctrl-shift-N)"
 
 #: data_src/data_ui.cpp:286
 msgid "Next"
-msgstr ""
+msgstr "следующий"
 
 #: data_src/data_ui.cpp:577 data_src/data_ui.cpp:653 data_src/data_ui.cpp:801
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: data_src/data_edit_record.cpp:119 data_src/data_label_preferences.cpp:287
 #: data_src/data_table_preferences.cpp:282
 msgid "OK (ctrl-s)"
-msgstr ""
+msgstr "OK (ctrl-s)"
 
 #: data_src/data_label_preferences.cpp:103
 #: data_src/data_label_preferences.cpp:159
 #: data_src/data_table_preferences.cpp:100
 #: data_src/data_table_preferences.cpp:156
 msgid "OK (enter)"
-msgstr ""
+msgstr "OK (enter)"
 
 #: data_src/data_ui.cpp:502
 msgid "Open File"
-msgstr ""
+msgstr "Открыть файл"
 
 #: data_src/data_menu.cpp:78
 msgid "Open file... (ctrl-o)"
-msgstr ""
+msgstr "Открыть файл... (ctrl-o)"
 
 #: data_src/data_menu.cpp:88
 msgid "Paste (ctrl-v)"
-msgstr ""
+msgstr "Вставить (ctrl-v)"
 
 #: data_src/data_ui.cpp:278
 msgid "Prev"
-msgstr ""
+msgstr "Предыдущая"
 
 #: data_src/data_table_preferences.cpp:240
 msgid "Set Table (ctrl-t)"
-msgstr ""
+msgstr "Выберите таблицу (ctrl-t)"
 
 #: data_src/data_table_preferences.cpp:208
 msgid "Table preferences"
-msgstr ""
+msgstr "Настройки таблицы"
 
 #: data_src/data_menu.cpp:100
 msgid "Table preferences... (ctrl-t)"
-msgstr ""
+msgstr "Настройки таблицы... (ctrl-t)"
 
 #: data_src/data_menu.cpp:98
 msgid "Tools"
-msgstr ""
+msgstr "Доп"
 
 #: data_src/data_menu.cpp:94
 msgid "View"
-msgstr ""
+msgstr "вид"
 
 #: data_src/data_menu.cpp:95
 msgid "Zoom In... (ctrl-m)"
-msgstr ""
+msgstr "Приблизить... (ctrl-m)"
 
 #: data_src/data_menu.cpp:96
 msgid "Zoom Out... (ctrl-shift-M)"
-msgstr ""
+msgstr "Уменьшить... (ctrl-shift-M)"
 
 #: data_src/data_ui.cpp:212
 msgid "[Filter Applied]"
-msgstr ""
+msgstr "[Фильтр применен]"

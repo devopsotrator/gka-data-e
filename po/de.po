@@ -5,226 +5,226 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gka-data-e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-27 12:46+0000\n"
+"POT-Creation-Date: 2017-12-26 14:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: \n"
+"Last-Translator: Adam Boardman\n"
+"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data_src/data_label_preferences.cpp:140
 msgid "Add Label"
-msgstr ""
+msgstr "Etikett hinzufügen"
 
 #: data_src/data_table_preferences.cpp:137
 msgid "Add Table"
-msgstr ""
+msgstr "Tabelle hinzufügen"
 
 #: data_src/data_label_preferences.cpp:263
 #: data_src/data_table_preferences.cpp:258
 msgid "Add... (ctrl-a)"
-msgstr ""
+msgstr "Hinzufügen... (ctrl-a)"
 
 #: data_src/data_ui.cpp:787
 msgid "Are you sure?"
-msgstr ""
+msgstr "Bist du sicher?"
 
 #: data_src/data_ui.cpp:571 data_src/data_ui.cpp:647 data_src/data_ui.cpp:795
 msgid "Cancel"
-msgstr ""
+msgstr "Stornieren"
 
-#: data_src/data_edit_record.cpp:113 data_src/data_label_preferences.cpp:97
+#: data_src/data_edit_record.cpp:110 data_src/data_label_preferences.cpp:97
 #: data_src/data_label_preferences.cpp:153
 #: data_src/data_label_preferences.cpp:281
 #: data_src/data_table_preferences.cpp:94
 #: data_src/data_table_preferences.cpp:150
 #: data_src/data_table_preferences.cpp:276
 msgid "Cancel (esc)"
-msgstr ""
+msgstr "Stornieren (esc)"
 
 #: data_src/data_menu.cpp:83
 msgid "Close (ctrl-q)"
-msgstr ""
+msgstr "Schließen (ctrl-q)"
 
 #: data_src/data_menu.cpp:87
 msgid "Copy (ctrl-c)"
-msgstr ""
+msgstr "Kopie (ctrl-c)"
 
 #: data_src/data_menu.cpp:77
 msgid "Create new file... (ctrl-n)"
-msgstr ""
+msgstr "Neue Datei erstellen... (ctrl-n)"
 
 #: data_src/data_menu.cpp:86
 msgid "Cut (ctrl-x)"
-msgstr ""
+msgstr "Schnitt (ctrl-x)"
 
 #: data_src/data_ui.cpp:191
 msgid "Data"
-msgstr ""
+msgstr "Daten"
 
 #: data_src/data_ui.cpp:328
 msgid "Data: "
-msgstr ""
+msgstr "Daten: "
 
 #: data_src/data_label_preferences.cpp:272
 #: data_src/data_table_preferences.cpp:267
 msgid "Delete (ctrl-d)"
-msgstr ""
+msgstr "Löschen (ctrl-d)"
 
 #: data_src/data_ui.cpp:784
 msgid "Delete Entry"
-msgstr ""
+msgstr "Eintrag löschen"
 
 #: data_src/data_menu.cpp:92
 msgid "Delete entry... (ctrl-shift-D)"
-msgstr ""
+msgstr "Eintrag löschen... (ctrl-shift-D)"
 
 #: data_src/data_menu.cpp:85
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
-#: data_src/data_edit_record.cpp:145
+#: data_src/data_edit_record.cpp:142
 msgid "Edit Entry"
-msgstr ""
+msgstr "Eintrag bearbeiten"
 
 #: data_src/data_label_preferences.cpp:81
 msgid "Edit Label"
-msgstr ""
+msgstr "Etikett bearbeiten"
 
 #: data_src/data_table_preferences.cpp:78
 msgid "Edit Table"
-msgstr ""
+msgstr "Tabelle bearbeiten"
 
 #: data_src/data_menu.cpp:91
 msgid "Edit entry... (ctrl-shift-E)"
-msgstr ""
+msgstr "Eintrag bearbeiten... (ctrl-shift-E)"
 
 #: data_src/data_label_preferences.cpp:254
 #: data_src/data_table_preferences.cpp:249
 msgid "Edit... (ctrl-e)"
-msgstr ""
+msgstr "Bearbeiten... (ctrl-e)"
 
 #: data_src/data_menu.cpp:81
 msgid "Export CSV file... (ctrl-p)"
-msgstr ""
+msgstr "CSV-Datei exportieren... (ctrl-p)"
 
 #: data_src/data_ui.cpp:558
 msgid "Export CSV to File"
-msgstr ""
+msgstr "CSV in Datei exportieren"
 
 #: data_src/data_menu.cpp:76
 msgid "File"
-msgstr ""
+msgstr "Datei"
 
 #: data_src/data_ui.cpp:262
 msgid "Find: "
-msgstr ""
+msgstr "Suchen: "
 
 #: data_src/data_ui.cpp:514
 msgid "Import CSV File"
-msgstr ""
+msgstr "CSV-Datei importieren"
 
 #: data_src/data_menu.cpp:80
 msgid "Import CSV file... (ctrl-i)"
-msgstr ""
+msgstr "CSV-Datei importieren... (ctrl-i)"
 
 #: data_src/data_ui.cpp:631
 msgid "Import to New File"
-msgstr ""
+msgstr "In neue Datei importieren"
 
 #: data_src/data_label_preferences.cpp:204
 msgid "Label preferences"
-msgstr ""
+msgstr "Etiketteneinstellungen"
 
 #: data_src/data_menu.cpp:99
 msgid "Label preferences... (ctrl-l)"
-msgstr ""
+msgstr "Etiketteneinstellungen... (ctrl-l)"
 
 #: data_src/data_label_preferences.cpp:245
 msgid "Move down (ctrl-j)"
-msgstr ""
+msgstr "Sich abwärts bewegen (ctrl-j)"
 
 #: data_src/data_label_preferences.cpp:236
 msgid "Move up (ctrl-u)"
-msgstr ""
+msgstr "Aufrücken (ctrl-u)"
 
-#: data_src/data_edit_record.cpp:132
+#: data_src/data_edit_record.cpp:129
 msgid "New Entry"
-msgstr ""
+msgstr "Neuer Eintrag"
 
 #: data_src/data_ui.cpp:633
 msgid "New File"
-msgstr ""
+msgstr "Neue Datei"
 
 #: data_src/data_menu.cpp:90
 msgid "New entry... (ctrl-shift-N)"
-msgstr ""
+msgstr "Neuer Eintrag... (ctrl-shift-N)"
 
 #: data_src/data_ui.cpp:286
 msgid "Next"
-msgstr ""
+msgstr "Neben"
 
 #: data_src/data_ui.cpp:577 data_src/data_ui.cpp:653 data_src/data_ui.cpp:801
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#: data_src/data_edit_record.cpp:119 data_src/data_label_preferences.cpp:287
+#: data_src/data_edit_record.cpp:116 data_src/data_label_preferences.cpp:287
 #: data_src/data_table_preferences.cpp:282
 msgid "OK (ctrl-s)"
-msgstr ""
+msgstr "OK (ctrl-s)"
 
 #: data_src/data_label_preferences.cpp:103
 #: data_src/data_label_preferences.cpp:159
 #: data_src/data_table_preferences.cpp:100
 #: data_src/data_table_preferences.cpp:156
 msgid "OK (enter)"
-msgstr ""
+msgstr "OK (enter)"
 
 #: data_src/data_ui.cpp:502
 msgid "Open File"
-msgstr ""
+msgstr "Datei öffnen"
 
 #: data_src/data_menu.cpp:78
 msgid "Open file... (ctrl-o)"
-msgstr ""
+msgstr "Datei öffnen... (ctrl-o)"
 
 #: data_src/data_menu.cpp:88
 msgid "Paste (ctrl-v)"
-msgstr ""
+msgstr "Paste (ctrl-v)"
 
 #: data_src/data_ui.cpp:278
 msgid "Prev"
-msgstr ""
+msgstr "Bisherige"
 
 #: data_src/data_table_preferences.cpp:240
 msgid "Set Table (ctrl-t)"
-msgstr ""
+msgstr "Tabelle auswählen (ctrl-t)"
 
 #: data_src/data_table_preferences.cpp:208
 msgid "Table preferences"
-msgstr ""
+msgstr "Tabelleneinstellungen"
 
 #: data_src/data_menu.cpp:100
 msgid "Table preferences... (ctrl-t)"
-msgstr ""
+msgstr "Tabelleneinstellungen... (ctrl-t)"
 
 #: data_src/data_menu.cpp:98
 msgid "Tools"
-msgstr ""
+msgstr "Werkzeuge"
 
 #: data_src/data_menu.cpp:94
 msgid "View"
-msgstr ""
+msgstr "Aussicht"
 
 #: data_src/data_menu.cpp:95
 msgid "Zoom In... (ctrl-m)"
-msgstr ""
+msgstr "Hineinzoomen... (ctrl-m)"
 
 #: data_src/data_menu.cpp:96
 msgid "Zoom Out... (ctrl-shift-M)"
-msgstr ""
+msgstr "Rauszoomen... (ctrl-shift-M)"
 
 #: data_src/data_ui.cpp:212
 msgid "[Filter Applied]"
-msgstr ""
+msgstr "[Filter angewendet]"

@@ -5,226 +5,226 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gka-data-e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-27 12:46+0000\n"
+"POT-Creation-Date: 2017-12-26 14:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: \n"
+"Last-Translator: Adam Boardman\n"
+"Language: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data_src/data_label_preferences.cpp:140
 msgid "Add Label"
-msgstr ""
+msgstr "ラベルを追加"
 
 #: data_src/data_table_preferences.cpp:137
 msgid "Add Table"
-msgstr ""
+msgstr "テーブルを追加"
 
 #: data_src/data_label_preferences.cpp:263
 #: data_src/data_table_preferences.cpp:258
 msgid "Add... (ctrl-a)"
-msgstr ""
+msgstr "追加... (ctrl-a)"
 
 #: data_src/data_ui.cpp:787
 msgid "Are you sure?"
-msgstr ""
+msgstr "本気ですか？"
 
 #: data_src/data_ui.cpp:571 data_src/data_ui.cpp:647 data_src/data_ui.cpp:795
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
-#: data_src/data_edit_record.cpp:113 data_src/data_label_preferences.cpp:97
+#: data_src/data_edit_record.cpp:110 data_src/data_label_preferences.cpp:97
 #: data_src/data_label_preferences.cpp:153
 #: data_src/data_label_preferences.cpp:281
 #: data_src/data_table_preferences.cpp:94
 #: data_src/data_table_preferences.cpp:150
 #: data_src/data_table_preferences.cpp:276
 msgid "Cancel (esc)"
-msgstr ""
+msgstr "キャンセル (esc)"
 
 #: data_src/data_menu.cpp:83
 msgid "Close (ctrl-q)"
-msgstr ""
+msgstr "閉じる (ctrl-q)"
 
 #: data_src/data_menu.cpp:87
 msgid "Copy (ctrl-c)"
-msgstr ""
+msgstr "コピー (ctrl-c)"
 
 #: data_src/data_menu.cpp:77
 msgid "Create new file... (ctrl-n)"
-msgstr ""
+msgstr "新しいファイルを作成する... (ctrl-n)"
 
 #: data_src/data_menu.cpp:86
 msgid "Cut (ctrl-x)"
-msgstr ""
+msgstr "カット (ctrl-x)"
 
 #: data_src/data_ui.cpp:191
 msgid "Data"
-msgstr ""
+msgstr "データ"
 
 #: data_src/data_ui.cpp:328
 msgid "Data: "
-msgstr ""
+msgstr "データ: "
 
 #: data_src/data_label_preferences.cpp:272
 #: data_src/data_table_preferences.cpp:267
 msgid "Delete (ctrl-d)"
-msgstr ""
+msgstr "削除"
 
 #: data_src/data_ui.cpp:784
 msgid "Delete Entry"
-msgstr ""
+msgstr "記入を消す"
 
 #: data_src/data_menu.cpp:92
 msgid "Delete entry... (ctrl-shift-D)"
-msgstr ""
+msgstr "記入を消す... (ctrl-shift-D)"
 
 #: data_src/data_menu.cpp:85
 msgid "Edit"
-msgstr ""
+msgstr "編集"
 
-#: data_src/data_edit_record.cpp:145
+#: data_src/data_edit_record.cpp:142
 msgid "Edit Entry"
-msgstr ""
+msgstr "編集エントリ"
 
 #: data_src/data_label_preferences.cpp:81
 msgid "Edit Label"
-msgstr ""
+msgstr "編集ラベル"
 
 #: data_src/data_table_preferences.cpp:78
 msgid "Edit Table"
-msgstr ""
+msgstr "編集テーブル"
 
 #: data_src/data_menu.cpp:91
 msgid "Edit entry... (ctrl-shift-E)"
-msgstr ""
+msgstr "編集エントリ... (ctrl-shift-E)"
 
 #: data_src/data_label_preferences.cpp:254
 #: data_src/data_table_preferences.cpp:249
 msgid "Edit... (ctrl-e)"
-msgstr ""
+msgstr "編集... (ctrl-e)"
 
 #: data_src/data_menu.cpp:81
 msgid "Export CSV file... (ctrl-p)"
-msgstr ""
+msgstr "CSVファイルを書き出す... (ctrl-p)"
 
 #: data_src/data_ui.cpp:558
 msgid "Export CSV to File"
-msgstr ""
+msgstr "ファイルにCSVをエクスポートする"
 
 #: data_src/data_menu.cpp:76
 msgid "File"
-msgstr ""
+msgstr "ファイル"
 
 #: data_src/data_ui.cpp:262
 msgid "Find: "
-msgstr ""
+msgstr "検索: "
 
 #: data_src/data_ui.cpp:514
 msgid "Import CSV File"
-msgstr ""
+msgstr "CSVファイルをインポートする"
 
 #: data_src/data_menu.cpp:80
 msgid "Import CSV file... (ctrl-i)"
-msgstr ""
+msgstr "CSVファイルをインポートする... (ctrl-i)"
 
 #: data_src/data_ui.cpp:631
 msgid "Import to New File"
-msgstr ""
+msgstr "新しいファイルにインポートする"
 
 #: data_src/data_label_preferences.cpp:204
 msgid "Label preferences"
-msgstr ""
+msgstr "ラベルの設定"
 
 #: data_src/data_menu.cpp:99
 msgid "Label preferences... (ctrl-l)"
-msgstr ""
+msgstr "ラベルの設定... (ctrl-l)"
 
 #: data_src/data_label_preferences.cpp:245
 msgid "Move down (ctrl-j)"
-msgstr ""
+msgstr "下に移動 (ctrl-j)"
 
 #: data_src/data_label_preferences.cpp:236
 msgid "Move up (ctrl-u)"
-msgstr ""
+msgstr "上に移動 (ctrl-u)"
 
-#: data_src/data_edit_record.cpp:132
+#: data_src/data_edit_record.cpp:129
 msgid "New Entry"
-msgstr ""
+msgstr "新しいエントリ"
 
 #: data_src/data_ui.cpp:633
 msgid "New File"
-msgstr ""
+msgstr "新しいファイル"
 
 #: data_src/data_menu.cpp:90
 msgid "New entry... (ctrl-shift-N)"
-msgstr ""
+msgstr "新しいエントリ... (ctrl-shift-N)"
 
 #: data_src/data_ui.cpp:286
 msgid "Next"
-msgstr ""
+msgstr "次"
 
 #: data_src/data_ui.cpp:577 data_src/data_ui.cpp:653 data_src/data_ui.cpp:801
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#: data_src/data_edit_record.cpp:119 data_src/data_label_preferences.cpp:287
+#: data_src/data_edit_record.cpp:116 data_src/data_label_preferences.cpp:287
 #: data_src/data_table_preferences.cpp:282
 msgid "OK (ctrl-s)"
-msgstr ""
+msgstr "OK (ctrl-s)"
 
 #: data_src/data_label_preferences.cpp:103
 #: data_src/data_label_preferences.cpp:159
 #: data_src/data_table_preferences.cpp:100
 #: data_src/data_table_preferences.cpp:156
 msgid "OK (enter)"
-msgstr ""
+msgstr "OK (enter)"
 
 #: data_src/data_ui.cpp:502
 msgid "Open File"
-msgstr ""
+msgstr "ファイルを開く"
 
 #: data_src/data_menu.cpp:78
 msgid "Open file... (ctrl-o)"
-msgstr ""
+msgstr "ファイルを開く... (ctrl-o)"
 
 #: data_src/data_menu.cpp:88
 msgid "Paste (ctrl-v)"
-msgstr ""
+msgstr "ペースト (ctrl-v)"
 
 #: data_src/data_ui.cpp:278
 msgid "Prev"
-msgstr ""
+msgstr "前"
 
 #: data_src/data_table_preferences.cpp:240
 msgid "Set Table (ctrl-t)"
-msgstr ""
+msgstr "表の選択 (ctrl-t)"
 
 #: data_src/data_table_preferences.cpp:208
 msgid "Table preferences"
-msgstr ""
+msgstr "表の好み"
 
 #: data_src/data_menu.cpp:100
 msgid "Table preferences... (ctrl-t)"
-msgstr ""
+msgstr "表の好み... (ctrl-t)"
 
 #: data_src/data_menu.cpp:98
 msgid "Tools"
-msgstr ""
+msgstr "ツール"
 
 #: data_src/data_menu.cpp:94
 msgid "View"
-msgstr ""
+msgstr "ビュー"
 
 #: data_src/data_menu.cpp:95
 msgid "Zoom In... (ctrl-m)"
-msgstr ""
+msgstr "ズームイン... (ctrl-m)"
 
 #: data_src/data_menu.cpp:96
 msgid "Zoom Out... (ctrl-shift-M)"
-msgstr ""
+msgstr "ズームアウトする... (ctrl-shift-M)"
 
 #: data_src/data_ui.cpp:212
 msgid "[Filter Applied]"
-msgstr ""
+msgstr "[アクティブなフィルタ]"

@@ -9,8 +9,7 @@ file(GLOB_RECURSE I18N_SRCS RELATIVE ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/*.cpp
         )
 
-#string(REPLACE "${CMAKE_SOURCE_DIR}/" "" RELATIVE_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
-
+string(REPLACE "${CMAKE_SOURCE_DIR}/" "" RELATIVE_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 foreach(PO_FILE ${PO_FILES})
     get_filename_component(LANG ${PO_FILE} NAME_WE)
     gettext_process_po_files(${LANG} ALL PO_FILES ${PO_FILE})

@@ -7,32 +7,32 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-27 12:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: \n"
+"Last-Translator: Adam Boardman\n"
+"Language: Chinese (simplified)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data_src/data_label_preferences.cpp:140
 msgid "Add Label"
-msgstr ""
+msgstr "添加标签"
 
 #: data_src/data_table_preferences.cpp:137
 msgid "Add Table"
-msgstr ""
+msgstr "添加表格"
 
 #: data_src/data_label_preferences.cpp:263
 #: data_src/data_table_preferences.cpp:258
 msgid "Add... (ctrl-a)"
-msgstr ""
+msgstr "添... (ctrl-a)"
 
 #: data_src/data_ui.cpp:787
 msgid "Are you sure?"
-msgstr ""
+msgstr "你确定？"
 
 #: data_src/data_ui.cpp:571 data_src/data_ui.cpp:647 data_src/data_ui.cpp:795
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: data_src/data_edit_record.cpp:113 data_src/data_label_preferences.cpp:97
 #: data_src/data_label_preferences.cpp:153
@@ -41,190 +41,190 @@ msgstr ""
 #: data_src/data_table_preferences.cpp:150
 #: data_src/data_table_preferences.cpp:276
 msgid "Cancel (esc)"
-msgstr ""
+msgstr "取消 (esc)"
 
 #: data_src/data_menu.cpp:83
 msgid "Close (ctrl-q)"
-msgstr ""
+msgstr "关 (ctrl-q)"
 
 #: data_src/data_menu.cpp:87
 msgid "Copy (ctrl-c)"
-msgstr ""
+msgstr "复制 (ctrl-c)"
 
 #: data_src/data_menu.cpp:77
 msgid "Create new file... (ctrl-n)"
-msgstr ""
+msgstr "创建新文件... (ctrl-n)"
 
 #: data_src/data_menu.cpp:86
 msgid "Cut (ctrl-x)"
-msgstr ""
+msgstr "切 (ctrl-x)"
 
 #: data_src/data_ui.cpp:191
 msgid "Data"
-msgstr ""
+msgstr "数据"
 
 #: data_src/data_ui.cpp:328
 msgid "Data: "
-msgstr ""
+msgstr "数据: "
 
 #: data_src/data_label_preferences.cpp:272
 #: data_src/data_table_preferences.cpp:267
 msgid "Delete (ctrl-d)"
-msgstr ""
+msgstr "删除 (ctrl-d)"
 
 #: data_src/data_ui.cpp:784
 msgid "Delete Entry"
-msgstr ""
+msgstr "删除条目"
 
 #: data_src/data_menu.cpp:92
 msgid "Delete entry... (ctrl-shift-D)"
-msgstr ""
+msgstr "删除条目... (ctrl-shift-D)"
 
 #: data_src/data_menu.cpp:85
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 #: data_src/data_edit_record.cpp:145
 msgid "Edit Entry"
-msgstr ""
+msgstr "编辑条目"
 
 #: data_src/data_label_preferences.cpp:81
 msgid "Edit Label"
-msgstr ""
+msgstr "编辑标签"
 
 #: data_src/data_table_preferences.cpp:78
 msgid "Edit Table"
-msgstr ""
+msgstr "编辑表格"
 
 #: data_src/data_menu.cpp:91
 msgid "Edit entry... (ctrl-shift-E)"
-msgstr ""
+msgstr "编辑条目... (ctrl-shift-E)"
 
 #: data_src/data_label_preferences.cpp:254
 #: data_src/data_table_preferences.cpp:249
 msgid "Edit... (ctrl-e)"
-msgstr ""
+msgstr "编辑... (ctrl-e)"
 
 #: data_src/data_menu.cpp:81
 msgid "Export CSV file... (ctrl-p)"
-msgstr ""
+msgstr "导出CSV文件... (ctrl-p)"
 
 #: data_src/data_ui.cpp:558
 msgid "Export CSV to File"
-msgstr ""
+msgstr "将CSV导出到文件"
 
 #: data_src/data_menu.cpp:76
 msgid "File"
-msgstr ""
+msgstr "文件"
 
 #: data_src/data_ui.cpp:262
 msgid "Find: "
-msgstr ""
+msgstr "找: "
 
 #: data_src/data_ui.cpp:514
 msgid "Import CSV File"
-msgstr ""
+msgstr "导入CSV文件"
 
 #: data_src/data_menu.cpp:80
 msgid "Import CSV file... (ctrl-i)"
-msgstr ""
+msgstr "导入CSV文件... (ctrl-i)"
 
 #: data_src/data_ui.cpp:631
 msgid "Import to New File"
-msgstr ""
+msgstr "导入到新文件"
 
 #: data_src/data_label_preferences.cpp:204
 msgid "Label preferences"
-msgstr ""
+msgstr "标签的喜好"
 
 #: data_src/data_menu.cpp:99
 msgid "Label preferences... (ctrl-l)"
-msgstr ""
+msgstr "标签的喜好... (ctrl-l)"
 
 #: data_src/data_label_preferences.cpp:245
 msgid "Move down (ctrl-j)"
-msgstr ""
+msgstr "下移 (ctrl-j)"
 
 #: data_src/data_label_preferences.cpp:236
 msgid "Move up (ctrl-u)"
-msgstr ""
+msgstr "向上移动 (ctrl-u)"
 
 #: data_src/data_edit_record.cpp:132
 msgid "New Entry"
-msgstr ""
+msgstr "新条目"
 
 #: data_src/data_ui.cpp:633
 msgid "New File"
-msgstr ""
+msgstr "新文件"
 
 #: data_src/data_menu.cpp:90
 msgid "New entry... (ctrl-shift-N)"
-msgstr ""
+msgstr "新条目... (ctrl-shift-N)"
 
 #: data_src/data_ui.cpp:286
 msgid "Next"
-msgstr ""
+msgstr "下一个"
 
 #: data_src/data_ui.cpp:577 data_src/data_ui.cpp:653 data_src/data_ui.cpp:801
 msgid "OK"
-msgstr ""
+msgstr "好的"
 
 #: data_src/data_edit_record.cpp:119 data_src/data_label_preferences.cpp:287
 #: data_src/data_table_preferences.cpp:282
 msgid "OK (ctrl-s)"
-msgstr ""
+msgstr "好的 (ctrl-s)"
 
 #: data_src/data_label_preferences.cpp:103
 #: data_src/data_label_preferences.cpp:159
 #: data_src/data_table_preferences.cpp:100
 #: data_src/data_table_preferences.cpp:156
 msgid "OK (enter)"
-msgstr ""
+msgstr "好的 (enter)"
 
 #: data_src/data_ui.cpp:502
 msgid "Open File"
-msgstr ""
+msgstr "打开文件"
 
 #: data_src/data_menu.cpp:78
 msgid "Open file... (ctrl-o)"
-msgstr ""
+msgstr "打开文件... (ctrl-o)"
 
 #: data_src/data_menu.cpp:88
 msgid "Paste (ctrl-v)"
-msgstr ""
+msgstr "糊 (ctrl-v)"
 
 #: data_src/data_ui.cpp:278
 msgid "Prev"
-msgstr ""
+msgstr "以前"
 
 #: data_src/data_table_preferences.cpp:240
 msgid "Set Table (ctrl-t)"
-msgstr ""
+msgstr "选择表 (ctrl-t)"
 
 #: data_src/data_table_preferences.cpp:208
 msgid "Table preferences"
-msgstr ""
+msgstr "表首选项"
 
 #: data_src/data_menu.cpp:100
 msgid "Table preferences... (ctrl-t)"
-msgstr ""
+msgstr "表首选项... (ctrl-t)"
 
 #: data_src/data_menu.cpp:98
 msgid "Tools"
-msgstr ""
+msgstr "工具的"
 
 #: data_src/data_menu.cpp:94
 msgid "View"
-msgstr ""
+msgstr "视图"
 
 #: data_src/data_menu.cpp:95
 msgid "Zoom In... (ctrl-m)"
-msgstr ""
+msgstr "放大... (ctrl-m)"
 
 #: data_src/data_menu.cpp:96
 msgid "Zoom Out... (ctrl-shift-M)"
-msgstr ""
+msgstr "缩小... (ctrl-shift-M)"
 
 #: data_src/data_ui.cpp:212
 msgid "[Filter Applied]"
-msgstr ""
+msgstr "[过滤器已被应用]"
