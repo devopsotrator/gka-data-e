@@ -12,6 +12,8 @@ find_package(Elementary REQUIRED)
 
 add_definitions(-DPACKAGE_VERSION="0.1" -DPACKAGE_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/gka/data-e")
 
+include(GNUInstallDirs)
+
 add_subdirectory(files)
 add_subdirectory(po)
 add_subdirectory(data_src)
