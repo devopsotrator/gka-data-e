@@ -9,7 +9,7 @@
 #include "data_table_preferences.h"
 #include "data_ui.h"
 
-static void table_pref_list_selection_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_list_selection_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto index = (int)(uintptr_t) data;
     ui.getTablePref().setCurrentTableSelection(index);
 }
@@ -19,7 +19,7 @@ static void populate_list(Evas_Object *list) {
     auto selected = ui.getTablePref().getCurrentTableSelection();
     auto tables = ui.getTablePref().getEditableTables();
     elm_list_clear(list);
-    for (int i = 0; i < tables.size(); i++) {
+    for (int i = 0; i < (int)tables.size(); i++) {
         std::string tableName = tables[i];
         if (i == active) {
             tableName.append(" [*]");
@@ -32,26 +32,26 @@ static void populate_list(Evas_Object *list) {
     }
 }
 
-static void on_elm_popup_event_dismissed(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void on_elm_popup_event_dismissed(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     populate_list(list);
 }
 
-static void table_pref_addedit_table_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_addedit_table_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
 }
 
-static void table_pref_edit_table_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_edit_table_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.getTablePref().saveEditableTable();
     ui.clearActivePopup();
 }
 
-static void table_pref_add_table_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_add_table_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.getTablePref().addEditableTable();
     ui.clearActivePopup();
 }
 
-static void table_pref_update_table_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void table_pref_update_table_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
 
     EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
@@ -59,7 +59,7 @@ static void table_pref_update_table_key_up_cb(void *data, Evas *e, Evas_Object *
     if (!strcmp(ev->key, "Escape")) {
         table_pref_addedit_table_exit_cb(data, obj, event_info);
     } else if (!strcmp(ev->key, "Return")) {
-        bool dataBool = data;
+        bool dataBool = static_cast<bool>(data);
         if (dataBool) {
             table_pref_add_table_ok_cb(data, obj, event_info);
         } else {
@@ -71,7 +71,7 @@ static void table_pref_update_table_key_up_cb(void *data, Evas *e, Evas_Object *
     ui.getTablePref().updateEditTable(table);
 }
 
-static void table_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_edit_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
 
     Evas_Object *popup = elm_popup_add(list);
@@ -109,19 +109,19 @@ static void table_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
     //populate_list(list);
 }
 
-static void table_pref_delete_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_delete_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     ui.getTablePref().editTableDelete();
     populate_list(list);
 }
 
-static void table_pref_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.getTablePref().clearTablePreferences();
     ui.clearFocus();
 }
 
-static void table_pref_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     if (ui.getTablePref().tablePreferencesAreValid()) {
         ui.clearActivePopup();
         ui.getTablePref().saveTablePreferences();
@@ -130,7 +130,7 @@ static void table_pref_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     }
 }
 
-static void table_pref_add_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_add_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
 
     Evas_Object *popup = elm_popup_add(list);
@@ -165,19 +165,17 @@ static void table_pref_add_cb(void *data, Evas_Object *obj, void *event_info) {
     populate_list(list);
 }
 
-static void table_pref_select_cb(void *data, Evas_Object *obj, void *event_info) {
+static void table_pref_select_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.getTablePref().setActiveTableFromSelection();
 }
 
 static void table_preferences_key_down_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    Eina_Bool ctrl, alt, shift;
+    Eina_Bool ctrl;
 
     ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
-    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
-    shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+//    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl) {
         if (!strcmp(ev->key, "t")) {
@@ -309,7 +307,7 @@ void data_table_preferences::updateEditTable(std::string table) {
 
 void data_table_preferences::editTableDelete() {
     auto index = editableTablesIndex;
-    if (index >= 0 && index < editableTables.size()) {
+    if (index >= 0 && index < (int)editableTables.size()) {
         editableTables.erase(editableTables.begin() + index);
         if (index > 0) {
             editableTablesIndex--;
@@ -330,7 +328,7 @@ std::vector<std::string> data_table_preferences::getEditableTables() {
 
 bool data_table_preferences::tablePreferencesAreValid() {
     std::unordered_set<std::string> validCheck;
-    for (auto table : editableTables) {
+    for (const auto &table : editableTables) {
         auto search = validCheck.find(table);
         if(search == validCheck.end()) {
             validCheck.insert(table);
@@ -371,7 +369,7 @@ void data_table_preferences::saveTablePreferences() {
         activeTable = editableTables[activeTableIndex];
     }
     auto oldTables = db.listTables();
-    for (auto table : oldTables) {
+    for (const auto &table : oldTables) {
         if (renames.find(table) != renames.end()) {
             db.renameTable(table, renames[table]);
         }
@@ -383,10 +381,10 @@ void data_table_preferences::saveTablePreferences() {
     std::vector<std::string> removals;
     std::set_difference(tables.begin(), tables.end(), editableTables.begin(), editableTables.end(),
                         std::inserter(removals, removals.begin()));
-    for (auto toAdd : additions) {
+    for (const auto &toAdd : additions) {
         db.addTable(toAdd);
     }
-    for (auto toRemove : removals) {
+    for (const auto &toRemove : removals) {
         db.deleteTable(toRemove);
     }
     if (!activeTable.empty()) {

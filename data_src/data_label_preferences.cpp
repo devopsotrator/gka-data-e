@@ -7,7 +7,7 @@
 #include "data_label_preferences.h"
 #include "data_ui.h"
 
-static void label_pref_selection_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_selection_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto index = (int)(uintptr_t) data;
     ui.setEditColumnSelection(index);
 }
@@ -15,7 +15,7 @@ static void label_pref_selection_cb(void *data, Evas_Object *obj, void *event_in
 static void populate_list(Evas_Object *list) {
     auto cols = ui.getEditableColumns();
     elm_list_clear(list);
-    for (int i = 0; i < cols.size(); i++) {
+    for (int i = 0; i < (int)cols.size(); i++) {
         auto item = elm_list_item_append(list, cols[i].c_str(), nullptr, nullptr, label_pref_selection_cb, (void *) (uintptr_t) i);
         if (i == ui.getEditColumnSelection()) {
             elm_list_item_selected_set(item, EINA_TRUE);
@@ -23,38 +23,38 @@ static void populate_list(Evas_Object *list) {
     }
 }
 
-static void label_pref_up_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_up_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     ui.editColumnMoveUp();
     populate_list(list);
 }
 
-static void label_pref_down_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_down_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     ui.editColumnMoveDown();
     populate_list(list);
 }
 
-static void on_elm_popup_event_dismissed(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void on_elm_popup_event_dismissed(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     populate_list(list);
 }
 
-static void label_pref_addedit_label_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_addedit_label_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
 }
 
-static void label_pref_edit_label_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_edit_label_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.saveEditableLabel();
     ui.clearActivePopup();
 }
 
-static void label_pref_add_label_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_add_label_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.addEditableLabel();
     ui.clearActivePopup();
 }
 
-static void label_pref_update_label_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void label_pref_update_label_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
 
     EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
@@ -62,7 +62,7 @@ static void label_pref_update_label_key_up_cb(void *data, Evas *e, Evas_Object *
     if (!strcmp(ev->key, "Escape")) {
         label_pref_addedit_label_exit_cb(data, obj, event_info);
     } else if (!strcmp(ev->key, "Return")) {
-        bool dataBool = data;
+        bool dataBool = static_cast<bool>(data);
         if (dataBool) {
             label_pref_add_label_ok_cb(data, obj, event_info);
         } else {
@@ -74,7 +74,7 @@ static void label_pref_update_label_key_up_cb(void *data, Evas *e, Evas_Object *
     ui.updateEditLabel(label);
 }
 
-static void label_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_edit_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
 
     Evas_Object *popup = elm_popup_add(list);
@@ -89,7 +89,7 @@ static void label_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
     elm_entry_cursor_line_end_set(input);
     evas_object_size_hint_weight_set(input, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(input, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, label_pref_update_label_key_up_cb, NULL);
+    evas_object_event_callback_add(input, EVAS_CALLBACK_KEY_UP, label_pref_update_label_key_up_cb, nullptr);
     evas_object_show(input);
     elm_object_content_set(popup, input);
 
@@ -112,19 +112,19 @@ static void label_pref_edit_cb(void *data, Evas_Object *obj, void *event_info) {
     populate_list(list);
 }
 
-static void label_pref_delete_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_delete_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
     ui.editColumnDelete();
     populate_list(list);
 }
 
-static void label_pref_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.clearLabelPreferences();
     ui.clearFocus();
 }
 
-static void label_pref_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     if (ui.labelPreferencesAreValid()) {
         ui.clearActivePopup();
         ui.saveLabelPreferences();
@@ -133,7 +133,7 @@ static void label_pref_ok_cb(void *data, Evas_Object *obj, void *event_info) {
     }
 }
 
-static void label_pref_add_cb(void *data, Evas_Object *obj, void *event_info) {
+static void label_pref_add_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto list = (Evas_Object *) data;
 
     Evas_Object *popup = elm_popup_add(list);
@@ -170,13 +170,11 @@ static void label_pref_add_cb(void *data, Evas_Object *obj, void *event_info) {
 
 static void label_preferences_key_down_cb(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    Eina_Bool ctrl, alt, shift;
+    Eina_Bool ctrl;
 
     ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
-    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
-    shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
-    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
+//    EINA_LOG_INFO("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (ctrl) {
         if (!strcmp(ev->key, "u")) {

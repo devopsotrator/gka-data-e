@@ -35,6 +35,7 @@ std::vector<std::string> csv_file::csvReadRow(std::istream &in, char delimiter) 
             stringFormer << c;
         }
     }
+    return row;
 }
 
 std::string csv_file::replaceAll(std::string str, const std::string &from, const std::string &to) {
@@ -47,7 +48,7 @@ std::string csv_file::replaceAll(std::string str, const std::string &from, const
 }
 
 void csv_file::outputToStream(std::ofstream &out, std::vector<std::string> values, int primaryKeyColumn) {
-    for (int i = 0; i<values.size(); i++) {
+    for (int i = 0; i < (int)values.size(); i++) {
         if (i != primaryKeyColumn-1) {
             auto value = values[i];
             if (i != 0 && !(primaryKeyColumn == 1 && i == 1)) {

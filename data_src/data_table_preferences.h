@@ -10,7 +10,7 @@
 class data_table_preferences {
 
 public:
-    data_table_preferences(sqlite_file &_db);
+    explicit data_table_preferences(sqlite_file &_db);
 
     void show(Evas_Object *window);
 
@@ -31,8 +31,6 @@ public:
     void editTableDelete();
 
     bool tablePreferencesAreValid();
-
-    void setTableSelection(int tableIndex);
 
     int getActiveTable();
 

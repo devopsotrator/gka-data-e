@@ -6,18 +6,18 @@
 #include "data_edit_record.h"
 #include "data_ui.h"
 
-static void edit_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void edit_entry_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.clearFocus();
 }
 
-static void edit_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void edit_entry_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.saveCurrentRow();
     ui.clearFocus();
 }
 
-static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void edit_entry_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     auto ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
     auto currentIndex = (int) (uintptr_t) data;
@@ -37,7 +37,7 @@ static void edit_entry_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *ev
     free(text);
 }
 
-static void entry_filter_out_tabs_cb(void *data, Evas_Object *entry, char **text) {
+static void entry_filter_out_tabs_cb(void *data EINA_UNUSED, Evas_Object *entry EINA_UNUSED, char **text) {
     if (!strcmp(*text, "<tab/>")) {
         char *insert = *text;
         *insert = 0;
@@ -77,7 +77,7 @@ void data_edit_record::populateAndShowEntryPopup(Evas_Object *window, Evas_Objec
     currentRowEditors.clear();
     int startingRow = db.getPrimaryKey() == 1 ? 1 : 0;
     int tableRow = 0;
-    for (int i = startingRow; i < cols.size(); i++,tableRow++) {
+    for (int i = startingRow; i < (int)cols.size(); i++,tableRow++) {
         auto field_name = elm_label_add(popupTable);
         elm_object_text_set(field_name, cols[i].c_str());
         evas_object_size_hint_align_set(field_name, 1, 0);
@@ -133,7 +133,7 @@ void data_edit_record::addRow(Evas_Object *window) {
 
     auto cols = db.listColumns();
     currentRowValues.clear();
-    for (int i = 0; i < cols.size(); i++) {
+    for (int i = 0; i < (int)cols.size(); i++) {
         currentRowValues.emplace_back("");
     }
 
@@ -150,7 +150,7 @@ void data_edit_record::editRow(Evas_Object *window, int selectedRow) {
     if (rows.empty()) {
         return;
     }
-    for (int i = 0; i < cols.size(); i++) {
+    for (int i = 0; i < (int)cols.size(); i++) {
         currentRowValues.emplace_back(rows[i]);
     }
 
@@ -163,7 +163,7 @@ data_edit_record::data_edit_record(sqlite_file &_db) : db(_db) {
 
 void data_edit_record::editColumnTabFocus(int currentIndex) {
     currentIndex -= db.getPrimaryKey() ? 1 : 0;
-    if (currentIndex >= 0 && currentIndex < currentRowEditors.size()) {
+    if (currentIndex >= 0 && currentIndex < (int)currentRowEditors.size()) {
         elm_object_focus_set(currentRowEditors[currentIndex], EINA_TRUE);
     }
 }

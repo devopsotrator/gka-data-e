@@ -26,7 +26,6 @@ static const Ecore_Getopt optdesc = {
 EAPI_MAIN int
 elm_main(int argc, char **argv) {
     Eina_Bool quit_option = EINA_FALSE;
-    const char *project_path = nullptr;
 
     Ecore_Getopt_Value values[] = {
             ECORE_GETOPT_VALUE_BOOL(quit_option),

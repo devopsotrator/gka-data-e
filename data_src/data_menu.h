@@ -5,7 +5,6 @@
 #ifndef GKA_DATA_E_DATA_MENU_H
 #define GKA_DATA_E_DATA_MENU_H
 
-#include <Evas.h>
 #include <Elementary.h>
 
 class data_menu {
@@ -19,8 +18,6 @@ public:
     bool isMenuActive();
 
     void handleKeyDown(Evas_Event_Key_Down *ev);
-
-    void fileOpened();
 
     void menuDismissed();
 

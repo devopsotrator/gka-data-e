@@ -27,7 +27,7 @@ void sqlite_file::file(std::string fileName) {
 void sqlite_file::newFile(std::string fileName, bool ignoreEmpty) {
     int rc = sqlite3_open_v2(fileName.c_str(), &handle, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, nullptr);
     if (rc != SQLITE_OK) {
-        EINA_LOG_ERR("Could not open %s: %s", fileName.c_str(), sqlite3_errcode(handle));
+        EINA_LOG_ERR("Could not open %s: %d", fileName.c_str(), sqlite3_errcode(handle));
     } else {
         state = DATA_CONNECT_TYPE_INIT;
     }
@@ -78,8 +78,8 @@ void sqlite_file::createTable(std::string &tableName, std::vector<std::string> &
         sqlite3_free(sqliteErrMsg);
     }
     if (!vector.empty()) {
-        for (auto i=0; i < vector.size(); i++) {
-            if (strcasestr(vector[i].c_str(), "INTEGER PRIMARY KEY") != NULL) {
+        for (auto i=0; i < (int)vector.size(); i++) {
+            if (strcasestr(vector[i].c_str(), "INTEGER PRIMARY KEY") != nullptr) {
                 intPrimaryKeys[tableName] = i + 1;
             }
         }
@@ -126,7 +126,7 @@ void sqlite_file::addRow(std::vector<std::string> &vector, std::string table) {
     }
 
     std::string sql = "INSERT OR REPLACE INTO " + table + " VALUES(";
-    for (int i=1; i<=vector.size(); i++) {
+    for (int i=1; i <= (int)vector.size(); i++) {
         if (i != 1)
             sql += ",";
         sql += "?"+std::to_string(i);
@@ -140,7 +140,7 @@ void sqlite_file::addRow(std::vector<std::string> &vector, std::string table) {
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
-    for (int i=1; i<=vector.size(); i++) {
+    for (int i=1; i <= (int)vector.size(); i++) {
         auto colValue = vector[i - 1];
         if (!colValue.empty()) {
             rc = sqlite3_bind_text(ppStmt, i, colValue.c_str(), -1, SQLITE_TRANSIENT);
@@ -172,7 +172,7 @@ int sqlite_file::rowCount(std::string table) {
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
-    for (int i=0; i<toBind.size(); i++) {
+    for (int i=0; i < (int)toBind.size(); i++) {
         auto colValue = toBind[i];
         rc = sqlite3_bind_text(ppStmt, i+1, colValue.c_str(), -1, SQLITE_TRANSIENT);
         if (rc != SQLITE_OK) {
@@ -187,7 +187,7 @@ int sqlite_file::rowCount(std::string table) {
 }
 
 void sqlite_file::setTable(std::string string) {
-    current_table = string;
+    current_table = std::move(string);
 }
 
 std::string &sqlite_file::getTable(std::string &table) {
@@ -221,7 +221,7 @@ std::vector<std::string> sqlite_file::readRow(int rowIndex, std::string table) {
     if (rc!=SQLITE_OK) {
         EINA_LOG_ERR("SQL error[%d]: %s", rc, sqlite3_errmsg(handle));
     }
-    for (int i=0; i<toBind.size(); i++) {
+    for (int i=0; i < (int)toBind.size(); i++) {
         auto colValue = toBind[i];
         rc = sqlite3_bind_text(ppStmt, i+1, colValue.c_str(), -1, SQLITE_TRANSIENT);
         if (rc != SQLITE_OK) {
@@ -259,7 +259,7 @@ void sqlite_file::deleteRow(std::vector<std::string> vector, std::string table) 
     std::string sql = "DELETE FROM " + table + " WHERE ";
 
     int i = 1;
-    for (int b = 0; b <columns.size(); b++) {
+    for (int b = 0; b < (int)columns.size(); b++) {
         auto &column = columns[b];
         if (!(vector[b].empty())) {
             if (b != 0) {
@@ -439,7 +439,7 @@ sqlite_file::setColumnsCreateNewTable(const std::vector<std::string> &newColumns
             sql += ", ";
         sql += column;
         auto index = find(oldName.begin(), oldName.end(), column) - oldName.begin();
-        if (index < oldName.size()) {
+        if (index < (int)oldName.size()) {
             sql += " " + oldType[index];
             if (oldPrimaryKey[index] > 0) {
                 sql += " PRIMARY KEY";

@@ -6,16 +6,14 @@
 #include <Elementary.h>
 #include <regex>
 #include <unordered_set>
-#include <utility>
 #include <csv_file.h>
 #include "data_ui.h"
 #include "data_label_preferences.h"
-#include "data_table_preferences.h"
 
 static sqlite_file db;
 data_ui ui(db);
 
-static char *right_list_text_get_cb(void *data, Evas_Object *obj, const char *part) {
+static char *right_list_text_get_cb(void *data, Evas_Object *obj EINA_UNUSED, const char *part) {
     if (strcmp(part, "elm.text") == 0) {
         auto *buf = static_cast<char *>(malloc(MAX_LIST_LENGTH));
         auto row = db.readRowTitle((int) (uintptr_t) data);
@@ -27,26 +25,25 @@ static char *right_list_text_get_cb(void *data, Evas_Object *obj, const char *pa
     } else return nullptr;
 }
 
-static void row_selected_cb(void *data, Evas_Object *obj, void *event_info) {
-    auto *it = (Elm_Object_Item *) event_info;
+static void row_selected_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto i = (int) (uintptr_t) data;
 
     ui.rowSelected(i);
 }
 
-static void previous_button_cb(void *data, Evas_Object *obj, void *event_info) {
+static void previous_button_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.prevButton();
 }
 
-static void next_button_cb(void *data, Evas_Object *obj, void *event_info) {
+static void next_button_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.nextButton();
 }
 
-static void scroller_scroll_cb(void *data, Evas_Object *obj, void *event_info) {
+static void scroller_scroll_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.scrollerScrolled();
 }
 
-static void edit_entry_clicked_cb(void *data, Evas_Object *obj, void *event_info) {
+static void edit_entry_clicked_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     auto i = (int) (uintptr_t) data;
     ui.entryClicked(i);
 }
@@ -61,11 +58,6 @@ static void window_cb_key_up(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_O
 
 void data_ui::handleKeyUp(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    Eina_Bool ctrl, alt, shift;
-
-    ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
-    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
-    shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
 //    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
 
@@ -79,10 +71,9 @@ void data_ui::handleKeyUp(void *event_info) {
 
 void data_ui::handleKeyDown(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    Eina_Bool ctrl, alt, shift;
+    Eina_Bool ctrl, shift;
 
     ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
-    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
 //    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
@@ -357,7 +348,7 @@ void data_ui::repopulateFieldsTable() {
     }
     currentEditors.clear();
     currentArrows.clear();
-    for (int i = 0; i < cols.size(); i++) {
+    for (int i = 0; i < (int)cols.size(); i++) {
         auto field_name = elm_label_add(fieldsTable);
         elm_object_text_set(field_name, cols[i].c_str());
         evas_object_size_hint_align_set(field_name, 1, 0);
@@ -436,13 +427,13 @@ void data_ui::rowSelected(int i) {
     repopulateFieldsTable();
 }
 
-static void file_open_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_open_exit_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     evas_object_del((Evas_Object *) data);
 
     ui.clearFocus();
 }
 
-static void file_open_sqlite_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_open_sqlite_ok_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info) {
     evas_object_del((Evas_Object *) data);
 
     if (event_info) {
@@ -455,7 +446,7 @@ static void file_open_sqlite_ok_cb(void *data, Evas_Object *obj, void *event_inf
     }
 }
 
-static void file_open_csv_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_open_csv_ok_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info) {
     evas_object_del((Evas_Object *) data);
 
     if (event_info) {
@@ -526,17 +517,17 @@ void data_ui::importCsv() {
     showFileOpener(win, fs);
 }
 
-static void file_export_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_export_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.clearFocus();
 }
 
-static void file_export_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_export_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.exportFile();
 }
 
-static void file_export_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void file_export_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
     if (!strcmp(ev->key, "Escape")) {
@@ -587,23 +578,23 @@ void data_ui::exportCsv() {
     showPopup(popup, input);
 }
 
-static void file_new_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_new_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.clearFocus();
 }
 
-static void file_new_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_new_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.setNewFile();
 }
 
-static void file_import_new_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void file_import_new_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.setNewFile();
     ui.importCsvFile();
 }
 
-static void file_new_key_up_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void file_new_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     EINA_LOG_INFO("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
     if (!strcmp(ev->key, "Escape")) {
@@ -760,18 +751,18 @@ void data_ui::clearFocus() {
     elm_object_focus_set(searchEntry, EINA_TRUE);
 }
 
-static void delete_entry_exit_cb(void *data, Evas_Object *obj, void *event_info) {
+static void delete_entry_exit_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.clearFocus();
 }
 
-static void delete_entry_ok_cb(void *data, Evas_Object *obj, void *event_info) {
+static void delete_entry_ok_cb(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED) {
     ui.clearActivePopup();
     ui.deleteCurrentRow();
     ui.clearFocus();
 }
 
-static void delete_entry_key_down_cb(void *data, Evas *e, Evas_Object *obj, void *event_info) {
+static void delete_entry_key_down_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
     auto ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
     EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
@@ -863,16 +854,16 @@ void data_ui::prevButton() {
             if (currentEditor == editorSelectionBeganIn) {
                 startAt = editorSelectionBeganAt - 1;
             }
-            auto pos = static_cast<int>(text.rfind(toFind, static_cast<unsigned long>(startAt)));
+            auto pos = text.rfind(toFind, static_cast<unsigned long>(startAt));
             if (pos != std::string::npos) {
                 editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
-                editorSelectionBeganAt = pos;
+                editorSelectionBeganAt = static_cast<int>(pos);
                 editorSelectionEndAt = static_cast<int>(pos + strlen(filter));
                 stringFound = true;
             } else {
                 currentEditor--;
             }
-        } while (!stringFound && (currentEditor < currentEditors.size()));
+        } while (!stringFound && (currentEditor < (int)currentEditors.size()));
         if (!stringFound) {
             if (prevItem()) {
                 currentEditor = static_cast<int>(currentEditors.size() - 1);
@@ -880,7 +871,7 @@ void data_ui::prevButton() {
                 editorSelectionEndAt = 0;
             }
         }
-    } while (!stringFound && (currentEditor < currentEditors.size()));
+    } while (!stringFound && (currentEditor < (int)currentEditors.size()));
     updateEditorSelection();
     updateFoundItemDisplay(stringFound, currentEditor);
 }
@@ -912,16 +903,16 @@ void data_ui::nextButton() {
             if (currentEditor == editorSelectionEndIn) {
                 startAt = editorSelectionEndAt;
             }
-            auto pos = static_cast<int>(text.find(toFind, static_cast<unsigned long>(startAt)));
+            auto pos = text.find(toFind, static_cast<unsigned long>(startAt));
             if (pos != std::string::npos) {
                 editorSelectionEndIn = editorSelectionBeganIn = currentEditor;
-                editorSelectionBeganAt = pos;
+                editorSelectionBeganAt = static_cast<int>(pos);
                 editorSelectionEndAt = static_cast<int>(pos + strlen(filter));
                 stringFound = true;
             } else {
                 currentEditor++;
             }
-        } while (!stringFound && (currentEditor < currentEditors.size()));
+        } while (!stringFound && (currentEditor < (int)currentEditors.size()));
         if (!stringFound) {
             if (nextItem()) {
                 currentEditor = 0;
@@ -929,7 +920,7 @@ void data_ui::nextButton() {
                 editorSelectionEndAt = 0;
             }
         }
-    } while (!stringFound && (currentEditor < currentEditors.size()));
+    } while (!stringFound && (currentEditor < (int)currentEditors.size()));
     updateEditorSelection();
     updateFoundItemDisplay(stringFound, currentEditor);
 }
@@ -980,7 +971,7 @@ void data_ui::editColumnMoveUp() {
 
 void data_ui::editColumnMoveDown() {
     auto index = editableColumnsIndex;
-    if (index < editableColumns.size()-1) {
+    if (index < (int)editableColumns.size()-1) {
         std::swap(editableColumns[index], editableColumns[index + 1]);
         editableColumnsIndex++;
     }
@@ -988,7 +979,7 @@ void data_ui::editColumnMoveDown() {
 
 void data_ui::editColumnDelete() {
     auto index = editableColumnsIndex;
-    if (index >= 0 && index < editableColumns.size()) {
+    if (index >= 0 && index < (int)editableColumns.size()) {
         editableColumns.erase(editableColumns.begin() + index);
         if (index > 0) {
             editableColumnsIndex--;
@@ -1006,7 +997,7 @@ int data_ui::getEditColumnSelection() {
 }
 
 void data_ui::updateEditLabel(std::string label) {
-    editableColumnsEditLabel = label;
+    editableColumnsEditLabel = std::move(label);
 }
 
 void data_ui::addEditableLabel() {
@@ -1085,7 +1076,7 @@ void data_ui::paste() {
 }
 
 void data_ui::cursorUp(Eina_Bool shift) {
-    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < currentEditors.size()) {
+    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < (int)currentEditors.size()) {
         auto editor = currentEditors[currentEditorWithCursorIndex];
         auto oldPos = elm_entry_cursor_pos_get(editor);
         if (shift) {
@@ -1180,7 +1171,7 @@ void data_ui::updateEditorSelection() {
 }
 
 void data_ui::cursorDown(Eina_Bool shift) {
-    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < currentEditors.size()) {
+    if (currentEditorWithCursorIndex >= 0 && currentEditorWithCursorIndex < (int)currentEditors.size()) {
         auto editor = currentEditors[currentEditorWithCursorIndex];
         auto oldPos = elm_entry_cursor_pos_get(editor);
         if (shift) {
@@ -1200,7 +1191,7 @@ void data_ui::cursorDown(Eina_Bool shift) {
         }
         elm_entry_cursor_down(editor);
         auto newPos = elm_entry_cursor_pos_get(editor);
-        if (newPos == oldPos && currentEditorWithCursorIndex < currentEditors.size()-1) {
+        if (newPos == oldPos && currentEditorWithCursorIndex < (int)currentEditors.size()-1) {
             updateCurrentEditorAndArrowVisibilityForIndex(currentEditorWithCursorIndex+1);
             if (editorSelectionActive) {
                 editorSelectionEndAt = 0;
@@ -1243,7 +1234,7 @@ void data_ui::updateArrowGeometry() {
     }
 }
 
-void data_ui::cursorLeft(Eina_Bool shift) {
+void data_ui::cursorLeft(Eina_Bool shift EINA_UNUSED) {
     auto pos = elm_entry_cursor_pos_get(searchEntry);
     if (pos == oldSearchEntryPos) {
         prevItem();
@@ -1252,8 +1243,8 @@ void data_ui::cursorLeft(Eina_Bool shift) {
     oldSearchEntryPos = pos;
 }
 
-void data_ui::cursorRight(Eina_Bool shift) {
-    auto empty = elm_entry_is_empty(searchEntry);
+void data_ui::cursorRight(Eina_Bool shift EINA_UNUSED) {
+//    auto empty = elm_entry_is_empty(searchEntry);
 
     auto pos = elm_entry_cursor_pos_get(searchEntry);
     if (pos == oldSearchEntryPos) {
@@ -1284,7 +1275,7 @@ void data_ui::setCsvFile(std::string fileName) {
     importFileName = std::move(fileName);
 }
 
-static Eina_Bool delayed_retry_scroll_pos(void *data) {
+static Eina_Bool delayed_retry_scroll_pos(void *data EINA_UNUSED) {
     ui.updateScrollPositions();
     return ECORE_CALLBACK_CANCEL;
 }
@@ -1358,5 +1349,5 @@ void data_ui::updateFoundItemDisplay(bool found, int editorIndex) {
 }
 
 data_menu data_ui::getMenu() {
-    menu;
+    return menu;
 }
