@@ -2,7 +2,7 @@
 
 Simple Sqlite3 database editor.
 
-Currently supports opening and editing of databases with a single table, with an INTEGER PRIMARY KEY.
+Currently supports opening and editing of sqlite databases.
 
 Working towards keyboard friendly input as part of the http://gka.thinkglobally.org project.
 
@@ -41,7 +41,7 @@ To make install and run from the command line:
 > $ cmake ..  
 > $ make  
 > $ sudo make install  
-> $ gka_data_e  
+> $ gka-data-e  
 
 The project also works with CLion and EDI integrated development environments.
 
@@ -58,6 +58,7 @@ Typing regular characters enters into the search box.
 * **Ctrl-Shift-E** Edit record
 * **Ctrl-Shift-D** Delete record
 * **Ctrl-l** Edit Label Preferences
+* **Ctrl-t** Edit Table Preferences
 
 ### New file
 
@@ -88,12 +89,28 @@ Not currently keyboard navigable, efl standard widget
 * **Ctrl-u** Move selected field up
 * **Ctrl-j** Move selected field down
 * **Ctrl-e** Edit selected field
-* **Ctrl-a** Add new selected field
+* **Ctrl-a** Add new field
 * **Ctrl-d** Delete selected field
 * **Ctrl-s** Save label changes
 * **Escape** Exit discarding changes
 
-### Add/Edit field
+### Edit Table Preferences
+
+* **Ctrl-t** Set selected table as active
+* **Ctrl-e** Edit selected table
+* **Ctrl-a** Add new table
+* **Ctrl-d** Delete selected table
+* **Ctrl-s** Save label changes
+* **Escape** Exit discarding changes
+
+### Add/Edit field/table
 
 * **Enter/Return** Action add/edit
 * **Escape** Exit add/edit
+
+### Menu
+
+* **Alt** Opens/Closes the menu
+* **Arrow Keys** Navigates the menu
+* **Enter** Selects the menu item
+* **Escape** Closes the menu
