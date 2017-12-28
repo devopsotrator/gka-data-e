@@ -110,12 +110,14 @@ void data_menu::init(Evas_Object *window) {
 void data_menu::addMenuItemToShortCuts(Elm_Object_Item *menuItem) {
     Evas_Object *cO = elm_menu_item_object_get(menuItem);
     auto ptr = elm_object_text_get(cO);
-    std::mbtowc(nullptr, nullptr, 0); // reset the conversion state
-    const char* end = ptr + std::strlen(ptr);
-    wchar_t wc;
-    int ret = std::mbtowc(&wc, ptr, end-ptr);
-    if (ret > 0) {
-        menuShortCuts.emplace(std::towlower(static_cast<wint_t>(wc)), menuItem);
+    if (ptr) {
+        std::mbtowc(nullptr, nullptr, 0); // reset the conversion state
+        const char* end = ptr + std::strlen(ptr);
+        wchar_t wc;
+        int ret = std::mbtowc(&wc, ptr, end-ptr);
+        if (ret > 0) {
+            menuShortCuts.emplace(std::towlower(static_cast<wint_t>(wc)), menuItem);
+        }
     }
 }
 
