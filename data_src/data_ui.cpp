@@ -59,7 +59,27 @@ static void window_cb_key_up(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_O
 void data_ui::handleKeyUp(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
 
+    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
+
 //    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+    if (!strcmp(ev->key, "Alt_L")) {
+        altPressed = false;
+    }
+
+    if (!strcmp(ev->key, "Alt_L") && altPressClean) {
+        menu.flipMenuActive();
+    } else if (altPressClean) {
+        altPressClean = false;
+    }
+
+    if (menu.isMenuActive()) {
+        menu.handleKeyUp(ev);
+        return;
+    }
+
+    if (alt) {
+        menu.handleKeyUp(ev);
+    }
 
     if (!strcmp(ev->key, "Shift_R") || !strcmp(ev->key, "Shift_L")) {
         if (editorSelectionActive) {
@@ -71,23 +91,22 @@ void data_ui::handleKeyUp(void *event_info) {
 
 void data_ui::handleKeyDown(void *event_info) {
     auto *ev = static_cast<Evas_Event_Key_Down *>(event_info);
-    Eina_Bool ctrl, shift;
+    Eina_Bool ctrl, alt, shift;
 
     ctrl = evas_key_modifier_is_set(ev->modifiers, "Control");
+    alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
 //    EINA_LOG_ERR("KeyDown: %s - %s - %s", ev->key, ev->compose, ev->string);
 
     if (!strcmp(ev->key, "Alt_L")) {
-        menu.flipMenuActive();
+        altPressClean = true;
+        altPressed = true;
     }
 
-    if (menu.isMenuActive()) {
-        menu.handleKeyDown(ev);
-        return;
-    }
-
-    if (ctrl && shift) {
+    if (alt) {
+        // ignore alt keys on the down
+    } else if (ctrl && shift) {
         if (!strcmp(ev->key, "N")) {
             addRow();
         } else if (!strcmp(ev->key, "E")) {
@@ -121,6 +140,11 @@ void data_ui::handleKeyDown(void *event_info) {
         } else if (!strcmp(ev->key, "p")) {
             exportCsv();
         }
+    }
+
+    if (menu.isMenuActive()) {
+        menu.handleKeyDown(ev);
+        return;
     }
 
     if (!strcmp(ev->key, "Escape")) {
@@ -176,6 +200,14 @@ bool data_ui::prevItem() {
     elm_genlist_item_selected_set(it, EINA_TRUE);
     elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
     return true;
+}
+
+static void entry_filter_out_unwanted_cb(void *data EINA_UNUSED, Evas_Object *entry EINA_UNUSED, char **text) {
+//    EINA_LOG_ERR("Filter: %s", *text);
+    if (!strcmp(*text, "<tab/>") || ui.getMenu().isMenuActive() || ui.isAltPressed()) {
+        char *insert = *text;
+        *insert = 0;
+    }
 }
 
 void data_ui::init() {
@@ -261,6 +293,7 @@ void data_ui::init() {
     elm_entry_editable_set(searchEntry, EINA_TRUE);
     evas_object_size_hint_weight_set(searchEntry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     evas_object_size_hint_align_set(searchEntry, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    elm_entry_markup_filter_append(searchEntry, entry_filter_out_unwanted_cb, nullptr);
     elm_box_pack_end(searchBox, searchEntry);
     elm_object_focus_set(searchEntry, EINA_TRUE);
     evas_object_show(searchEntry);
@@ -600,7 +633,7 @@ static void file_new_key_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj
     if (!strcmp(ev->key, "Escape")) {
         file_new_exit_cb(data, obj, event_info);
     } else if (!strcmp(ev->key, "Return")) {
-        bool forImport = (bool)(uintptr_t) data;
+        auto forImport = (bool)(uintptr_t) data;
         if (forImport) {
             file_import_new_ok_cb(data, obj, event_info);
         } else {
@@ -835,7 +868,7 @@ void data_ui::prevButton() {
         repopulateUI();
     }
 
-    if (currentEditors.size() == 0) {
+    if (currentEditors.empty()) {
         return;
     }
 
@@ -884,7 +917,7 @@ void data_ui::nextButton() {
         repopulateUI();
     }
 
-    if (currentEditors.size() == 0) {
+    if (currentEditors.empty()) {
         return;
     }
 
@@ -1023,7 +1056,7 @@ void data_ui::saveEditableLabel() {
 
 Eina_Bool data_ui::labelPreferencesAreValid() {
     std::unordered_set<std::string> validCheck;
-    for (auto column : editableColumns) {
+    for (const auto &column : editableColumns) {
         auto search = validCheck.find(column);
         if(search == validCheck.end()) {
             validCheck.insert(column);
@@ -1125,7 +1158,7 @@ void data_ui::cursorUp(Eina_Bool shift) {
 
 void data_ui::updateEditorSelection() {
 //    EINA_LOG_ERR("a: %d, bi: %d, ba: %d, ei: %d, ea: %d",editorSelectionActive,editorSelectionBeganIn,editorSelectionBeganAt,editorSelectionEndIn,editorSelectionEndAt);
-    if (editorSelectionBeganIn >= 0 && currentEditors.size() > 0) {
+    if (editorSelectionBeganIn >= 0 && !currentEditors.empty()) {
         if (editorSelectionBeganIn > editorSelectionEndIn) {
             for (int editorIndex = editorSelectionEndIn; editorIndex <= editorSelectionBeganIn; editorIndex++) {
                 auto editor = currentEditors[editorIndex];
@@ -1300,7 +1333,7 @@ void data_ui::updateScrollPositions() {
         }
 
         Evas_Coord newSyDown = (ey+cy+sy) - 6;
-        Evas_Coord newSyUp = (ey+cy+sy) - (sh*.9);
+        Evas_Coord newSyUp = static_cast<Evas_Coord>((ey + cy + sy) - (sh * .9));
         if (((ey+cy+sy) > (sh*.9)) && (newSyUp > sy)) {
             sy = newSyUp;
         }
@@ -1350,4 +1383,8 @@ void data_ui::updateFoundItemDisplay(bool found, int editorIndex) {
 
 data_menu data_ui::getMenu() {
     return menu;
+}
+
+bool data_ui::isAltPressed() {
+    return altPressed;
 }

@@ -6,6 +6,7 @@
 #define GKA_DATA_E_DATA_MENU_H
 
 #include <Elementary.h>
+#include <map>
 
 class data_menu {
 
@@ -21,6 +22,8 @@ public:
 
     void menuDismissed();
 
+    void handleKeyUp(Evas_Event_Key_Down *ev);
+
 private:
     void cursorDown();
 
@@ -29,6 +32,8 @@ private:
     void cursorLeft();
 
     void cursorUp();
+
+    Elm_Object_Item *findSelectedItem();
 
 private:
     Evas_Object *menu;
@@ -58,7 +63,9 @@ private:
 
     bool menuActive;
 
-    Elm_Object_Item *findSelectedItem();
+    std::map<wchar_t, Elm_Object_Item *> menuShortCuts;
+
+    void addMenuItemToShortCuts(Elm_Object_Item *menuItem);
 };
 
 

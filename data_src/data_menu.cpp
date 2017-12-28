@@ -2,6 +2,8 @@
 // Created by adam on 25/11/17.
 //
 
+#include <cstring>
+#include <cwctype>
 #include "data_menu.h"
 #include "data_ui.h"
 
@@ -98,6 +100,23 @@ void data_menu::init(Evas_Object *window) {
     menuTools = elm_menu_item_add(menu, nullptr, nullptr, _("Tools"), nullptr, nullptr);
     menuToolsLabelPref = elm_menu_item_add(menu, menuTools, "", _("Label preferences... (ctrl-l)"), menu_label_preferences_cb, nullptr);
     menuToolsTablePref = elm_menu_item_add(menu, menuTools, "", _("Table preferences... (ctrl-t)"), menu_table_preferences_cb, nullptr);
+
+    addMenuItemToShortCuts(menuFile);
+    addMenuItemToShortCuts(menuEdit);
+    addMenuItemToShortCuts(menuView);
+    addMenuItemToShortCuts(menuTools);
+}
+
+void data_menu::addMenuItemToShortCuts(Elm_Object_Item *menuItem) {
+    Evas_Object *cO = elm_menu_item_object_get(menuItem);
+    auto ptr = elm_object_text_get(cO);
+    std::mbtowc(nullptr, nullptr, 0); // reset the conversion state
+    const char* end = ptr + std::strlen(ptr);
+    wchar_t wc;
+    int ret = std::mbtowc(&wc, ptr, end-ptr);
+    if (ret > 0) {
+        menuShortCuts.emplace(std::towlower(static_cast<wint_t>(wc)), menuItem);
+    }
 }
 
 void data_menu::updateMenuStates(int itemAvailable) {
@@ -116,7 +135,7 @@ void data_menu::flipMenuActive() {
             cMenu = menuFile;
         }
         elm_menu_item_selected_set(cMenu, EINA_TRUE);
-        Evas_Object *cO = elm_menu_item_object_get(menuFile);
+        Evas_Object *cO = elm_menu_item_object_get(cMenu);
         elm_layout_signal_emit(cO,"elm,action,open", "");
     } else {
         Elm_Object_Item *cMenu = elm_menu_selected_item_get(menu);
@@ -128,6 +147,27 @@ void data_menu::flipMenuActive() {
 bool data_menu::isMenuActive() {
 //    EINA_LOG_ERR("isMenuActive %d",menuActive);
     return menuActive;
+}
+
+void data_menu::handleKeyUp(Evas_Event_Key_Down *ev) {
+//    EINA_LOG_ERR("KeyUp: %s - %s - %s", ev->key, ev->compose, ev->string);
+
+    if (ev->string) {
+        std::mbtowc(nullptr, nullptr, 0); // reset the conversion state
+        const char *end = ev->string + std::strlen(ev->string);
+        wchar_t wc;
+        int ret = std::mbtowc(&wc, ev->string, end - ev->string);
+        if (ret > 0) {
+            auto shortCut = menuShortCuts.find(static_cast<const wchar_t &>(std::towlower(static_cast<wint_t>(wc))));
+            if (shortCut != menuShortCuts.end()) {
+                auto menu = shortCut->second;
+                elm_menu_item_selected_set(menu, EINA_TRUE);
+                Evas_Object *cO = elm_menu_item_object_get(menu);
+                elm_layout_signal_emit(cO, "elm,action,open", "");
+                menuActive = true;
+            }
+        }
+    }
 }
 
 void data_menu::handleKeyDown(Evas_Event_Key_Down *ev) {

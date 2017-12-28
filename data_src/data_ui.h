@@ -169,6 +169,8 @@ public:
 
     data_menu getMenu();
 
+    bool isAltPressed();
+
 private:
     void cursorUp(Eina_Bool i);
 
@@ -221,6 +223,8 @@ private:
     data_table_preferences table_preferences;
     std::string exportFileName;
     std::string importFileName;
+    bool altPressClean;
+    bool altPressed;
 };
 
 extern data_ui ui;
