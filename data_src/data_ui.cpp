@@ -187,7 +187,10 @@ void data_ui::clearActivePopup() {
 bool data_ui::nextItem() {
     auto sIt = elm_genlist_selected_item_get(rightList);
     auto it = elm_genlist_item_next_get(sIt);
-    if (!it) return false;
+    if (!it) {
+        it = elm_genlist_last_item_get(rightList);
+        if (!it) return false;
+    }
     elm_genlist_item_selected_set(it, EINA_TRUE);
     elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
     return true;
@@ -196,7 +199,10 @@ bool data_ui::nextItem() {
 bool data_ui::prevItem() {
     auto sIt = elm_genlist_selected_item_get(rightList);
     auto it = elm_genlist_item_prev_get(sIt);
-    if (!it) return false;
+    if (!it) {
+        it = elm_genlist_first_item_get(rightList);
+        if (!it) return false;
+    }
     elm_genlist_item_selected_set(it, EINA_TRUE);
     elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
     return true;
@@ -753,7 +759,7 @@ static Eina_Bool delayed_set_focus(void *data) {
     elm_object_focus_allow_set(focusOn, EINA_TRUE);
 
     auto type = elm_object_widget_type_get(focusOn);
-    EINA_LOG_INFO("FocusOn type: %s",type);
+//    EINA_LOG_ERR("FocusOn type: %s",type);
     if (!strcmp(type, "Elm.Entry")) {
         elm_entry_cursor_line_end_set(focusOn);
     }
