@@ -1,6 +1,6 @@
-# GKA Data for Enlightenment
+# GKA Data
 
-Simple Sqlite3 database editor.
+Simple Sqlite3 database editor, using Enlightenment Foundation Libraries.
 
 Currently supports opening and editing of sqlite databases.
 
@@ -14,7 +14,7 @@ Install prerequisite packages:
 
 ### Enlightenment Foundation librarys
 
-The project now supports building with any version of EFL from 1.7 onwards, the UI is a tiny bit nicer with the latest version.
+The project now supports building with any version of EFL from 1.7 onwards, the UI is a tiny bit nicer with the latest version, but it also has some focusing bugs.
 
 #### Build efl from source
 
