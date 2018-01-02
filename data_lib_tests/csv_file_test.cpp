@@ -11,7 +11,6 @@
 
 TEST_CASE("csv file export") {
     eina_init();
-    int _log_dom = eina_log_domain_register("gka-data", EINA_COLOR_GREEN);
 
     sqlite_file db;
     db.newFile(":memory:");
@@ -27,9 +26,9 @@ TEST_CASE("csv file export") {
     csv_file::exportCsv(db, fileName);
 
     std::ifstream in{fileName, std::ios::binary | std::ios::ate};
-    REQUIRE(in.fail() == false);
+    REQUIRE(!in.fail());
     std::string fileContent;
-    unsigned long size = in.tellg();
+    auto size = static_cast<unsigned long>(in.tellg());
     std::string str(size, '\0');
     in.seekg(0);
     in.read(&str[0], size);
@@ -40,7 +39,6 @@ TEST_CASE("csv file export") {
 
 TEST_CASE("csv file import") {
     eina_init();
-    int _log_dom = eina_log_domain_register("gka-data", EINA_COLOR_GREEN);
 
     std::string fileName("/tmp/test-export.csv");
 
