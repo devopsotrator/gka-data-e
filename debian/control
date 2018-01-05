@@ -1,14 +1,13 @@
 Source: gka-data-e
-Section: utils
+Section: database
 Priority: optional
-Maintainer: Michael Prokop <mika@debian.org>
+Maintainer: Adam Boardman <adamboardman@gmail.com>
 Standards-Version: 3.9.8
 Homepage: https://github.com/adamboardman/gka-data-e.git
 Vcs-Git: https://github.com/adamboardman/gka-data-e.git
 Vcs-Browser: https://github.com/adamboardman/gka-data-e
 Build-Depends:
  debhelper (>= 10),
- dh-autoreconf,
  intltool,
  cmake,
  libsqlite3-dev,
