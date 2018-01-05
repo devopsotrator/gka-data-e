@@ -1,0 +1,28 @@
+Source: gka-data-e
+Section: utils
+Priority: optional
+Maintainer: Michael Prokop <mika@debian.org>
+Standards-Version: 4.1.1
+Homepage: https://github.com/adamboardman/gka-data-e.git
+Vcs-Git: https://github.com/adamboardman/gka-data-e.git
+Vcs-Browser: https://github.com/adamboardman/gka-data-e
+Build-Depends:
+ debhelper (>= 10),
+
+Package: gka-data-e
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${misc:Depends},
+ intltool,
+ cmake,
+ libsqlite3-dev,
+ e17-dev,
+ libelementary-dev,
+Conflicts:
+Replaces:
+Recommends:
+Description: GKA Data
+  Simple Sqlite3 database editor.
+ .
+ Based on EFL.
