@@ -23,9 +23,11 @@ Build-Depends:
  libeio-dev (>= 1.7.10)
 
 Package: gka-data-e
-Architecture: all
+Architecture: any
+Multi-Arch: same
 Depends:
  ${misc:Depends},
+ ${shlibs:Depends},
  libelementary2,
  libeina1 (>= 1.7.4),
  libecore-con1 (>= 1.7.7),
