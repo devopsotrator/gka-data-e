@@ -8,16 +8,36 @@ Vcs-Git: https://github.com/adamboardman/gka-data-e.git
 Vcs-Browser: https://github.com/adamboardman/gka-data-e
 Build-Depends:
  debhelper (>= 10),
+ dh-autoreconf,
+ intltool,
+ cmake,
+ liblementary-dev (>= 1.7.10),
+ libsqlite3-dev,
+ libeina-dev (>= 1.7.10),
+ libeet-dev (>= 1.7.10),
+ libevas-dev (>= 1.7.10),
+ libecore-dev (>= 1.7.10),
+ libefreet-dev (>= 1.7.10),
+ libedje-dev (>= 1.7.10),
+ libedbus-dev (>= 1.7.10),
+ libeeze-dev (>= 1.7.10),
+ libeio-dev (>= 1.7.10)
 
 Package: gka-data-e
 Architecture: all
 Depends:
  ${misc:Depends},
- intltool,
- cmake,
- libsqlite3-dev,
- e17-dev,
- libelementary-dev,
+ libeina1 (>= 1.7.4),
+ libecore-con1 (>= 1.7.7),
+ libecore-evas1 (>= 1.7.7),
+ libecore-file1 (>= 1.7.7),
+ libecore-imf1 (>= 1.7.7),
+ libecore-input1 (>= 1.7.7),
+ libecore-ipc1 (>= 1.7.7),
+ libecore-x1 (>= 1.8.0),
+ libecore1 (>= 1.7.7),
+ libevas1-engine-software-x11,
+ libsqlite3-0,
 Conflicts:
 Replaces:
 Recommends:
