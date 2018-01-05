@@ -13,7 +13,6 @@ Package: gka-data-e
 Architecture: all
 Depends:
  ${misc:Depends},
- ${misc:Depends},
  intltool,
  cmake,
  libsqlite3-dev,
@@ -23,6 +22,6 @@ Conflicts:
 Replaces:
 Recommends:
 Description: GKA Data
-  Simple Sqlite3 database editor.
+ Simple Sqlite3 database editor.
  .
  Based on EFL.
