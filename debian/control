@@ -3,13 +3,14 @@ Section: database
 Priority: optional
 Maintainer: Adam Boardman <adamboardman@gmail.com>
 Standards-Version: 3.9.8
-Homepage: https://github.com/adamboardman/gka-data-e.git
+Homepage: https://github.com/adamboardman/gka-data-e
 Vcs-Git: https://github.com/adamboardman/gka-data-e.git
 Vcs-Browser: https://github.com/adamboardman/gka-data-e
 Build-Depends:
  debhelper (>= 10),
  intltool,
  cmake,
+ apt-utils,
  libsqlite3-dev,
  libeina-dev (>= 1.7.10),
  libeet-dev (>= 1.7.10),

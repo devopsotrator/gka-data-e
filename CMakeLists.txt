@@ -14,6 +14,7 @@ add_definitions(-DPACKAGE_VERSION="0.1" -DPACKAGE_DATA_DIR="${CMAKE_INSTALL_PREF
 
 include(GNUInstallDirs)
 
+add_subdirectory(handyfiles)
 add_subdirectory(files)
 add_subdirectory(po)
 add_subdirectory(data_src)
