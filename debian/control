@@ -20,7 +20,8 @@ Build-Depends:
  libedje-dev (>= 1.7.10),
  libedbus-dev (>= 1.7.10),
  libeeze-dev (>= 1.7.10),
- libeio-dev (>= 1.7.10)
+ libeio-dev (>= 1.7.10),
+ libelemenatary-dev,
 
 Package: gka-data-e
 Architecture: any
