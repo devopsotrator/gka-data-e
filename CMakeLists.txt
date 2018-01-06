@@ -4,8 +4,11 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/)
 set(Eina_DIR ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/Eina/)
+set(Ecore_DIR ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/Ecore/)
+set(Evas_DIR ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/Evas/)
+set(Efl_DIR ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/Efl/)
+set(Elementary_DIR ${CMAKE_CURRENT_SOURCE_DIR}/handyfiles/usr-local-lib-cmake/Elementary/)
 
 find_package(Eina REQUIRED)
 find_package(Ecore REQUIRED)
