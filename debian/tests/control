@@ -1,3 +1,2 @@
-Tests: data_lib_tests
-Depends: @
 Test-Command: data_lib_tests/data_lib_tests -r junit
+Depends: @
