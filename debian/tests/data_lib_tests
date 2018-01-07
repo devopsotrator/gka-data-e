@@ -1,3 +1,0 @@
-#!/bin/sh
-
-data_lib_tests -r junit
