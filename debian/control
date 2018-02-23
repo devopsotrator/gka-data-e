@@ -3,9 +3,9 @@ Section: database
 Priority: optional
 Maintainer: Adam Boardman <adamboardman@gmail.com>
 Standards-Version: 3.9.8
-Homepage: https://github.com/adamboardman/gka-data-e
-Vcs-Git: https://github.com/adamboardman/gka-data-e.git
-Vcs-Browser: https://github.com/adamboardman/gka-data-e
+Homepage: https://github.com/gemian/gka-data-e
+Vcs-Git: https://github.com/gemian/gka-data-e.git
+Vcs-Browser: https://github.com/gemian/gka-data-e
 Build-Depends:
  debhelper (>= 10),
  intltool,
